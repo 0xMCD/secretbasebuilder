@@ -1,14 +1,64 @@
-import { MODULE_DEFS, THEMES, ENVIRONMENTS } from '../core/catalog';
+import { useEffect, useRef } from 'react';
+import { removeModule } from '../core/actions';
+import { getState } from '../core/store';
+import { redo, undo } from '../core/undo';
+import { attachPointerController } from '../input/pointerController';
+import { initRenderer } from '../render/renderer';
+import { loadAutosave, startAutosave } from '../persistence/save';
+import { useGameState } from './hooks';
+import { TopBar } from './TopBar';
+import { Sidebar } from './Sidebar';
+import { EnvironmentPicker } from './EnvironmentPicker';
 
-/** Placeholder shell — replaced by the real layout in Chunk E (see docs/PLAN.md). */
+// Restore before first render so returning players skip the start screen.
+loadAutosave();
+
 export function App() {
+  const state = useGameState();
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current!;
+    const stopRenderer = initRenderer(canvas);
+    const stopPointer = attachPointerController(canvas);
+    const stopAutosave = startAutosave();
+
+    const onKey = (e: KeyboardEvent) => {
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+      if ((e.key === 'Delete' || e.key === 'Backspace') && getState().selectedId) {
+        removeModule(getState().selectedId!);
+      } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') {
+        e.preventDefault();
+        if (e.shiftKey) redo();
+        else undo();
+      } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'y') {
+        e.preventDefault();
+        redo();
+      }
+    };
+    window.addEventListener('keydown', onKey);
+
+    return () => {
+      window.removeEventListener('keydown', onKey);
+      stopAutosave();
+      stopPointer();
+      stopRenderer();
+    };
+  }, []);
+
   return (
-    <div style={{ padding: 24, fontFamily: 'system-ui' }}>
-      <h1>Secret Base Builder</h1>
-      <p>
-        Content system online: {MODULE_DEFS.length} module defs, {THEMES.length}{' '}
-        themes, {ENVIRONMENTS.length} environments.
-      </p>
+    <div className="app">
+      <TopBar />
+      <div className="main">
+        <div className="canvas-wrap">
+          <canvas ref={canvasRef} className="world" />
+          {state.placements.length === 0 && !state.needsEnvironmentPick && (
+            <div className="hint">Drag a room from the catalog ➡ into the dirt to start building!</div>
+          )}
+        </div>
+        <Sidebar canvasRef={canvasRef} />
+      </div>
+      {state.needsEnvironmentPick && <EnvironmentPicker />}
     </div>
   );
 }

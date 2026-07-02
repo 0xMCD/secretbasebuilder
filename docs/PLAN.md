@@ -28,23 +28,25 @@ How to resume a session:
   coverage for all placement math and save round-trips.
   *Done when: `npm test` passes with meaningful core tests.*
 
-- [ ] **D. Rendering** — `render/renderer.ts` (rAF + dirty flag, draw order per
+- [x] **D. Rendering** — `render/renderer.ts` (rAF + dirty flag, draw order per
   ARCHITECTURE.md), `render/camera.ts`, `render/sprites.ts` (manifest-first,
   procedural fallback, cache), `render/procedural/` (theme palettes + furniture
   painters for all 13 kinds), `render/environment.ts` (5 environments: sky,
   weather, surface structure, dirt), connection seams, label overlay.
   *Done when: a hardcoded demo base renders correctly with pan/zoom.*
 
-- [ ] **E. UI + interaction** — sidebar catalog (thumbnails from sprite
+- [x] **E. UI + interaction** — sidebar catalog (thumbnails from sprite
   pipeline, search/filter/sort, theme selector), pointer-event drag-to-place
   with ghost validity tint, move/select/delete, environment picker (start
   screen + switcher), top bar (name, overlay toggle, undo/redo, export/import,
   clear). Works with touch.
   *Done when: the full core loop from GDD.md is playable on desktop and tablet.*
 
-- [ ] **F. Polish pass** — empty-state hints ("drag a room into the dirt!"),
+- [x] **F. Polish pass** — empty-state hints ("drag a room into the dirt!"),
   keyboard shortcuts (Delete, Ctrl+Z/Y), favicon/title, README with screenshots,
-  `npm run build` clean.
+  `npm run build` clean. *(Verified end-to-end in Chromium via Playwright:
+  environment pick → drag-place → overlap/sky rejection → theme switch →
+  labels → delete/undo → zoom/pan → autosave survives reload.)*
 
 ## Phase P1 — Catalog explosion *(future sessions)*
 
