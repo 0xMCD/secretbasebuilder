@@ -1,0 +1,162 @@
+{
+  "$comment": "Machine-readable Game Design Document for Secret Base Builder. This file is the source of truth for design intent. Human-readable companion: docs/GDD.md. Content data (actual module catalog, themes, environments) lives in src/content/*.json — this document defines the RULES those files must follow.",
+  "meta": {
+    "title": "Secret Base Builder",
+    "workingTitle": "Me and Sailor Bunker",
+    "version": "0.1.0",
+    "documentVersion": 1,
+    "audience": "Kids roughly 5-12, plus anyone who ever drew a secret base on paper",
+    "platform": "Web (desktop mouse + tablet touch), no install, no accounts",
+    "elevatorPitch": "A 2D side-cutaway secret-base builder where kids drag rooms from a giant catalog into an underground grid and watch their dream hideout come to life in high-fidelity pixel art with a Spy Kids vibe: somewhat realistic, a bit techy, a bit fantastical."
+  },
+  "designPillars": [
+    {
+      "id": "variety-is-the-fun",
+      "statement": "The core joy is the sheer variety of modules and styles. Breadth of catalog > depth of mechanics.",
+      "implications": [
+        "Adding a new module or style variant must require zero engine code changes — content is data.",
+        "The sidebar catalog must stay browsable at 100+ entries (scroll, filter, sort)."
+      ]
+    },
+    {
+      "id": "no-friction-no-failure",
+      "statement": "Pure creative sandbox. No resources, no costs, no wrong answers in v1.",
+      "implications": [
+        "Placement rules exist only to keep bases coherent (no overlaps, stay underground), never to gate creativity.",
+        "Everything is instantly reversible: move, delete, undo."
+      ]
+    },
+    {
+      "id": "it-comes-alive",
+      "statement": "Placed modules should feel like a living base, not stickers on a grid.",
+      "implications": [
+        "Adjacent modules visually connect (doorways/openings at shared edges).",
+        "Architecture reserves hooks for future animated modules and wandering characters."
+      ]
+    },
+    {
+      "id": "art-is-swappable",
+      "statement": "All art is placeholder until final styles are chosen; the pipeline must make replacement trivial.",
+      "implications": [
+        "Every sprite is addressed by a deterministic key (kind_WxH_theme). A real PNG at the conventional path always wins over the procedural fallback.",
+        "No sprite dimensions or offsets are hardcoded in game logic; everything derives from grid size."
+      ]
+    },
+    {
+      "id": "handoff-friendly",
+      "statement": "Any capable model or developer should be able to extend the game by reading docs/ and src/content/.",
+      "implications": [
+        "Docs describe systems by contract (inputs/outputs/invariants), not implementation trivia.",
+        "Work is chunked in docs/PLAN.md with explicit status so sessions can resume mid-stream."
+      ]
+    }
+  ],
+  "coordinateSystem": {
+    "description": "The world is a fixed grid of square cells, side-view cutaway. x grows rightward, y grows downward. Rows [0, groundRow) are sky/surface; rows [groundRow, rows) are underground and buildable.",
+    "grid": {
+      "cols": 48,
+      "rows": 26,
+      "groundRow": 6,
+      "buildableRegion": "x in [0, cols), y in [groundRow, rows)"
+    },
+    "artCellPx": 64,
+    "artCellPxNote": "Each grid cell is authored at 64x64 art pixels. Rendering scales by camera zoom with image smoothing disabled for crisp pixels. Final art must be authored at exactly moduleWidth*64 x moduleHeight*64.",
+    "camera": {
+      "controls": "One-finger / left-drag on empty space pans. Wheel or pinch zooms toward pointer. Zoom clamped to [0.25, 3.0].",
+      "persistence": "Camera state is session-only, not saved."
+    }
+  },
+  "systems": {
+    "moduleCatalog": {
+      "sourceFile": "src/content/modules.json",
+      "contract": "A list of module KINDS (bedroom, kitchen, ...). Each kind declares: id, display name, category, tags, rarity, and a list of sizes {w,h}. The engine expands kinds x sizes into concrete ModuleDefs with id `${kindId}_${w}x${h}`.",
+      "sizeRules": {
+        "heights": "Most modules are 1 tile tall. 2-tall and 3-tall modules exist but are rarer (rarity uncommon/rare).",
+        "widths": "Most kinds ship multiple width variants, e.g. bedroom in 2, 3, and 4 wide."
+      },
+      "startingKinds": [
+        "bedroom", "kitchen", "hallway", "bathroom", "storage",
+        "entertainment", "living", "gameroom",
+        "lab", "command", "vault", "garage", "elevator"
+      ],
+      "extensibility": "To add a kind: add an entry to modules.json, add a furniture painter in src/render/procedural/furniture.ts (or ship real PNGs), run npm run validate:content."
+    },
+    "themes": {
+      "sourceFile": "src/content/themes.json",
+      "contract": "Exactly the style axis. Every module def gets one sprite per theme. v1 themes: tech, fantasy, realistic, cozy, glam. Each theme declares a pixel-art palette (wall, wallShadow, floor, accent, glow, trim) consumed by the procedural sprite generator.",
+      "selection": "Player picks a theme per placement (a theme selector in the sidebar filters/styles the catalog). Mixed-theme bases are allowed and encouraged."
+    },
+    "environments": {
+      "sourceFile": "src/content/environments.json",
+      "contract": "A single choice made when starting a base (changeable later without losing placements). One environment bundles three things: aboveground structure, weather, and dirt/soil style. Rendered by src/render/environment.ts.",
+      "v1Set": [
+        { "id": "suburban", "structure": "two-story house", "weather": "sunny", "dirt": "brown loam" },
+        { "id": "cabin", "structure": "forest cabin", "weather": "rain", "dirt": "dark rooty soil" },
+        { "id": "beach", "structure": "beach shack", "weather": "sunny-coastal", "dirt": "sand" },
+        { "id": "mountain", "structure": "research dome", "weather": "snow", "dirt": "gray stone" },
+        { "id": "desert", "structure": "adobe tower", "weather": "clear night", "dirt": "red rock" }
+      ]
+    },
+    "placement": {
+      "rules": [
+        "A module occupies a w x h rectangle of cells entirely inside the buildable region.",
+        "Modules may not overlap.",
+        "No support/gravity/resource rules in v1.",
+        "Placements can be moved (drag) and deleted (select then delete / trash button)."
+      ],
+      "interaction": "Drag a catalog card onto the canvas (custom pointer-event drag, works with touch). A ghost preview shows validity (green tint valid / red tint invalid) snapped to the grid. Drop places it. Dragging an already-placed module moves it.",
+      "undo": "Single linear undo/redo stack over placement operations (place, move, delete, clear)."
+    },
+    "visualConnection": {
+      "rule": "When two placements share an edge segment, the renderer draws a doorway/opening connector across that seam instead of a solid wall, so rooms read as one connected base.",
+      "implementation": "Sprites are authored/generated with walls; the renderer overlays connector openings at shared edges at draw time. Connection detection = axis-aligned edge overlap of at least 1 cell."
+    },
+    "labelOverlay": {
+      "rule": "A global toggle draws each placement's display name (and size) centered on the module in a readable badge. Off by default."
+    },
+    "persistence": {
+      "autosave": "Full base state serialized to localStorage on every mutation (debounced).",
+      "saveFormat": {
+        "version": 1,
+        "shape": "{ version, environmentId, placements: [{ id, defId, theme, x, y }] }",
+        "compatibility": "Loaders must check version and migrate or reject gracefully. defIds and themeIds are stable strings — never rename published ids; deprecate instead."
+      },
+      "exportImport": "Export downloads the same JSON as a .json file; import loads one. Unknown defIds on import are skipped with a friendly count shown to the player."
+    },
+    "artPipeline": {
+      "spriteKey": "`${kindId}_${w}x${h}_${themeId}` — deterministic, derived, never stored in save files.",
+      "resolution": [
+        "1. If public/art/modules/<spriteKey>.png is listed in public/art/art-manifest.json, load and use it.",
+        "2. Otherwise generate a procedural placeholder sprite at runtime (deterministic per key) and cache it."
+      ],
+      "replacingArt": "Drop final PNG(s) into public/art/modules/ at exactly w*64 x h*64 px, add filenames to art-manifest.json (or run the future scan script), reload. Zero code changes.",
+      "proceduralStyle": "Placeholders are real pixel art, not gray boxes: theme palette walls/floors plus per-kind furniture silhouettes (bed, stove, arcade cabinet...) so the game reads correctly before final art exists."
+    }
+  },
+  "uiLayout": {
+    "canvas": "Fills the viewport behind everything; owns pan/zoom/placement input.",
+    "sidebar": {
+      "position": "right",
+      "contents": "Scrollable module catalog as cards (thumbnail + name + size). Thumbnails come from the same sprite pipeline as the canvas.",
+      "controls": ["text search", "category filter chips", "sort (name | size | category)", "theme selector that restyles all card thumbnails"]
+    },
+    "topBar": ["base name (editable)", "environment switcher", "label-overlay toggle", "undo/redo", "export/import", "clear base (confirm)"]
+  },
+  "outOfScopeV1": [
+    "Animated module interiors (hook: sprite pipeline returns static frames now; a frames[] extension is reserved in the sprite cache API)",
+    "Characters walking around the base (hook: placements expose a walkability graph via shared-edge connections — the same data as visualConnection)",
+    "Resource/economy constraints",
+    "Multiplayer or share links / backend",
+    "Sound"
+  ],
+  "roadmap": {
+    "note": "Authoritative live status lives in docs/PLAN.md; this is the design-level phase intent.",
+    "phases": [
+      { "id": "P0", "name": "Foundation", "goal": "Playable sandbox: pick environment, drag/drop themed modules, pan/zoom, labels, save/export.", "status": "in-progress" },
+      { "id": "P1", "name": "Catalog explosion", "goal": "Grow to 30+ kinds, decorations/props layer, more environments and themes." },
+      { "id": "P2", "name": "Final art", "goal": "Replace procedural placeholders with authored pixel art via the drop-in pipeline; per-module animation frames." },
+      { "id": "P3", "name": "Life", "goal": "Characters that walk between connected rooms; ambient module animations; day/night." },
+      { "id": "P4", "name": "Maybe", "goal": "Optional challenge mode (budgets/missions), share links." }
+    ]
+  }
+}
