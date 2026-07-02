@@ -1,0 +1,85 @@
+{
+  "$comment": "Style themes. Every module def gets one sprite per theme. Palette keys are consumed by src/render/procedural/. Theme ids are public (saved in placements): never rename or delete, only add. After editing run: npm run validate:content",
+  "themes": [
+    {
+      "id": "tech",
+      "name": "Tech",
+      "blurb": "Brushed steel, glowing panels, spy-movie gadgetry.",
+      "palette": {
+        "wall": "#33465c",
+        "wallDark": "#22303f",
+        "floor": "#3f5670",
+        "roomBg": "#26343f",
+        "accent": "#38e1ff",
+        "glow": "#a8f4ff",
+        "trim": "#7e93a8",
+        "furniture": "#55708c",
+        "furnitureDark": "#40566e"
+      }
+    },
+    {
+      "id": "fantasy",
+      "name": "Fantasy",
+      "blurb": "Stone arches, purple banners, a little bit of magic.",
+      "palette": {
+        "wall": "#4b3a66",
+        "wallDark": "#352849",
+        "floor": "#5c4a7c",
+        "roomBg": "#2f2542",
+        "accent": "#b678ff",
+        "glow": "#ffd166",
+        "trim": "#8d76ab",
+        "furniture": "#6e5a92",
+        "furnitureDark": "#544373"
+      }
+    },
+    {
+      "id": "realistic",
+      "name": "Realistic",
+      "blurb": "Concrete, steel beams, honest bunker engineering.",
+      "palette": {
+        "wall": "#6e6c64",
+        "wallDark": "#504e48",
+        "floor": "#7f7a70",
+        "roomBg": "#5a574f",
+        "accent": "#d08840",
+        "glow": "#efe3c0",
+        "trim": "#918d82",
+        "furniture": "#847f73",
+        "furnitureDark": "#67635a"
+      }
+    },
+    {
+      "id": "cozy",
+      "name": "Cozy",
+      "blurb": "Warm wood, soft lamps, blanket-fort energy.",
+      "palette": {
+        "wall": "#8a5a3b",
+        "wallDark": "#68422a",
+        "floor": "#a8764f",
+        "roomBg": "#6f4a30",
+        "accent": "#ff9d4d",
+        "glow": "#ffdda6",
+        "trim": "#c99b6e",
+        "furniture": "#b5854f",
+        "furnitureDark": "#8f6539"
+      }
+    },
+    {
+      "id": "glam",
+      "name": "Glam",
+      "blurb": "Pink velvet, gold trim, disco-ball headquarters.",
+      "palette": {
+        "wall": "#8e4a7d",
+        "wallDark": "#69355d",
+        "floor": "#a55c94",
+        "roomBg": "#733e67",
+        "accent": "#f5c542",
+        "glow": "#ffe9f4",
+        "trim": "#f0a5d8",
+        "furniture": "#b06fa0",
+        "furnitureDark": "#8b5280"
+      }
+    }
+  ]
+}

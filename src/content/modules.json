@@ -1,0 +1,129 @@
+{
+  "$comment": "Module catalog. Each kind expands to one ModuleDef per size, id `${kindId}_${w}x${h}`. Ids are public (they appear in save files): never rename or delete, only add. After editing run: npm run validate:content",
+  "categories": [
+    { "id": "living", "name": "Living" },
+    { "id": "fun", "name": "Fun & Games" },
+    { "id": "utility", "name": "Utility" },
+    { "id": "infrastructure", "name": "Infrastructure" },
+    { "id": "ops", "name": "Secret Ops" }
+  ],
+  "kinds": [
+    {
+      "id": "bedroom",
+      "name": "Bedroom",
+      "category": "living",
+      "rarity": "common",
+      "tags": ["sleep", "bed", "cozy"],
+      "blurb": "A place to crash after a long day of secret missions.",
+      "sizes": [ { "w": 2, "h": 1 }, { "w": 3, "h": 1 }, { "w": 4, "h": 1 } ]
+    },
+    {
+      "id": "kitchen",
+      "name": "Kitchen",
+      "category": "living",
+      "rarity": "common",
+      "tags": ["food", "cooking", "snacks"],
+      "blurb": "Fuel up. Snack storage classified.",
+      "sizes": [ { "w": 2, "h": 1 }, { "w": 3, "h": 1 } ]
+    },
+    {
+      "id": "hallway",
+      "name": "Hallway",
+      "category": "infrastructure",
+      "rarity": "common",
+      "tags": ["connector", "corridor"],
+      "blurb": "Connects rooms. Every good base needs sneaky corridors.",
+      "sizes": [ { "w": 1, "h": 1 }, { "w": 2, "h": 1 }, { "w": 3, "h": 1 } ]
+    },
+    {
+      "id": "bathroom",
+      "name": "Bathroom",
+      "category": "living",
+      "rarity": "common",
+      "tags": ["toilet", "sink"],
+      "blurb": "Even spies need one.",
+      "sizes": [ { "w": 1, "h": 1 }, { "w": 2, "h": 1 } ]
+    },
+    {
+      "id": "storage",
+      "name": "Storage Room",
+      "category": "utility",
+      "rarity": "common",
+      "tags": ["crates", "gear", "supplies"],
+      "blurb": "Crates of gear, gadgets, and mystery boxes.",
+      "sizes": [ { "w": 1, "h": 1 }, { "w": 2, "h": 1 }, { "w": 3, "h": 1 } ]
+    },
+    {
+      "id": "entertainment",
+      "name": "Entertainment Room",
+      "category": "fun",
+      "rarity": "common",
+      "tags": ["movies", "screen", "couch"],
+      "blurb": "Giant screen. Movie nights, mission briefings, both.",
+      "sizes": [ { "w": 3, "h": 1 }, { "w": 4, "h": 1 } ]
+    },
+    {
+      "id": "living",
+      "name": "Living Area",
+      "category": "living",
+      "rarity": "common",
+      "tags": ["couch", "hangout", "chill"],
+      "blurb": "The hangout heart of the base.",
+      "sizes": [ { "w": 3, "h": 1 }, { "w": 4, "h": 1 } ]
+    },
+    {
+      "id": "gameroom",
+      "name": "Game Room",
+      "category": "fun",
+      "rarity": "common",
+      "tags": ["arcade", "games", "pool"],
+      "blurb": "Arcade cabinets and a pool table. High scores only.",
+      "sizes": [ { "w": 3, "h": 1 }, { "w": 4, "h": 1 } ]
+    },
+    {
+      "id": "lab",
+      "name": "Laboratory",
+      "category": "ops",
+      "rarity": "uncommon",
+      "tags": ["science", "experiments", "gadgets"],
+      "blurb": "Where the gadgets get invented. Goggles on.",
+      "sizes": [ { "w": 2, "h": 2 }, { "w": 3, "h": 2 } ]
+    },
+    {
+      "id": "command",
+      "name": "Command Center",
+      "category": "ops",
+      "rarity": "uncommon",
+      "tags": ["screens", "radar", "hq"],
+      "blurb": "Wall of screens. Track everything. Run the show.",
+      "sizes": [ { "w": 3, "h": 2 } ]
+    },
+    {
+      "id": "vault",
+      "name": "Vault",
+      "category": "utility",
+      "rarity": "uncommon",
+      "tags": ["safe", "treasure", "secure"],
+      "blurb": "Massive door. Whatever's inside stays inside.",
+      "sizes": [ { "w": 2, "h": 1 }, { "w": 2, "h": 2 } ]
+    },
+    {
+      "id": "garage",
+      "name": "Vehicle Bay",
+      "category": "ops",
+      "rarity": "rare",
+      "tags": ["vehicle", "hangar", "launch"],
+      "blurb": "Home of the getaway vehicle. Big door, bigger plans.",
+      "sizes": [ { "w": 4, "h": 2 }, { "w": 6, "h": 2 } ]
+    },
+    {
+      "id": "elevator",
+      "name": "Elevator Shaft",
+      "category": "infrastructure",
+      "rarity": "rare",
+      "tags": ["lift", "vertical", "connector"],
+      "blurb": "Connects the depths. Going down.",
+      "sizes": [ { "w": 1, "h": 2 }, { "w": 1, "h": 3 } ]
+    }
+  ]
+}

@@ -17,7 +17,7 @@ How to resume a session:
   truth), `docs/GDD.md`, `docs/ARCHITECTURE.md`, this plan, root `CLAUDE.md`.
   *Done when: a fresh model can describe the game and its contracts from docs alone.*
 
-- [ ] **B. Scaffold + content system** — Vite/React/TS app boots; `src/content/`
+- [x] **B. Scaffold + content system** — Vite/React/TS app boots; `src/content/`
   manifests (13 module kinds × sizes, 5 themes, 5 environments);
   `scripts/validate-content.mjs` passes; `core/types.ts` + `core/catalog.ts`.
   *Done when: `npm run dev` shows a page, `npm run validate:content` exits 0.*

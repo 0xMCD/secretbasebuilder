@@ -1,0 +1,95 @@
+{
+  "$comment": "Environments: ONE player choice bundles aboveground structure + weather + dirt style. Rendered by src/render/environment.ts using these palettes. Ids are public (saved): never rename or delete, only add. After editing run: npm run validate:content",
+  "environments": [
+    {
+      "id": "suburban",
+      "name": "Suburban House",
+      "blurb": "A totally normal house. Nothing suspicious underneath at all.",
+      "structure": "house",
+      "weather": "sunny",
+      "palette": {
+        "skyTop": "#5db8ff",
+        "skyBottom": "#a8dcff",
+        "surface": "#5faa46",
+        "dirt": "#6e4a2e",
+        "dirtDark": "#59391f",
+        "dirtSpeckle": "#84603f",
+        "structureMain": "#e8e0d0",
+        "structureRoof": "#b04a3a",
+        "structureDark": "#c9bfa8"
+      }
+    },
+    {
+      "id": "cabin",
+      "name": "Forest Cabin",
+      "blurb": "Rainy pines, a log cabin, and roots creeping past your windows.",
+      "structure": "cabin",
+      "weather": "rain",
+      "palette": {
+        "skyTop": "#5a6b7d",
+        "skyBottom": "#8a99a8",
+        "surface": "#3f7038",
+        "dirt": "#4d3826",
+        "dirtDark": "#3a2a1b",
+        "dirtSpeckle": "#665037",
+        "structureMain": "#8a5f3c",
+        "structureRoof": "#4f3a26",
+        "structureDark": "#6e4b2e"
+      }
+    },
+    {
+      "id": "beach",
+      "name": "Beach Shack",
+      "blurb": "Waves up top, sand crabs at eye level, secrets below.",
+      "structure": "shack",
+      "weather": "sunny",
+      "palette": {
+        "skyTop": "#4fc3f7",
+        "skyBottom": "#c7ecff",
+        "surface": "#e8d59a",
+        "dirt": "#d4b877",
+        "dirtDark": "#b3985c",
+        "dirtSpeckle": "#eeddaa",
+        "structureMain": "#7fd4d4",
+        "structureRoof": "#c9a15c",
+        "structureDark": "#5cb3b3"
+      }
+    },
+    {
+      "id": "mountain",
+      "name": "Mountain Research Dome",
+      "blurb": "Snow above, solid rock below. Very science. Very secret.",
+      "structure": "dome",
+      "weather": "snow",
+      "palette": {
+        "skyTop": "#8ea8c4",
+        "skyBottom": "#d3e2ef",
+        "surface": "#e9f2f8",
+        "dirt": "#6d7278",
+        "dirtDark": "#54585d",
+        "dirtSpeckle": "#8a9096",
+        "structureMain": "#c8d6e2",
+        "structureRoof": "#8fb3cc",
+        "structureDark": "#a4b6c4"
+      }
+    },
+    {
+      "id": "desert",
+      "name": "Desert Hideout",
+      "blurb": "An adobe tower under starry desert night. Red rock runs deep.",
+      "structure": "tower",
+      "weather": "night",
+      "palette": {
+        "skyTop": "#1a2244",
+        "skyBottom": "#3d3560",
+        "surface": "#c98a4b",
+        "dirt": "#9c5b38",
+        "dirtDark": "#7c4527",
+        "dirtSpeckle": "#b5754c",
+        "structureMain": "#d9a05e",
+        "structureRoof": "#a06a3a",
+        "structureDark": "#b5824a"
+      }
+    }
+  ]
+}
