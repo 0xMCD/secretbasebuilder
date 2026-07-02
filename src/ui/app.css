@@ -294,56 +294,29 @@ canvas.world {
   margin-top: 8px;
 }
 
-.flipper {
-  display: flex;
-  align-items: center;
-  gap: 2px;
-}
-
-.flip-btn {
-  background: #202a37;
+.card-select {
+  flex: 1;
+  min-width: 0;
+  background: #141b25;
   border: 1px solid #334153;
+  border-bottom-width: 3px; /* inline style paints this in the theme accent */
   border-radius: 8px;
-  color: #cdd8e4;
+  color: #e8eef5;
   cursor: pointer;
   font-size: 13px;
-  width: 42px;
-  height: 42px;
-  flex-shrink: 0;
-  transition: background 0.1s ease, border-color 0.1s ease;
+  font-weight: 600;
+  min-height: 42px;
+  padding: 4px 8px;
+  transition: border-color 0.1s ease, background 0.1s ease;
 }
 
-.flip-btn:hover:not(:disabled) {
-  background: #2b3849;
-  border-color: #4a80b0;
+.card-select:hover:not(:disabled) {
+  background: #1b2430;
 }
 
-.flip-btn:disabled {
-  opacity: 0.3;
+.card-select:disabled {
+  opacity: 0.45;
   cursor: default;
-}
-
-.flip-value {
-  font-size: 12.5px;
-  font-weight: 700;
-  color: #e8eef5;
-  width: 62px;
-  text-align: center;
-  position: relative;
-}
-
-.flip-value::after {
-  content: '';
-  display: block;
-  height: 3px;
-  border-radius: 2px;
-  background: var(--swatch, #4a5a6d);
-  margin: 3px auto 0;
-  width: 70%;
-}
-
-.flip-value.flip-size {
-  width: 36px;
 }
 
 .size-row {
@@ -489,6 +462,47 @@ canvas.world {
 .inspector-tip {
   font-size: 11.5px;
   color: #6f8296;
+}
+
+/* ---------- confirm dialog ---------- */
+
+.confirm-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(5, 8, 12, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3000;
+}
+
+.confirm-dialog {
+  background: #1a2330;
+  border: 1px solid #ff4a4a66;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  padding: 20px;
+  max-width: 340px;
+  margin: 16px;
+  animation: rise 0.14s ease-out;
+}
+
+.confirm-title {
+  font-size: 17px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.confirm-text {
+  font-size: 13.5px;
+  color: #93a5b8;
+  margin: 0 0 16px;
+}
+
+.confirm-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
 }
 
 /* ---------- environment picker ---------- */

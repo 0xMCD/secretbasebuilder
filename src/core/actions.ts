@@ -5,7 +5,7 @@
 import type { DefId, EnvironmentId, Placement, ThemeId } from './types';
 import { getDef, getEnvironment, getTheme } from './catalog';
 import { canPlace } from './grid';
-import { getState, setState } from './store';
+import { getState, resetState, setState } from './store';
 import { recordUndo, resetUndo } from './undo';
 
 let uidCounter = 0;
@@ -91,6 +91,15 @@ export function clearBase(): void {
   if (getState().placements.length === 0) return;
   recordUndo();
   setState({ placements: [], selectedId: null });
+}
+
+/**
+ * Wipes everything and returns to the start screen (NOT undoable — the UI
+ * must confirm first). Caller should also clear the autosave.
+ */
+export function startOver(): void {
+  resetUndo();
+  resetState();
 }
 
 export function setEnvironment(environmentId: EnvironmentId): void {

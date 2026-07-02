@@ -114,7 +114,7 @@
     "visualConnection": {
       "rule": "When two placements share an edge segment, the renderer draws a doorway/opening connector across that seam instead of a solid wall, so rooms read as one connected base.",
       "implementation": "Sprites are authored/generated with walls; the renderer overlays connector openings at shared edges at draw time. Connection detection = axis-aligned edge overlap of at least 1 cell.",
-      "style": "Deliberately QUIET: slim arched doorways rising from the floor line, small pass-through windows on upper rows, thin ladderways through floors. Low contrast, whisper-thin edges — connected, not decorated. No chunky frames."
+      "style": "Deliberately QUIET: exactly ONE slim arched doorway per vertical seam, at the floor line of the seam's bottom row (where you'd actually walk through) — never multiple openings up the wall. Thin ladderways through floors for stacked rooms. Low contrast, whisper-thin edges — connected, not decorated."
     },
     "selectionInspector": {
       "rule": "Tapping a placed module selects it (dashed outline) and opens an inspector panel (bottom-left): kind name + blurb, style dots to restyle THIS placement, size chips to swap to another size of the same kind in place (disabled when the footprint doesn't fit), and Remove. Moving stays direct — drag the module itself.",
@@ -146,8 +146,8 @@
     "canvas": "Fills the viewport behind everything; owns pan/zoom/placement input.",
     "sidebar": {
       "position": "right on desktop; bottom sheet with horizontally scrolling cards on phones (max-width 760px)",
-      "contents": "ONE card per module KIND (not per size — keeps the list short). Each card: live thumbnail, name, rarity/blurb, size-tier chips (S | M | L | XL, always visible), and a ◀ ▶ STYLE FLIPPER that cycles the card through the 5 themes (thumbnail restyles live). Flow: pick size → flip to a style you like → drag in. Cards start on varied styles to show off the mix.",
-      "controls": ["text search", "category filter", "sort (name | size | category)", "per-card style flipper + size chips"]
+      "contents": "ONE card per module KIND (not per size — keeps the list short). Each card: live thumbnail, name, rarity, and TWO compact dropdowns side by side — STYLE (5 themes; thumbnail restyles live; the select's underline is painted in the theme accent) and SIZE ('S · 1×1' … tiers). Native selects keep cards slim and get free full-screen pickers on touch. Flow: pick size + style → drag in. Cards start on varied styles to show off the mix. Default sort: alphabetical.",
+      "controls": ["text search", "category filter", "sort (A→Z default | size | category)", "per-card style + size dropdowns"]
     },
     "topBar": ["base name (editable)", "environment switcher", "label-overlay toggle", "undo/redo", "export/import", "clear base (confirm)"],
     "touchTargets": "Phones and tablets are first-class. Every interactive control (buttons, chips, flipper arrows, selects) is at least 42px tall/wide; style dots ≥32px. Pointer Events only, no hover-dependent functionality."

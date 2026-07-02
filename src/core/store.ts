@@ -32,7 +32,7 @@ export function setState(partial: Partial<GameState>): void {
   for (const l of listeners) l();
 }
 
-/** Test-only: reset to a fresh state. */
+/** Resets to a fresh state (start-over flow and tests). */
 export function resetState(next?: GameState): void {
   state = next ?? initialState();
   for (const l of listeners) l();

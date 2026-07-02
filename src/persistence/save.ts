@@ -83,6 +83,9 @@ let autosaveTimer: ReturnType<typeof setTimeout> | undefined;
 export function startAutosave(storage: Pick<Storage, 'setItem'> = localStorage): () => void {
   const unsubscribe = subscribe(() => {
     clearTimeout(autosaveTimer);
+    // Nothing to save while the start screen is up — otherwise starting over
+    // would immediately re-write the autosave it just cleared.
+    if (getState().needsEnvironmentPick) return;
     autosaveTimer = setTimeout(() => {
       try {
         storage.setItem(STORAGE_KEY, JSON.stringify(serialize(getState())));
@@ -95,6 +98,15 @@ export function startAutosave(storage: Pick<Storage, 'setItem'> = localStorage):
     unsubscribe();
     clearTimeout(autosaveTimer);
   };
+}
+
+/** Deletes the autosave (start-over flow). */
+export function clearAutosave(storage: Pick<Storage, 'removeItem'> = localStorage): void {
+  try {
+    storage.removeItem(STORAGE_KEY);
+  } catch {
+    // Storage unavailable — nothing to clear.
+  }
 }
 
 /** Loads the autosave into the store. Returns true if one existed and loaded. */

@@ -14,17 +14,18 @@ const RARITY_LABEL: Record<string, string> = {
 };
 
 /**
- * One card per module KIND with two matching ◀ ▶ flippers: STYLE (cycles the
- * 5 themes, thumbnail restyles live) and SIZE (cycles the kind's size tiers).
- * Flow: flip to the size and style you want, then drag the card in.
+ * One card per module KIND with two compact dropdowns: STYLE (the 5 themes,
+ * thumbnail restyles live) and SIZE (the kind's size tiers). Native selects
+ * keep the card slim and get free full-screen pickers on touch devices.
+ * Flow: pick the size and style you want, then drag the card in.
  */
 export function Sidebar({ canvasRef }: { canvasRef: RefObject<HTMLCanvasElement> }) {
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('all');
   const [sort, setSort] = useState<SortKey>('name');
-  const [sizeChoice, setSizeChoice] = useState<Record<string, number>>({});
-  // Style index per kind. Cards start on varied styles so the mix shows off.
-  const [styleChoice, setStyleChoice] = useState<Record<string, number>>({});
+  const [sizeChoice, setSizeChoice] = useState<Record<string, string>>({});
+  // Style per kind. Cards start on varied styles so the mix shows off.
+  const [styleChoice, setStyleChoice] = useState<Record<string, string>>({});
 
   const kinds = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -41,11 +42,6 @@ export function Sidebar({ canvasRef }: { canvasRef: RefObject<HTMLCanvasElement>
     };
     return [...filtered].sort(by[sort]);
   }, [search, category, sort]);
-
-  const cycle = (record: Record<string, number>, key: string, dir: number, len: number, fallback: number) => ({
-    ...record,
-    [key]: (((record[key] ?? fallback) + dir) % len + len) % len,
-  });
 
   return (
     <div className="sidebar">
@@ -77,12 +73,10 @@ export function Sidebar({ canvasRef }: { canvasRef: RefObject<HTMLCanvasElement>
           <KindCard
             key={kind.id}
             kind={kind}
-            styleIdx={styleChoice[kind.id] ?? i % THEMES.length}
-            sizeIdx={sizeChoice[kind.id] ?? 0}
-            onFlipStyle={(dir) =>
-              setStyleChoice((s) => cycle(s, kind.id, dir, THEMES.length, i % THEMES.length))
-            }
-            onFlipSize={(dir) => setSizeChoice((s) => cycle(s, kind.id, dir, kind.sizes.length, 0))}
+            themeId={styleChoice[kind.id] ?? THEMES[i % THEMES.length].id}
+            defId={sizeChoice[kind.id] ?? `${kind.id}_${kind.sizes[0].w}x${kind.sizes[0].h}`}
+            onChooseStyle={(themeId) => setStyleChoice((s) => ({ ...s, [kind.id]: themeId }))}
+            onChooseSize={(defId) => setSizeChoice((s) => ({ ...s, [kind.id]: defId }))}
             canvasRef={canvasRef}
           />
         ))}
@@ -94,22 +88,21 @@ export function Sidebar({ canvasRef }: { canvasRef: RefObject<HTMLCanvasElement>
 
 function KindCard({
   kind,
-  styleIdx,
-  sizeIdx,
-  onFlipStyle,
-  onFlipSize,
+  themeId,
+  defId,
+  onChooseStyle,
+  onChooseSize,
   canvasRef,
 }: {
   kind: KindDef;
-  styleIdx: number;
-  sizeIdx: number;
-  onFlipStyle: (dir: 1 | -1) => void;
-  onFlipSize: (dir: 1 | -1) => void;
+  themeId: string;
+  defId: string;
+  onChooseStyle: (themeId: string) => void;
+  onChooseSize: (defId: string) => void;
   canvasRef: RefObject<HTMLCanvasElement>;
 }) {
-  const theme = THEMES[styleIdx];
-  const size = kind.sizes[sizeIdx];
-  const def = getDef(`${kind.id}_${size.w}x${size.h}`)!;
+  const theme = THEMES.find((t) => t.id === themeId) ?? THEMES[0];
+  const def = getDef(defId)!;
   const stop = (e: React.PointerEvent) => e.stopPropagation();
   return (
     <div className={`card rarity-${kind.rarity}`} title={`${kind.blurb} — drag me into the base!`}>
@@ -128,40 +121,37 @@ function KindCard({
         </div>
       </div>
       <div className="card-controls">
-        <div className="flipper">
-          <button className="flip-btn" onPointerDown={stop} onClick={() => onFlipStyle(-1)} aria-label="Previous style">
-            ◀
-          </button>
-          <span className="flip-value" style={{ ['--swatch' as string]: theme.palette.accent }}>
-            {theme.name}
-          </span>
-          <button className="flip-btn" onPointerDown={stop} onClick={() => onFlipStyle(1)} aria-label="Next style">
-            ▶
-          </button>
-        </div>
-        <div className="flipper">
-          <button
-            className="flip-btn"
-            onPointerDown={stop}
-            onClick={() => onFlipSize(-1)}
-            disabled={kind.sizes.length < 2}
-            aria-label="Smaller size"
-          >
-            ◀
-          </button>
-          <span className="flip-value flip-size" title={`${size.w}×${size.h} cells`}>
-            {sizeLabel(size.w, size.h)}
-          </span>
-          <button
-            className="flip-btn"
-            onPointerDown={stop}
-            onClick={() => onFlipSize(1)}
-            disabled={kind.sizes.length < 2}
-            aria-label="Bigger size"
-          >
-            ▶
-          </button>
-        </div>
+        <select
+          className="card-select"
+          value={theme.id}
+          onChange={(e) => onChooseStyle(e.target.value)}
+          onPointerDown={stop}
+          style={{ borderBottomColor: theme.palette.accent }}
+          aria-label="Style"
+        >
+          {THEMES.map((t) => (
+            <option key={t.id} value={t.id}>
+              {t.name}
+            </option>
+          ))}
+        </select>
+        <select
+          className="card-select"
+          value={defId}
+          onChange={(e) => onChooseSize(e.target.value)}
+          onPointerDown={stop}
+          disabled={kind.sizes.length < 2}
+          aria-label="Size"
+        >
+          {kind.sizes.map((s) => {
+            const id = `${kind.id}_${s.w}x${s.h}`;
+            return (
+              <option key={id} value={id}>
+                {sizeLabel(s.w, s.h)} · {s.w}×{s.h}
+              </option>
+            );
+          })}
+        </select>
       </div>
     </div>
   );

@@ -182,30 +182,21 @@ function drawSeams(c: CanvasRenderingContext2D): void {
     : state.placements;
   for (const seam of allSeams(placements)) {
     if (seam.orientation === 'vertical') {
+      // ONE arched doorway per seam, at the floor line of the seam's bottom
+      // row — rooms connect where you'd walk through, nowhere else.
       const x = seam.x * ART_CELL;
-      for (let row = 0; row < seam.len; row++) {
-        const yTop = (seam.y + row) * ART_CELL;
-        if (row === seam.len - 1) {
-          // Arched doorway rising from the floor line.
-          const yFloor = yTop + ART_CELL - 24;
-          const doorH = 68;
-          c.fillStyle = SEAM_DARK;
-          c.fillRect(x - 10, yFloor - doorH + 12, 20, doorH - 12);
-          c.fillRect(x - 8, yFloor - doorH + 6, 16, 6); // arch steps
-          c.fillRect(x - 6, yFloor - doorH, 12, 6);
-          c.fillStyle = SEAM_EDGE;
-          c.fillRect(x - 12, yFloor - doorH + 12, 2, doorH - 12); // whisper-thin jambs
-          c.fillRect(x + 10, yFloor - doorH + 12, 2, doorH - 12);
-          c.fillStyle = SEAM_GLOW;
-          c.fillRect(x - 2, yFloor - doorH + 8, 4, 4); // tiny doorway lamp
-        } else {
-          // Small round pass-through window on upper rows.
-          c.fillStyle = SEAM_DARK;
-          c.fillRect(x - 8, yTop + 56, 16, 20);
-          c.fillRect(x - 6, yTop + 52, 12, 4);
-          c.fillRect(x - 6, yTop + 76, 12, 4);
-        }
-      }
+      const yTop = (seam.y + seam.len - 1) * ART_CELL;
+      const yFloor = yTop + ART_CELL - 24;
+      const doorH = 68;
+      c.fillStyle = SEAM_DARK;
+      c.fillRect(x - 10, yFloor - doorH + 12, 20, doorH - 12);
+      c.fillRect(x - 8, yFloor - doorH + 6, 16, 6); // arch steps
+      c.fillRect(x - 6, yFloor - doorH, 12, 6);
+      c.fillStyle = SEAM_EDGE;
+      c.fillRect(x - 12, yFloor - doorH + 12, 2, doorH - 12); // whisper-thin jambs
+      c.fillRect(x + 10, yFloor - doorH + 12, 2, doorH - 12);
+      c.fillStyle = SEAM_GLOW;
+      c.fillRect(x - 2, yFloor - doorH + 8, 4, 4); // tiny doorway lamp
     } else {
       // Slim ladderway through the floor at the middle of the overlap.
       const hx = Math.round((seam.x + seam.len / 2) * ART_CELL);

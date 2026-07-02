@@ -68,6 +68,14 @@ How to resume a session:
   environment stays 64px-logical upscaled 2× to cap memory; seams retuned.
   Verified in Chromium incl. closeup inspection.
 
+- [x] **F5. Feedback round 4** — sidebar decluttered: both card pickers are now
+  compact native dropdowns (style keeps its accent underline); Clear fixed with
+  an in-app confirm dialog (`window.confirm` is silently blocked in sandboxed
+  iframes like the hosted artifact!) that starts over fresh (wipes base +
+  autosave, returns to environment picker; autosave is suspended while the
+  start screen is up); vertical seams draw exactly ONE doorway at the seam's
+  bottom-row floor line (upper-row portholes removed).
+
 ## Phase P1 — Catalog explosion *(future sessions)*
 
 - [ ] G. 15+ more module kinds (gym, pool, aquarium, armory, library, kennel,
