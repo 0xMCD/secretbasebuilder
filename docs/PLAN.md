@@ -61,6 +61,13 @@ How to resume a session:
   painters, touch pass (all controls ≥42px, style dots 32px) + phone
   bottom-sheet catalog layout ≤760px. Verified on 1280×800 and 390×844.
 
+- [x] **F4. Feedback round 3** — size picker became a ◀ ▶ flipper matching the
+  style flipper; default sort A→Z; card meta shows rarity only; **detail pass:
+  ART_CELL 64 → 128** (real resolution, not zoom) with all 16 painters
+  rewritten richer (shading, tiles/planks, glow halos, more props per room);
+  environment stays 64px-logical upscaled 2× to cap memory; seams retuned.
+  Verified in Chromium incl. closeup inspection.
+
 ## Phase P1 — Catalog explosion *(future sessions)*
 
 - [ ] G. 15+ more module kinds (gym, pool, aquarium, armory, library, kennel,

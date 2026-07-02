@@ -10,9 +10,17 @@ import { ART_CELL, COLS, GROUND_ROW, ROWS } from '../core/grid';
 import type { EnvironmentDef } from '../core/types';
 import { createRng } from './procedural/rng';
 
-const WORLD_W = COLS * ART_CELL;
-const GROUND_Y = GROUND_ROW * ART_CELL;
-const WORLD_H = ROWS * ART_CELL;
+/**
+ * Environment art is authored in a 64px-per-cell LOGICAL space and upscaled
+ * to ART_CELL at draw time (nearest-neighbor, so it stays crisp). This keeps
+ * the cached world canvas at ~20MB instead of ~80MB — module sprites are
+ * where the high-detail budget goes.
+ */
+const LCELL = 64;
+export const ENV_SCALE = ART_CELL / LCELL;
+const WORLD_W = COLS * LCELL;
+const GROUND_Y = GROUND_ROW * LCELL;
+const WORLD_H = ROWS * LCELL;
 
 // --- static layer (cached) ---
 
@@ -239,17 +247,26 @@ function drawHatch(ctx: CanvasRenderingContext2D, env: EnvironmentDef): void {
   ctx.fillStyle = env.palette.structureDark;
   ctx.fillRect(cx - 16, GROUND_Y - 8, 32, 8);
   ctx.fillStyle = '#3a3f45';
-  ctx.fillRect(cx - 10, GROUND_Y, 20, ART_CELL);
+  ctx.fillRect(cx - 10, GROUND_Y, 20, LCELL);
   ctx.fillStyle = '#8a9097';
-  for (let y = GROUND_Y + 6; y < GROUND_Y + ART_CELL - 2; y += 10) {
+  for (let y = GROUND_Y + 6; y < GROUND_Y + LCELL - 2; y += 10) {
     ctx.fillRect(cx - 7, y, 14, 3);
   }
 }
 
 // --- animated weather overlay (drawn every frame) ---
 
-/** t = seconds since app start. Draws only above-ground effects. */
+/** t = seconds since app start. Draws only above-ground effects. Caller's ctx
+ * is in ART_CELL world space; weather is authored in the same logical 64
+ * space as the static layers, so scale up internally. */
 export function drawWeather(ctx: CanvasRenderingContext2D, env: EnvironmentDef, t: number): void {
+  ctx.save();
+  ctx.scale(ENV_SCALE, ENV_SCALE);
+  drawWeatherLogical(ctx, env, t);
+  ctx.restore();
+}
+
+function drawWeatherLogical(ctx: CanvasRenderingContext2D, env: EnvironmentDef, t: number): void {
   const rng = createRng(`weather_${env.id}`);
   switch (env.weather) {
     case 'sunny': {

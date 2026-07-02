@@ -9,8 +9,11 @@ export const COLS = 48;
 export const ROWS = 26;
 /** First underground (buildable) row. Rows above are sky/surface. */
 export const GROUND_ROW = 6;
-/** Art pixels per grid cell. All sprite dimensions derive from this. */
-export const ART_CELL = 64;
+/**
+ * Art pixels per grid cell. All sprite dimensions derive from this.
+ * 128 = the "high-detail" resolution (final art is authored at w*128 × h*128).
+ */
+export const ART_CELL = 128;
 
 /** Max module footprint — keep in sync with scripts/validate-content.mjs. */
 export const MAX_W = 6;

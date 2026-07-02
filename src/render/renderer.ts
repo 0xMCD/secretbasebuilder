@@ -7,7 +7,7 @@ import { ART_CELL, COLS, GROUND_ROW, ROWS, allSeams, canPlace, placementRect } f
 import { getDef, getEnvironment } from '../core/catalog';
 import type { DefId, ThemeId } from '../core/types';
 import { getState, subscribe } from '../core/store';
-import { createCamera, type Camera } from './camera';
+import { createCamera, WORLD_H, WORLD_W, type Camera } from './camera';
 import { getSprite, initSprites } from './sprites';
 import { drawWeather, getEnvironmentCanvas } from './environment';
 
@@ -121,7 +121,9 @@ function draw(): void {
   c.scale(cam.zoom, cam.zoom);
   c.translate(-cam.offsetX, -cam.offsetY);
 
-  c.drawImage(getEnvironmentCanvas(env), 0, 0);
+  // Static environment is cached at a lower logical resolution; the stretch
+  // to world size is nearest-neighbor so it stays crisp pixel art.
+  c.drawImage(getEnvironmentCanvas(env), 0, 0, WORLD_W, WORLD_H);
   drawWeather(c, env, t);
 
   // Module sprites (skip the one being moved — its ghost is drawn instead)
@@ -185,23 +187,23 @@ function drawSeams(c: CanvasRenderingContext2D): void {
         const yTop = (seam.y + row) * ART_CELL;
         if (row === seam.len - 1) {
           // Arched doorway rising from the floor line.
-          const yFloor = yTop + ART_CELL - 12;
-          const doorH = 34;
+          const yFloor = yTop + ART_CELL - 24;
+          const doorH = 68;
           c.fillStyle = SEAM_DARK;
-          c.fillRect(x - 5, yFloor - doorH + 6, 10, doorH - 6);
-          c.fillRect(x - 4, yFloor - doorH + 3, 8, 3); // arch steps
-          c.fillRect(x - 3, yFloor - doorH, 6, 3);
+          c.fillRect(x - 10, yFloor - doorH + 12, 20, doorH - 12);
+          c.fillRect(x - 8, yFloor - doorH + 6, 16, 6); // arch steps
+          c.fillRect(x - 6, yFloor - doorH, 12, 6);
           c.fillStyle = SEAM_EDGE;
-          c.fillRect(x - 6, yFloor - doorH + 6, 1, doorH - 6); // whisper-thin jambs
-          c.fillRect(x + 5, yFloor - doorH + 6, 1, doorH - 6);
+          c.fillRect(x - 12, yFloor - doorH + 12, 2, doorH - 12); // whisper-thin jambs
+          c.fillRect(x + 10, yFloor - doorH + 12, 2, doorH - 12);
           c.fillStyle = SEAM_GLOW;
-          c.fillRect(x - 1, yFloor - doorH + 4, 2, 2); // tiny doorway lamp
+          c.fillRect(x - 2, yFloor - doorH + 8, 4, 4); // tiny doorway lamp
         } else {
           // Small round pass-through window on upper rows.
           c.fillStyle = SEAM_DARK;
-          c.fillRect(x - 4, yTop + 28, 8, 10);
-          c.fillRect(x - 3, yTop + 26, 6, 2);
-          c.fillRect(x - 3, yTop + 38, 6, 2);
+          c.fillRect(x - 8, yTop + 56, 16, 20);
+          c.fillRect(x - 6, yTop + 52, 12, 4);
+          c.fillRect(x - 6, yTop + 76, 12, 4);
         }
       }
     } else {
@@ -209,10 +211,10 @@ function drawSeams(c: CanvasRenderingContext2D): void {
       const hx = Math.round((seam.x + seam.len / 2) * ART_CELL);
       const y = seam.y * ART_CELL;
       c.fillStyle = SEAM_DARK;
-      c.fillRect(hx - 8, y - 12, 16, 24);
+      c.fillRect(hx - 16, y - 24, 32, 48);
       c.fillStyle = SEAM_EDGE;
-      for (let ry = y - 8; ry < y + 10; ry += 6) {
-        c.fillRect(hx - 5, ry, 10, 1); // rungs
+      for (let ry = y - 16; ry < y + 20; ry += 12) {
+        c.fillRect(hx - 10, ry, 20, 2); // rungs
       }
     }
   }

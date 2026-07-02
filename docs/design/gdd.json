@@ -59,8 +59,8 @@
       "groundRow": 6,
       "buildableRegion": "x in [0, cols), y in [groundRow, rows)"
     },
-    "artCellPx": 64,
-    "artCellPxNote": "Each grid cell is authored at 64x64 art pixels. Rendering scales by camera zoom with image smoothing disabled for crisp pixels. Final art must be authored at exactly moduleWidth*64 x moduleHeight*64. That budget supports high-fidelity '32-bit era' art (full color, no palette limits); if final art needs even more detail, bumping ART_CELL is a contained change (grid.ts constant + retuned procedural painters), since no ids or save data encode pixel sizes.",
+    "artCellPx": 128,
+    "artCellPxNote": "Each grid cell is authored at 128x128 art pixels (doubled from 64 in the detail pass — real resolution, not zoom). Final art must be authored at exactly moduleWidth*128 x moduleHeight*128. Rendering scales by camera zoom with image smoothing disabled. The ENVIRONMENT (sky/dirt/structure) is authored in a 64px logical space and upscaled 2x at draw time to keep the cached world canvas memory-friendly — the high-detail budget is spent on module interiors, which is what players zoom into.",
     "camera": {
       "defaultZoom": "1.5 — one grid cell renders at ~96 CSS px ≈ 1 inch. Modules should feel big and chunky by default; players zoom out for overview.",
       "controls": "One-finger / left-drag on empty space pans. Wheel or pinch zooms toward pointer. Zoom clamped to [0.25, 3.0].",
@@ -138,7 +138,7 @@
         "1. If public/art/modules/<spriteKey>.png is listed in public/art/art-manifest.json, load and use it.",
         "2. Otherwise generate a procedural placeholder sprite at runtime (deterministic per key) and cache it."
       ],
-      "replacingArt": "Drop final PNG(s) into public/art/modules/ at exactly w*64 x h*64 px, add filenames to art-manifest.json (or run the future scan script), reload. Zero code changes.",
+      "replacingArt": "Drop final PNG(s) into public/art/modules/ at exactly w*128 x h*128 px, add filenames to art-manifest.json (or run the future scan script), reload. Zero code changes.",
       "proceduralStyle": "Placeholders are real pixel art, not gray boxes: theme palette walls/floors plus per-kind furniture silhouettes (bed, stove, arcade cabinet...) so the game reads correctly before final art exists."
     }
   },

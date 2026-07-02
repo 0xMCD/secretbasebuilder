@@ -22,7 +22,8 @@ React (UI) + hand-rolled Canvas2D renderer (base view). No backend.
 - All sprite art is addressed by key `${kindId}_${w}x${h}_${themeId}`. Real
   PNGs in `public/art/modules/` (listed in `public/art/art-manifest.json`)
   override procedural placeholders. Never hardcode sprite pixel sizes —
-  everything derives from `ART_CELL` (64px per grid cell).
+  everything derives from `ART_CELL` (128px per grid cell; the environment
+  layer is authored at 64px logical and upscaled — see render/environment.ts).
 - Adding a module kind = edit `src/content/modules.json` + add a furniture
   painter case in `src/render/procedural/furniture.ts`. No engine changes.
 - Save format is versioned (`persistence/save.ts`); bump + migrate, never break.

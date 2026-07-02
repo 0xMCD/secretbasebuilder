@@ -5,6 +5,7 @@
  * Future hook: SpriteEntry.frames for animated modules.
  */
 import type { ModuleDef } from '../core/types';
+import { ART_CELL } from '../core/grid';
 import { getTheme, spriteKey } from '../core/catalog';
 import { generateModuleSprite } from './procedural/moduleSprite';
 
@@ -70,9 +71,9 @@ export function getThumbnailURL(def: ModuleDef, themeId: string): string {
   const hit = thumbnailCache.get(key);
   if (hit) return hit;
   const sprite = getSprite(def, themeId).image;
-  const scale = THUMB_H / (def.h * 64);
+  const scale = THUMB_H / (def.h * ART_CELL);
   const canvas = document.createElement('canvas');
-  canvas.width = Math.round(def.w * 64 * scale);
+  canvas.width = Math.round(def.w * ART_CELL * scale);
   canvas.height = THUMB_H;
   const ctx = canvas.getContext('2d')!;
   ctx.imageSmoothingEnabled = false;
