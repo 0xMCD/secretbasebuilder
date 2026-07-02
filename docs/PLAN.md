@@ -22,7 +22,7 @@ How to resume a session:
   `scripts/validate-content.mjs` passes; `core/types.ts` + `core/catalog.ts`.
   *Done when: `npm run dev` shows a page, `npm run validate:content` exits 0.*
 
-- [ ] **C. Core engine** — `core/grid.ts` (bounds/overlap/adjacency),
+- [x] **C. Core engine** — `core/grid.ts` (bounds/overlap/adjacency),
   `core/store.ts`, `core/actions.ts` (place/move/remove/clear/setEnvironment),
   `core/undo.ts`, `persistence/save.ts` (autosave + export/import). Vitest
   coverage for all placement math and save round-trips.
