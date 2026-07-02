@@ -33,12 +33,15 @@ living base.
 
 ## Why it's fun
 
-**Variety.** The catalog is the game. Most modules are 1 tile tall with several
-width variants (bedroom in 2, 3, or 4 wide); 2- and 3-tall modules (garage,
-elevator shaft, command center) are rarer and feel special. Every module comes
-in all 5 themes. Launch kinds: bedroom, kitchen, hallway, bathroom, storage,
-entertainment, living area, game room, lab, command center, vault, garage,
-elevator.
+**Variety.** The catalog is the game. 1-tall modules come in standard size
+tiers — S (1×1), M (2×1), L (3×1), and sometimes XL (4×1) — always visible as
+chips on the card; the ◀ ▶ flipper on each card cycles its style. 2- and
+3-tall modules (garage, elevator shaft, command center, greenhouse, library,
+rocket silo) are rarer and feel special. Every module comes in all 5 themes,
+and style is per-room: mixing them is half the fun. Launch kinds: bedroom,
+kitchen, hallway, bathroom, storage, entertainment, living area, game room,
+lab, command center, vault, garage, elevator, greenhouse, library, rocket
+silo.
 
 ## The three big technical promises
 

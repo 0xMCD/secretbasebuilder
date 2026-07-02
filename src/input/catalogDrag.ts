@@ -3,19 +3,22 @@
  * A floating thumbnail follows the pointer; over the canvas it becomes a
  * grid-snapped ghost; releasing places the module (centered on the pointer).
  */
-import type { DefId } from '../core/types';
+import type { DefId, ThemeId } from '../core/types';
 import { getDef } from '../core/catalog';
-import { getState } from '../core/store';
 import { placeModule } from '../core/actions';
 import { screenToCell } from '../render/camera';
 import { getCamera, setGhost } from '../render/renderer';
 import { getThumbnailURL } from '../render/sprites';
 
-export function beginCatalogDrag(defId: DefId, e: PointerEvent, canvas: HTMLCanvasElement): void {
+export function beginCatalogDrag(
+  defId: DefId,
+  theme: ThemeId,
+  e: PointerEvent,
+  canvas: HTMLCanvasElement,
+): void {
   const def = getDef(defId);
   if (!def) return;
   e.preventDefault();
-  const theme = getState().activeTheme;
 
   // Floating preview that follows the pointer until it's over the canvas.
   const preview = document.createElement('img');

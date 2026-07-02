@@ -65,12 +65,13 @@ body {
 .basename {
   background: #0e1319;
   border: 1px solid #2c3745;
-  border-radius: 6px;
+  border-radius: 8px;
   color: #e8eef5;
   font-size: 15px;
   font-weight: 600;
-  padding: 6px 10px;
-  width: 220px;
+  padding: 8px 12px;
+  min-height: 42px;
+  width: 210px;
 }
 
 .basename:focus {
@@ -79,16 +80,18 @@ body {
   box-shadow: 0 0 8px rgba(56, 225, 255, 0.25);
 }
 
+/* Touch rule: every interactive control is ≥ 42px tall (finger-friendly). */
 .btn,
 .env-select,
 .filter-row select {
   background: #202a37;
   border: 1px solid #334153;
-  border-radius: 6px;
+  border-radius: 8px;
   color: #e8eef5;
   cursor: pointer;
-  font-size: 13px;
-  padding: 6px 10px;
+  font-size: 14px;
+  padding: 8px 12px;
+  min-height: 42px;
   transition: background 0.1s ease, border-color 0.1s ease, box-shadow 0.1s ease;
 }
 
@@ -179,50 +182,14 @@ canvas.world {
   border-bottom: 1px solid #232c39;
 }
 
-.theme-row {
-  display: flex;
-  gap: 4px;
-  flex-wrap: wrap;
-}
-
-.theme-chip {
-  background: #1b2430;
-  border: 1px solid #334153;
-  border-radius: 20px;
-  color: #cdd8e4;
-  cursor: pointer;
-  font-size: 12px;
-  padding: 4px 10px 4px 22px;
-  position: relative;
-  transition: box-shadow 0.12s ease, border-color 0.12s ease;
-}
-
-.theme-chip::before {
-  content: '';
-  position: absolute;
-  left: 7px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: var(--swatch);
-}
-
-.theme-chip.active {
-  border-color: var(--swatch);
-  background: #232f3e;
-  color: #fff;
-  box-shadow: 0 0 10px color-mix(in srgb, var(--swatch) 45%, transparent);
-}
-
 .search {
   background: #0e1319;
   border: 1px solid #2c3745;
-  border-radius: 6px;
+  border-radius: 8px;
   color: #e8eef5;
-  font-size: 13px;
-  padding: 7px 10px;
+  font-size: 14px;
+  padding: 8px 12px;
+  min-height: 42px;
 }
 
 .search:focus {
@@ -319,21 +286,74 @@ canvas.world {
   color: #e8c46f;
 }
 
+.card-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.style-flipper {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.flip-btn {
+  background: #202a37;
+  border: 1px solid #334153;
+  border-radius: 8px;
+  color: #cdd8e4;
+  cursor: pointer;
+  font-size: 13px;
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+  transition: background 0.1s ease, border-color 0.1s ease;
+}
+
+.flip-btn:hover {
+  background: #2b3849;
+  border-color: #4a80b0;
+}
+
+.style-name {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #e8eef5;
+  width: 62px;
+  text-align: center;
+  position: relative;
+}
+
+.style-name::after {
+  content: '';
+  display: block;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--swatch);
+  margin: 3px auto 0;
+  width: 70%;
+}
+
 .size-row {
   display: flex;
   gap: 4px;
-  margin-top: 7px;
   flex-wrap: wrap;
 }
 
 .size-chip {
   background: #141b25;
   border: 1px solid #334153;
-  border-radius: 5px;
+  border-radius: 8px;
   color: #cdd8e4;
   cursor: pointer;
-  font-size: 11.5px;
-  padding: 3px 9px;
+  font-size: 13px;
+  font-weight: 700;
+  min-width: 42px;
+  min-height: 42px;
+  padding: 4px 8px;
   transition: border-color 0.1s ease, background 0.1s ease;
 }
 
@@ -432,10 +452,10 @@ canvas.world {
 }
 
 .theme-dot {
-  width: 20px;
-  height: 20px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
-  border: 2px solid transparent;
+  border: 3px solid transparent;
   background: var(--swatch);
   cursor: pointer;
   transition: transform 0.1s ease, box-shadow 0.1s ease;
@@ -537,4 +557,83 @@ canvas.world {
   color: #93a5b8;
   font-size: 13px;
   margin-top: 18px;
+}
+
+/* ---------- phone layout: catalog becomes a bottom sheet ---------- */
+
+@media (max-width: 760px) {
+  .wordmark {
+    display: none;
+  }
+
+  .topbar {
+    gap: 6px;
+    padding: 6px 8px;
+  }
+
+  .basename {
+    width: 130px;
+    flex: 1;
+  }
+
+  .main {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    order: 2;
+    width: 100%;
+    height: 285px;
+    border-left: none;
+    border-top: 1px solid #2c3745;
+  }
+
+  .sidebar-header {
+    flex-direction: row;
+    align-items: center;
+    padding: 8px;
+    gap: 6px;
+  }
+
+  .search {
+    flex: 1;
+    min-width: 110px;
+  }
+
+  .filter-row {
+    flex-shrink: 0;
+  }
+
+  .filter-row select {
+    max-width: 130px;
+  }
+
+  /* Cards scroll sideways under the canvas — swipe the shelf, drag up to place. */
+  .card-list {
+    flex-direction: row;
+    overflow-x: auto;
+    overflow-y: hidden;
+    align-items: stretch;
+  }
+
+  .card {
+    min-width: 240px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .inspector {
+    left: 8px;
+    right: 8px;
+    bottom: 8px;
+    width: auto;
+  }
+
+  .hint {
+    font-size: 13px;
+    width: max-content;
+    max-width: 90%;
+  }
 }

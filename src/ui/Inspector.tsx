@@ -2,6 +2,7 @@ import { KINDS, THEMES, getDef } from '../core/catalog';
 import { canPlace } from '../core/grid';
 import { removeModule, resizePlacement, select, setPlacementTheme } from '../core/actions';
 import { useGameState } from './hooks';
+import { sizeLabel } from './format';
 
 /**
  * Selected-module panel: shows what it is, and lets you restyle it, swap its
@@ -56,10 +57,10 @@ export function Inspector() {
                   key={id}
                   className={id === placement.defId ? 'size-chip active' : 'size-chip'}
                   disabled={!fits}
-                  title={fits ? `Make it ${s.w}×${s.h}` : "Doesn't fit here"}
+                  title={fits ? `Make it ${s.w}×${s.h} cells` : "Doesn't fit here"}
                   onClick={() => resizePlacement(placement.id, id)}
                 >
-                  {s.w}×{s.h}
+                  {sizeLabel(s.w, s.h)}
                 </button>
               );
             })}

@@ -7,14 +7,16 @@ A web-based creative sandbox where kids build the ultimate secret base in a
 resource constraints. Drag rooms from a giant catalog into the dirt and watch
 them snap together into a living hideout.
 
-![Default view: big chunky modules connected under the house](docs/images/overview.png)
+![Desktop: a fantasy rocket silo under a suburban house](docs/images/overview.png)
 
 Rooms placed next to each other automatically connect with doorways and
-ladder hatches, every module comes in five style themes (tech, fantasy,
-realistic, cozy, glam), and selecting a room opens an inspector to restyle,
-resize, or remove it:
+ladder hatches. 1-tall rooms come in size tiers (S/M/L/XL) with a per-card
+style flipper across five themes (tech, fantasy, realistic, cozy, glam) —
+style is per-room, so mixing is half the fun. Selecting a room opens an
+inspector to restyle, resize, or remove it. Works on phones too (bottom-sheet
+catalog, big touch targets):
 
-![Selection inspector restyling a room to glam](docs/images/connected-rooms.png)
+![Phone layout with the selection inspector open](docs/images/phone.png)
 
 ## Play with it
 

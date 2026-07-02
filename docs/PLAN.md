@@ -54,6 +54,13 @@ How to resume a session:
   animated weather + cached static environment, placement pop, dirt easter
   eggs (gems/bones/worms), UI glow-up + wordmark. Verified in Chromium.
 
+- [x] **F3. Feedback round 2** — standardized size tiers (S 1×1 / M 2×1 /
+  L 3×1 / XL 4×1, always visible as chips), per-card ◀ ▶ style flipper
+  (replaces the global theme row; cards start on varied styles), 3 new tall
+  kinds (greenhouse 2×2/3×2, library 2×2/3×2, rocket silo 2×3/3×3 rare) with
+  painters, touch pass (all controls ≥42px, style dots 32px) + phone
+  bottom-sheet catalog layout ≤760px. Verified on 1280×800 and 390×844.
+
 ## Phase P1 — Catalog explosion *(future sessions)*
 
 - [ ] G. 15+ more module kinds (gym, pool, aquarium, armory, library, kennel,

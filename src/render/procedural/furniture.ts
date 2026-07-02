@@ -316,6 +316,88 @@ const elevatorP: Painter = (ctx, room, pal, rng) => {
   if (rng.chance(0.8)) r(ctx, pal.glow, room.x + room.w / 2 - 3, room.y + 2, 6, 2); // floor indicator
 };
 
+const greenhouseP: Painter = (ctx, room, pal, rng) => {
+  // grow-lamp strips across the ceiling
+  for (let x = room.x + 8; x < room.x + room.w - 12; x += 26) {
+    r(ctx, pal.trim, x, room.y + 2, 18, 3);
+    r(ctx, pal.glow, x + 2, room.y + 5, 14, 2);
+  }
+  // planter boxes with plants of varying heights
+  let px = room.x + 5;
+  while (px < room.x + room.w - 16) {
+    const bw = rng.int(12, 18);
+    r(ctx, pal.furnitureDark, px, room.floor - 8, bw, 8);
+    const stems = rng.int(2, 3);
+    for (let s = 0; s < stems; s++) {
+      const sx = px + 2 + s * (bw / stems);
+      const ph = rng.int(8, Math.min(26, room.h - 20));
+      r(ctx, pal.accent, sx, room.floor - 8 - ph, 3, ph);
+      r(ctx, pal.glow, sx - 2, room.floor - 10 - ph, 7, 4); // leafy top
+    }
+    px += bw + rng.int(4, 8);
+  }
+  // hanging vines from the ceiling (tall rooms show them off)
+  for (let x = room.x + 14; x < room.x + room.w - 8; x += rng.int(18, 30)) {
+    const vh = rng.int(10, Math.min(30, room.h * 0.4));
+    r(ctx, pal.accent, x, room.y + 6, 2, vh);
+    r(ctx, pal.glow, x - 1, room.y + 6 + vh, 4, 3);
+  }
+  // water tank
+  r(ctx, pal.furnitureDark, room.x + room.w - 14, room.floor - 20, 11, 20);
+  r(ctx, pal.glow, room.x + room.w - 12, room.floor - 17, 7, 10);
+};
+
+const libraryP: Painter = (ctx, room, pal, rng) => {
+  // floor-to-ceiling shelves on the left 60%
+  const shelfW = room.w * 0.58;
+  const rows = Math.max(2, Math.floor((room.h - 10) / 11));
+  shelf(ctx, pal, room.x + 4, room.y + 6, shelfW, rows, rng);
+  // rolling ladder: vertical rail + rungs, leaning on the shelves
+  const lx = room.x + shelfW * 0.7;
+  r(ctx, pal.trim, lx, room.y + 8, 2, room.h - 16);
+  r(ctx, pal.trim, lx + 8, room.y + 8, 2, room.h - 16);
+  for (let y = room.y + 12; y < room.floor - 4; y += 8) {
+    r(ctx, pal.furniture, lx, y, 10, 2);
+  }
+  // reading nook: desk, lamp, globe
+  const dx = room.x + room.w - 34;
+  table(ctx, pal, dx, room.floor, 22);
+  r(ctx, pal.glow, dx + 3, room.floor - 16, 4, 6); // lamp
+  r(ctx, pal.accent, dx + 13, room.floor - 15, 6, 5); // globe
+  rug(ctx, pal, room.x + room.w * 0.5, room.floor, room.w * 0.4);
+};
+
+const siloP: Painter = (ctx, room, pal, rng) => {
+  const cx = room.x + room.w * 0.45;
+  const bodyW = Math.min(26, room.w * 0.3);
+  const topY = room.y + 10;
+  const bodyH = room.floor - topY - 14;
+  // rocket body + window + racing stripe
+  r(ctx, pal.trim, cx - bodyW / 2, topY + 10, bodyW, bodyH);
+  r(ctx, pal.accent, cx - bodyW / 2, topY + 10 + bodyH * 0.25, bodyW, 5);
+  r(ctx, pal.glow, cx - 4, topY + 18, 8, 8); // porthole
+  // nose cone (stepped)
+  r(ctx, pal.accent, cx - bodyW / 2 + 3, topY + 4, bodyW - 6, 6);
+  r(ctx, pal.accent, cx - 4, topY, 8, 4);
+  // fins
+  r(ctx, pal.accent, cx - bodyW / 2 - 6, room.floor - 26, 6, 12);
+  r(ctx, pal.accent, cx + bodyW / 2, room.floor - 26, 6, 12);
+  // launch pad + thruster
+  r(ctx, pal.furnitureDark, cx - bodyW / 2 - 8, room.floor - 6, bodyW + 16, 6);
+  r(ctx, pal.glow, cx - 5, room.floor - 13, 10, 7); // engine glow
+  // gantry arm from the right wall
+  const gx = room.x + room.w - 12;
+  r(ctx, pal.furnitureDark, gx, room.y + 8, 8, room.h - 16);
+  r(ctx, pal.furniture, cx + bodyW / 2, topY + 22, gx - cx - bodyW / 2, 4);
+  // hazard stripes on the floor edge
+  for (let x = room.x + 2; x < room.x + room.w - 6; x += 10) {
+    if (rng.chance(0.9)) r(ctx, x % 20 < 10 ? pal.glow : pal.furnitureDark, x, room.floor - 2, 8, 2);
+  }
+  // little control console
+  r(ctx, pal.furnitureDark, room.x + 4, room.floor - 12, 12, 12);
+  r(ctx, pal.accent, room.x + 6, room.floor - 10, 8, 4);
+};
+
 /** Fallback for kinds with no painter yet: generic room with accent sign. */
 const genericP: Painter = (ctx, room, pal, rng) => {
   ceilingLamp(ctx, pal, room.x + room.w / 2, room.y);
@@ -338,6 +420,9 @@ export const PAINTERS: Record<string, Painter> = {
   vault: vaultP,
   garage: garageP,
   elevator: elevatorP,
+  greenhouse: greenhouseP,
+  library: libraryP,
+  silo: siloP,
 };
 
 export function getPainter(kind: string): Painter {

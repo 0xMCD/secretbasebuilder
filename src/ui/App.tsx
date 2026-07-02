@@ -54,7 +54,7 @@ export function App() {
         <div className="canvas-wrap">
           <canvas ref={canvasRef} className="world" />
           {state.placements.length === 0 && !state.needsEnvironmentPick && (
-            <div className="hint">Drag a room from the catalog ➡ into the dirt to start building!</div>
+            <div className="hint">Drag a room from the catalog into the dirt to start building!</div>
           )}
           <Inspector />
         </div>

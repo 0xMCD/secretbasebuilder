@@ -72,13 +72,15 @@
       "sourceFile": "src/content/modules.json",
       "contract": "A list of module KINDS (bedroom, kitchen, ...). Each kind declares: id, display name, category, tags, rarity, and a list of sizes {w,h}. The engine expands kinds x sizes into concrete ModuleDefs with id `${kindId}_${w}x${h}`.",
       "sizeRules": {
-        "heights": "Most modules are 1 tile tall. 2-tall and 3-tall modules exist but are rarer (rarity uncommon/rare).",
-        "widths": "Most kinds ship multiple width variants, e.g. bedroom in 2, 3, and 4 wide."
+        "tiers": "1-tall modules use standard size tiers labeled like shirt sizes: S = 1x1, M = 2x1, L = 3x1, XL = 4x1 (XL only where it makes sense). Most kinds ship S+M+L.",
+        "heights": "2-tall and 3-tall modules exist but are rarer (rarity uncommon/rare) and label their sizes as WxH (e.g. 2x2, 2x3) instead of tiers.",
+        "uiRule": "All of a kind's sizes are ALWAYS visible as chips on its catalog card — size is a visible choice, never hidden behind a toggle."
       },
       "startingKinds": [
         "bedroom", "kitchen", "hallway", "bathroom", "storage",
         "entertainment", "living", "gameroom",
-        "lab", "command", "vault", "garage", "elevator"
+        "lab", "command", "vault", "garage", "elevator",
+        "greenhouse", "library", "silo"
       ],
       "extensibility": "To add a kind: add an entry to modules.json, add a furniture painter in src/render/procedural/furniture.ts (or ship real PNGs), run npm run validate:content."
     },
@@ -143,11 +145,12 @@
   "uiLayout": {
     "canvas": "Fills the viewport behind everything; owns pan/zoom/placement input.",
     "sidebar": {
-      "position": "right",
-      "contents": "ONE card per module KIND (not per size — keeps the list short). Each card: live thumbnail from the sprite pipeline, name, rarity/blurb, and size chips (2×1 | 3×1 | 4×1...) that pick the variant to drag. The global theme selector restyles all thumbnails and sets the style of new placements.",
-      "controls": ["text search", "category filter", "sort (name | size | category)", "theme selector"]
+      "position": "right on desktop; bottom sheet with horizontally scrolling cards on phones (max-width 760px)",
+      "contents": "ONE card per module KIND (not per size — keeps the list short). Each card: live thumbnail, name, rarity/blurb, size-tier chips (S | M | L | XL, always visible), and a ◀ ▶ STYLE FLIPPER that cycles the card through the 5 themes (thumbnail restyles live). Flow: pick size → flip to a style you like → drag in. Cards start on varied styles to show off the mix.",
+      "controls": ["text search", "category filter", "sort (name | size | category)", "per-card style flipper + size chips"]
     },
-    "topBar": ["base name (editable)", "environment switcher", "label-overlay toggle", "undo/redo", "export/import", "clear base (confirm)"]
+    "topBar": ["base name (editable)", "environment switcher", "label-overlay toggle", "undo/redo", "export/import", "clear base (confirm)"],
+    "touchTargets": "Phones and tablets are first-class. Every interactive control (buttons, chips, flipper arrows, selects) is at least 42px tall/wide; style dots ≥32px. Pointer Events only, no hover-dependent functionality."
   },
   "outOfScopeV1": [
     "Animated module interiors (hook: sprite pipeline returns static frames now; a frames[] extension is reserved in the sprite cache API)",

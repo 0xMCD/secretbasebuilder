@@ -1,11 +1,9 @@
 import { useMemo, useState, type RefObject } from 'react';
-import { CATEGORIES, KINDS, THEMES } from '../core/catalog';
+import { CATEGORIES, KINDS, THEMES, getDef } from '../core/catalog';
 import type { KindDef } from '../core/types';
-import { setActiveTheme } from '../core/actions';
 import { beginCatalogDrag } from '../input/catalogDrag';
 import { getThumbnailURL } from '../render/sprites';
-import { useGameState } from './hooks';
-import { getDef } from '../core/catalog';
+import { sizeLabel } from './format';
 
 type SortKey = 'name' | 'size' | 'category';
 
@@ -16,16 +14,17 @@ const RARITY_LABEL: Record<string, string> = {
 };
 
 /**
- * One card per module KIND; the size variant is chosen with chips on the card
- * and the style comes from the global theme selector. Keeps the list short.
+ * One card per module KIND. Size tiers (S/M/L/XL…) are always visible as
+ * chips; the ◀ ▶ flipper cycles the STYLE for that card (thumbnail follows).
+ * Flow: "I want an L bedroom → flip styles until I like one → drag it in."
  */
 export function Sidebar({ canvasRef }: { canvasRef: RefObject<HTMLCanvasElement> }) {
-  const { activeTheme } = useGameState();
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('all');
   const [sort, setSort] = useState<SortKey>('category');
-  // Chosen size per kind (defaults to the kind's first/smallest size).
   const [sizeChoice, setSizeChoice] = useState<Record<string, string>>({});
+  // Style index per kind. Cards start on varied styles so the mix shows off.
+  const [styleChoice, setStyleChoice] = useState<Record<string, number>>({});
 
   const kinds = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -46,19 +45,6 @@ export function Sidebar({ canvasRef }: { canvasRef: RefObject<HTMLCanvasElement>
   return (
     <div className="sidebar">
       <div className="sidebar-header">
-        <div className="theme-row">
-          {THEMES.map((t) => (
-            <button
-              key={t.id}
-              className={t.id === activeTheme ? 'theme-chip active' : 'theme-chip'}
-              style={{ ['--swatch' as string]: t.palette.accent }}
-              onClick={() => setActiveTheme(t.id)}
-              title={t.blurb}
-            >
-              {t.name}
-            </button>
-          ))}
-        </div>
         <input
           className="search"
           placeholder="Search rooms…"
@@ -82,11 +68,19 @@ export function Sidebar({ canvasRef }: { canvasRef: RefObject<HTMLCanvasElement>
         </div>
       </div>
       <div className="card-list">
-        {kinds.map((kind) => (
+        {kinds.map((kind, i) => (
           <KindCard
             key={kind.id}
             kind={kind}
-            theme={activeTheme}
+            styleIdx={styleChoice[kind.id] ?? i % THEMES.length}
+            onFlipStyle={(dir) =>
+              setStyleChoice((s) => ({
+                ...s,
+                [kind.id]:
+                  (((s[kind.id] ?? i % THEMES.length) + dir) % THEMES.length + THEMES.length) %
+                  THEMES.length,
+              }))
+            }
             chosenDefId={sizeChoice[kind.id]}
             onChooseSize={(defId) => setSizeChoice((s) => ({ ...s, [kind.id]: defId }))}
             canvasRef={canvasRef}
@@ -100,17 +94,20 @@ export function Sidebar({ canvasRef }: { canvasRef: RefObject<HTMLCanvasElement>
 
 function KindCard({
   kind,
-  theme,
+  styleIdx,
+  onFlipStyle,
   chosenDefId,
   onChooseSize,
   canvasRef,
 }: {
   kind: KindDef;
-  theme: string;
+  styleIdx: number;
+  onFlipStyle: (dir: 1 | -1) => void;
   chosenDefId: string | undefined;
   onChooseSize: (defId: string) => void;
   canvasRef: RefObject<HTMLCanvasElement>;
 }) {
+  const theme = THEMES[styleIdx];
   const defId = chosenDefId ?? `${kind.id}_${kind.sizes[0].w}x${kind.sizes[0].h}`;
   const def = getDef(defId)!;
   return (
@@ -118,10 +115,10 @@ function KindCard({
       <div
         className="card-drag-zone"
         onPointerDown={(e) => {
-          if (canvasRef.current) beginCatalogDrag(def.id, e.nativeEvent, canvasRef.current);
+          if (canvasRef.current) beginCatalogDrag(def.id, theme.id, e.nativeEvent, canvasRef.current);
         }}
       >
-        <img className="card-thumb" src={getThumbnailURL(def, theme)} alt="" draggable={false} />
+        <img className="card-thumb" src={getThumbnailURL(def, theme.id)} alt="" draggable={false} />
         <div className="card-info">
           <div className="card-name">{kind.name}</div>
           <div className="card-meta">
@@ -133,7 +130,28 @@ function KindCard({
           </div>
         </div>
       </div>
-      {kind.sizes.length > 1 && (
+      <div className="card-controls">
+        <div className="style-flipper">
+          <button
+            className="flip-btn"
+            onPointerDown={(e) => e.stopPropagation()}
+            onClick={() => onFlipStyle(-1)}
+            aria-label="Previous style"
+          >
+            ◀
+          </button>
+          <span className="style-name" style={{ ['--swatch' as string]: theme.palette.accent }}>
+            {theme.name}
+          </span>
+          <button
+            className="flip-btn"
+            onPointerDown={(e) => e.stopPropagation()}
+            onClick={() => onFlipStyle(1)}
+            aria-label="Next style"
+          >
+            ▶
+          </button>
+        </div>
         <div className="size-row">
           {kind.sizes.map((s) => {
             const id = `${kind.id}_${s.w}x${s.h}`;
@@ -143,13 +161,14 @@ function KindCard({
                 className={id === defId ? 'size-chip active' : 'size-chip'}
                 onPointerDown={(e) => e.stopPropagation()}
                 onClick={() => onChooseSize(id)}
+                title={`${s.w}×${s.h} cells`}
               >
-                {s.w}×{s.h}
+                {sizeLabel(s.w, s.h)}
               </button>
             );
           })}
         </div>
-      )}
+      </div>
     </div>
   );
 }

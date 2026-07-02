@@ -15,7 +15,7 @@
       "rarity": "common",
       "tags": ["sleep", "bed", "cozy"],
       "blurb": "A place to crash after a long day of secret missions.",
-      "sizes": [ { "w": 2, "h": 1 }, { "w": 3, "h": 1 }, { "w": 4, "h": 1 } ]
+      "sizes": [ { "w": 1, "h": 1 }, { "w": 2, "h": 1 }, { "w": 3, "h": 1 }, { "w": 4, "h": 1 } ]
     },
     {
       "id": "kitchen",
@@ -24,7 +24,7 @@
       "rarity": "common",
       "tags": ["food", "cooking", "snacks"],
       "blurb": "Fuel up. Snack storage classified.",
-      "sizes": [ { "w": 2, "h": 1 }, { "w": 3, "h": 1 } ]
+      "sizes": [ { "w": 1, "h": 1 }, { "w": 2, "h": 1 }, { "w": 3, "h": 1 } ]
     },
     {
       "id": "hallway",
@@ -42,7 +42,7 @@
       "rarity": "common",
       "tags": ["toilet", "sink"],
       "blurb": "Even spies need one.",
-      "sizes": [ { "w": 1, "h": 1 }, { "w": 2, "h": 1 } ]
+      "sizes": [ { "w": 1, "h": 1 }, { "w": 2, "h": 1 }, { "w": 3, "h": 1 } ]
     },
     {
       "id": "storage",
@@ -60,7 +60,7 @@
       "rarity": "common",
       "tags": ["movies", "screen", "couch"],
       "blurb": "Giant screen. Movie nights, mission briefings, both.",
-      "sizes": [ { "w": 3, "h": 1 }, { "w": 4, "h": 1 } ]
+      "sizes": [ { "w": 2, "h": 1 }, { "w": 3, "h": 1 }, { "w": 4, "h": 1 } ]
     },
     {
       "id": "living",
@@ -69,7 +69,7 @@
       "rarity": "common",
       "tags": ["couch", "hangout", "chill"],
       "blurb": "The hangout heart of the base.",
-      "sizes": [ { "w": 3, "h": 1 }, { "w": 4, "h": 1 } ]
+      "sizes": [ { "w": 2, "h": 1 }, { "w": 3, "h": 1 }, { "w": 4, "h": 1 } ]
     },
     {
       "id": "gameroom",
@@ -78,7 +78,7 @@
       "rarity": "common",
       "tags": ["arcade", "games", "pool"],
       "blurb": "Arcade cabinets and a pool table. High scores only.",
-      "sizes": [ { "w": 3, "h": 1 }, { "w": 4, "h": 1 } ]
+      "sizes": [ { "w": 2, "h": 1 }, { "w": 3, "h": 1 }, { "w": 4, "h": 1 } ]
     },
     {
       "id": "lab",
@@ -115,6 +115,33 @@
       "tags": ["vehicle", "hangar", "launch"],
       "blurb": "Home of the getaway vehicle. Big door, bigger plans.",
       "sizes": [ { "w": 4, "h": 2 }, { "w": 6, "h": 2 } ]
+    },
+    {
+      "id": "greenhouse",
+      "name": "Greenhouse",
+      "category": "utility",
+      "rarity": "uncommon",
+      "tags": ["plants", "garden", "grow"],
+      "blurb": "Underground jungle under glowing grow lamps.",
+      "sizes": [ { "w": 2, "h": 2 }, { "w": 3, "h": 2 } ]
+    },
+    {
+      "id": "library",
+      "name": "Library",
+      "category": "living",
+      "rarity": "uncommon",
+      "tags": ["books", "reading", "study"],
+      "blurb": "Two stories of books and one rolling ladder.",
+      "sizes": [ { "w": 2, "h": 2 }, { "w": 3, "h": 2 } ]
+    },
+    {
+      "id": "silo",
+      "name": "Rocket Silo",
+      "category": "ops",
+      "rarity": "rare",
+      "tags": ["rocket", "launch", "space"],
+      "blurb": "Every serious base keeps a rocket. Just in case.",
+      "sizes": [ { "w": 2, "h": 3 }, { "w": 3, "h": 3 } ]
     },
     {
       "id": "elevator",
