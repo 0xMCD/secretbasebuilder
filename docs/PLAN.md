@@ -48,6 +48,12 @@ How to resume a session:
   environment pick → drag-place → overlap/sky rejection → theme switch →
   labels → delete/undo → zoom/pan → autosave survives reload.)*
 
+- [x] **F2. Feedback round 1** — default zoom 1.5 (cell ≈ 96px ≈ 1"), quiet
+  arched door/ladder seams, sidebar collapsed to one card per kind with size
+  chips, selection inspector (restyle / resize-in-place / remove), vibes pass:
+  animated weather + cached static environment, placement pop, dirt easter
+  eggs (gems/bones/worms), UI glow-up + wordmark. Verified in Chromium.
+
 ## Phase P1 — Catalog explosion *(future sessions)*
 
 - [ ] G. 15+ more module kinds (gym, pool, aquarium, armory, library, kennel,

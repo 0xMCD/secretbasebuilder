@@ -6,7 +6,9 @@ import {
   moveModule,
   placeModule,
   removeModule,
+  resizePlacement,
   setEnvironment,
+  setPlacementTheme,
 } from './actions';
 import { canRedo, canUndo, redo, resetUndo, undo } from './undo';
 import { deserialize, serialize } from '../persistence/save';
@@ -45,6 +47,35 @@ describe('moveModule / removeModule', () => {
     removeModule(a.id);
     expect(getState().placements).toHaveLength(0);
     expect(getState().selectedId).toBeNull();
+  });
+});
+
+describe('setPlacementTheme / resizePlacement (inspector)', () => {
+  it('restyles a placement and is undoable', () => {
+    const a = placeModule('bedroom_2x1', 'tech', 10, Y)!;
+    setPlacementTheme(a.id, 'glam');
+    expect(getState().placements[0].theme).toBe('glam');
+    setPlacementTheme(a.id, 'nope'); // unknown theme → ignored
+    expect(getState().placements[0].theme).toBe('glam');
+    undo();
+    expect(getState().placements[0].theme).toBe('tech');
+  });
+
+  it('resizes within the same kind when the footprint fits', () => {
+    const a = placeModule('bedroom_2x1', 'tech', 10, Y)!;
+    expect(resizePlacement(a.id, 'bedroom_4x1')).toBe(true); // cols 10-13 free
+    expect(getState().placements[0].defId).toBe('bedroom_4x1');
+    expect(resizePlacement(a.id, 'bedroom_2x1')).toBe(true);
+    // A kitchen on cols 12-13 now blocks growing back to 4 wide (cols 10-13).
+    placeModule('kitchen_2x1', 'tech', 12, Y);
+    expect(resizePlacement(a.id, 'bedroom_4x1')).toBe(false);
+    expect(getState().placements[0].defId).toBe('bedroom_2x1');
+  });
+
+  it('refuses cross-kind swaps', () => {
+    const a = placeModule('bedroom_2x1', 'tech', 10, Y)!;
+    expect(resizePlacement(a.id, 'kitchen_2x1')).toBe(false);
+    expect(getState().placements[0].defId).toBe('bedroom_2x1');
   });
 });
 

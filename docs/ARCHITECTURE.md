@@ -57,9 +57,11 @@ deprecate instead.
 ### Store & actions (`core/store.ts`, `core/actions.ts`)
 
 Single `GameState`: `{ baseName, environmentId, placements, overlayOn,
-activeTheme, selection }`. Mutations go through action functions which push
-inverse operations onto the undo stack (`core/undo.ts`) and trigger a debounced
-autosave. React components and the renderer both subscribe.
+activeTheme, selection }`. Mutations go through action functions (place, move,
+remove, `setPlacementTheme`, `resizePlacement`, clear, environment/name) which
+snapshot into the undo stack (`core/undo.ts`) and trigger a debounced autosave.
+React components and the renderer both subscribe. The selection inspector
+(`ui/Inspector.tsx`) is the UI for the per-placement actions.
 
 ### Save format (`persistence/save.ts`)
 
@@ -85,11 +87,15 @@ manifest, reload. No code changes.** The cache API is shaped to grow a
 
 ### Renderer (`render/renderer.ts`)
 
-One `requestAnimationFrame` loop, redrawn only when a dirty flag is set (store
-change, camera move, pointer ghost). Draw order: sky/weather → surface
-structure → dirt → placed module sprites → **connection seams** (doorway
-overlays wherever two placements share ≥1 cell of edge) → ghost preview →
-label overlay → selection outline.
+One `requestAnimationFrame` loop rendering **every frame** (weather and
+placement pops are always animating). Cheap because the static environment
+(sky, sun/moon, dirt + easter eggs, surface, structure, hatch) is cached per
+environment in an offscreen canvas (`render/environment.ts:
+getEnvironmentCanvas`); only the weather overlay (`drawWeather(ctx, env, t)`)
+and sprites are drawn fresh. Draw order: cached environment → animated weather
+→ module sprites (new placements scale-pop for 200ms) → **connection seams**
+(quiet arched doorways / ladderways wherever two placements share ≥1 cell of
+edge) → ghost preview → selection outline → label overlay.
 
 ### Input (`input/`)
 

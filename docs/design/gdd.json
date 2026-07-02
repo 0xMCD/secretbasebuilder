@@ -60,8 +60,9 @@
       "buildableRegion": "x in [0, cols), y in [groundRow, rows)"
     },
     "artCellPx": 64,
-    "artCellPxNote": "Each grid cell is authored at 64x64 art pixels. Rendering scales by camera zoom with image smoothing disabled for crisp pixels. Final art must be authored at exactly moduleWidth*64 x moduleHeight*64.",
+    "artCellPxNote": "Each grid cell is authored at 64x64 art pixels. Rendering scales by camera zoom with image smoothing disabled for crisp pixels. Final art must be authored at exactly moduleWidth*64 x moduleHeight*64. That budget supports high-fidelity '32-bit era' art (full color, no palette limits); if final art needs even more detail, bumping ART_CELL is a contained change (grid.ts constant + retuned procedural painters), since no ids or save data encode pixel sizes.",
     "camera": {
+      "defaultZoom": "1.5 — one grid cell renders at ~96 CSS px ≈ 1 inch. Modules should feel big and chunky by default; players zoom out for overview.",
       "controls": "One-finger / left-drag on empty space pans. Wheel or pinch zooms toward pointer. Zoom clamped to [0.25, 3.0].",
       "persistence": "Camera state is session-only, not saved."
     }
@@ -89,6 +90,7 @@
     "environments": {
       "sourceFile": "src/content/environments.json",
       "contract": "A single choice made when starting a base (changeable later without losing placements). One environment bundles three things: aboveground structure, weather, and dirt/soil style. Rendered by src/render/environment.ts.",
+      "ambientLife": "Weather is ANIMATED in v1 (falling rain, drifting snow and clouds, twinkling stars) via a per-frame overlay on top of a cached static environment canvas. Placed modules land with a 200ms pop. The dirt hides deterministic easter eggs (gem clusters, old bones, worm buddies) for kids to find while scrolling.",
       "v1Set": [
         { "id": "suburban", "structure": "two-story house", "weather": "sunny", "dirt": "brown loam" },
         { "id": "cabin", "structure": "forest cabin", "weather": "rain", "dirt": "dark rooty soil" },
@@ -109,7 +111,12 @@
     },
     "visualConnection": {
       "rule": "When two placements share an edge segment, the renderer draws a doorway/opening connector across that seam instead of a solid wall, so rooms read as one connected base.",
-      "implementation": "Sprites are authored/generated with walls; the renderer overlays connector openings at shared edges at draw time. Connection detection = axis-aligned edge overlap of at least 1 cell."
+      "implementation": "Sprites are authored/generated with walls; the renderer overlays connector openings at shared edges at draw time. Connection detection = axis-aligned edge overlap of at least 1 cell.",
+      "style": "Deliberately QUIET: slim arched doorways rising from the floor line, small pass-through windows on upper rows, thin ladderways through floors. Low contrast, whisper-thin edges — connected, not decorated. No chunky frames."
+    },
+    "selectionInspector": {
+      "rule": "Tapping a placed module selects it (dashed outline) and opens an inspector panel (bottom-left): kind name + blurb, style dots to restyle THIS placement, size chips to swap to another size of the same kind in place (disabled when the footprint doesn't fit), and Remove. Moving stays direct — drag the module itself.",
+      "sourceFiles": ["src/ui/Inspector.tsx", "core actions setPlacementTheme / resizePlacement"]
     },
     "labelOverlay": {
       "rule": "A global toggle draws each placement's display name (and size) centered on the module in a readable badge. Off by default."
@@ -137,8 +144,8 @@
     "canvas": "Fills the viewport behind everything; owns pan/zoom/placement input.",
     "sidebar": {
       "position": "right",
-      "contents": "Scrollable module catalog as cards (thumbnail + name + size). Thumbnails come from the same sprite pipeline as the canvas.",
-      "controls": ["text search", "category filter chips", "sort (name | size | category)", "theme selector that restyles all card thumbnails"]
+      "contents": "ONE card per module KIND (not per size — keeps the list short). Each card: live thumbnail from the sprite pipeline, name, rarity/blurb, and size chips (2×1 | 3×1 | 4×1...) that pick the variant to drag. The global theme selector restyles all thumbnails and sets the style of new placements.",
+      "controls": ["text search", "category filter", "sort (name | size | category)", "theme selector"]
     },
     "topBar": ["base name (editable)", "environment switcher", "label-overlay toggle", "undo/redo", "export/import", "clear base (confirm)"]
   },

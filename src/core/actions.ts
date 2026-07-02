@@ -55,6 +55,38 @@ export function removeModule(id: string): void {
   });
 }
 
+/** Restyles one placed module (from the selection inspector). */
+export function setPlacementTheme(id: string, themeId: ThemeId): void {
+  if (!getTheme(themeId)) return;
+  const { placements } = getState();
+  const placement = placements.find((p) => p.id === id);
+  if (!placement || placement.theme === themeId) return;
+  recordUndo();
+  setState({
+    placements: placements.map((p) => (p.id === id ? { ...p, theme: themeId } : p)),
+  });
+}
+
+/**
+ * Swaps a placement to another size of the SAME kind, keeping its top-left
+ * anchor. Returns false if the new footprint doesn't fit there.
+ */
+export function resizePlacement(id: string, newDefId: DefId): boolean {
+  const { placements } = getState();
+  const placement = placements.find((p) => p.id === id);
+  if (!placement) return false;
+  if (placement.defId === newDefId) return true;
+  const oldDef = getDef(placement.defId);
+  const newDef = getDef(newDefId);
+  if (!oldDef || !newDef || oldDef.kind !== newDef.kind) return false;
+  if (!canPlace(placements, newDef, placement.x, placement.y, id)) return false;
+  recordUndo();
+  setState({
+    placements: placements.map((p) => (p.id === id ? { ...p, defId: newDefId } : p)),
+  });
+  return true;
+}
+
 export function clearBase(): void {
   if (getState().placements.length === 0) return;
   recordUndo();

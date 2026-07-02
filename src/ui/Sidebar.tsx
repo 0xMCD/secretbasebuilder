@@ -1,10 +1,11 @@
 import { useMemo, useState, type RefObject } from 'react';
-import { CATEGORIES, MODULE_DEFS, THEMES } from '../core/catalog';
-import type { ModuleDef } from '../core/types';
+import { CATEGORIES, KINDS, THEMES } from '../core/catalog';
+import type { KindDef } from '../core/types';
 import { setActiveTheme } from '../core/actions';
 import { beginCatalogDrag } from '../input/catalogDrag';
 import { getThumbnailURL } from '../render/sprites';
 import { useGameState } from './hooks';
+import { getDef } from '../core/catalog';
 
 type SortKey = 'name' | 'size' | 'category';
 
@@ -14,27 +15,30 @@ const RARITY_LABEL: Record<string, string> = {
   rare: '★ rare',
 };
 
+/**
+ * One card per module KIND; the size variant is chosen with chips on the card
+ * and the style comes from the global theme selector. Keeps the list short.
+ */
 export function Sidebar({ canvasRef }: { canvasRef: RefObject<HTMLCanvasElement> }) {
   const { activeTheme } = useGameState();
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('all');
   const [sort, setSort] = useState<SortKey>('category');
+  // Chosen size per kind (defaults to the kind's first/smallest size).
+  const [sizeChoice, setSizeChoice] = useState<Record<string, string>>({});
 
-  const defs = useMemo(() => {
+  const kinds = useMemo(() => {
     const q = search.trim().toLowerCase();
-    const filtered = MODULE_DEFS.filter((d) => {
-      if (category !== 'all' && d.category !== category) return false;
+    const filtered = KINDS.filter((k) => {
+      if (category !== 'all' && k.category !== category) return false;
       if (!q) return true;
-      return (
-        d.name.toLowerCase().includes(q) ||
-        d.tags.some((t) => t.toLowerCase().includes(q))
-      );
+      return k.name.toLowerCase().includes(q) || k.tags.some((t) => t.toLowerCase().includes(q));
     });
-    const by: Record<SortKey, (a: ModuleDef, b: ModuleDef) => number> = {
-      name: (a, b) => a.name.localeCompare(b.name) || a.w - b.w,
-      size: (a, b) => a.w * a.h - b.w * b.h || a.name.localeCompare(b.name),
-      category: (a, b) =>
-        a.category.localeCompare(b.category) || a.name.localeCompare(b.name) || a.w - b.w,
+    const by: Record<SortKey, (a: KindDef, b: KindDef) => number> = {
+      name: (a, b) => a.name.localeCompare(b.name),
+      size: (a, b) =>
+        a.sizes[0].w * a.sizes[0].h - b.sizes[0].w * b.sizes[0].h || a.name.localeCompare(b.name),
+      category: (a, b) => a.category.localeCompare(b.category) || a.name.localeCompare(b.name),
     };
     return [...filtered].sort(by[sort]);
   }, [search, category, sort]);
@@ -78,40 +82,74 @@ export function Sidebar({ canvasRef }: { canvasRef: RefObject<HTMLCanvasElement>
         </div>
       </div>
       <div className="card-list">
-        {defs.map((def) => (
-          <ModuleCard key={def.id} def={def} theme={activeTheme} canvasRef={canvasRef} />
+        {kinds.map((kind) => (
+          <KindCard
+            key={kind.id}
+            kind={kind}
+            theme={activeTheme}
+            chosenDefId={sizeChoice[kind.id]}
+            onChooseSize={(defId) => setSizeChoice((s) => ({ ...s, [kind.id]: defId }))}
+            canvasRef={canvasRef}
+          />
         ))}
-        {defs.length === 0 && <div className="empty-list">No rooms match. Try another search!</div>}
+        {kinds.length === 0 && <div className="empty-list">No rooms match. Try another search!</div>}
       </div>
     </div>
   );
 }
 
-function ModuleCard({
-  def,
+function KindCard({
+  kind,
   theme,
+  chosenDefId,
+  onChooseSize,
   canvasRef,
 }: {
-  def: ModuleDef;
+  kind: KindDef;
   theme: string;
+  chosenDefId: string | undefined;
+  onChooseSize: (defId: string) => void;
   canvasRef: RefObject<HTMLCanvasElement>;
 }) {
+  const defId = chosenDefId ?? `${kind.id}_${kind.sizes[0].w}x${kind.sizes[0].h}`;
+  const def = getDef(defId)!;
   return (
-    <div
-      className={`card rarity-${def.rarity}`}
-      onPointerDown={(e) => {
-        if (canvasRef.current) beginCatalogDrag(def.id, e.nativeEvent, canvasRef.current);
-      }}
-      title={`${def.blurb} — drag me into the base!`}
-    >
-      <img className="card-thumb" src={getThumbnailURL(def, theme)} alt="" draggable={false} />
-      <div className="card-info">
-        <div className="card-name">{def.name}</div>
-        <div className="card-meta">
-          {def.w}×{def.h}
-          {RARITY_LABEL[def.rarity] && <span className={`rarity ${def.rarity}`}> {RARITY_LABEL[def.rarity]}</span>}
+    <div className={`card rarity-${kind.rarity}`} title={`${kind.blurb} — drag me into the base!`}>
+      <div
+        className="card-drag-zone"
+        onPointerDown={(e) => {
+          if (canvasRef.current) beginCatalogDrag(def.id, e.nativeEvent, canvasRef.current);
+        }}
+      >
+        <img className="card-thumb" src={getThumbnailURL(def, theme)} alt="" draggable={false} />
+        <div className="card-info">
+          <div className="card-name">{kind.name}</div>
+          <div className="card-meta">
+            {RARITY_LABEL[kind.rarity] ? (
+              <span className={`rarity ${kind.rarity}`}>{RARITY_LABEL[kind.rarity]}</span>
+            ) : (
+              <span>{kind.blurb}</span>
+            )}
+          </div>
         </div>
       </div>
+      {kind.sizes.length > 1 && (
+        <div className="size-row">
+          {kind.sizes.map((s) => {
+            const id = `${kind.id}_${s.w}x${s.h}`;
+            return (
+              <button
+                key={id}
+                className={id === defId ? 'size-chip active' : 'size-chip'}
+                onPointerDown={(e) => e.stopPropagation()}
+                onClick={() => onChooseSize(id)}
+              >
+                {s.w}×{s.h}
+              </button>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }

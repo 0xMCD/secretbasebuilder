@@ -22,6 +22,9 @@ export function TopBar() {
   return (
     <div className="topbar">
       <span className="topbar-logo">🕵️</span>
+      <span className="wordmark">
+        SECRET BASE<br />BUILDER
+      </span>
       <input
         className="basename"
         value={state.baseName}

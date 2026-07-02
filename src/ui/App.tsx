@@ -9,6 +9,7 @@ import { useGameState } from './hooks';
 import { TopBar } from './TopBar';
 import { Sidebar } from './Sidebar';
 import { EnvironmentPicker } from './EnvironmentPicker';
+import { Inspector } from './Inspector';
 
 // Restore before first render so returning players skip the start screen.
 loadAutosave();
@@ -55,6 +56,7 @@ export function App() {
           {state.placements.length === 0 && !state.needsEnvironmentPick && (
             <div className="hint">Drag a room from the catalog ➡ into the dirt to start building!</div>
           )}
+          <Inspector />
         </div>
         <Sidebar canvasRef={canvasRef} />
       </div>

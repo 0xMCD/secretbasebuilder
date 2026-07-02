@@ -2,10 +2,11 @@
  * Camera: maps world art-pixel space to screen space.
  * screen = (world - offset) * zoom. Session-only, never saved.
  */
-import { ART_CELL, COLS, ROWS } from '../core/grid';
+import { ART_CELL, COLS, GROUND_ROW, ROWS } from '../core/grid';
 
 export const WORLD_W = COLS * ART_CELL;
 export const WORLD_H = ROWS * ART_CELL;
+const GROUND_Y = GROUND_ROW * ART_CELL;
 export const MIN_ZOOM = 0.25;
 export const MAX_ZOOM = 3;
 
@@ -15,12 +16,15 @@ export interface Camera {
   zoom: number;
 }
 
+/** Default zoom: one grid cell ≈ 96 CSS px ≈ 1 inch — big and chunky. */
+export const DEFAULT_ZOOM = 96 / ART_CELL;
+
 export function createCamera(viewW: number, viewH: number): Camera {
-  // Start framing the surface + first underground rows, centered horizontally.
-  const zoom = Math.min(1, viewW / (WORLD_W * 0.55));
+  // Frame the hatch area: surface in the top third, building space below.
+  const zoom = DEFAULT_ZOOM;
   const cam: Camera = {
-    offsetX: (WORLD_W - viewW / zoom) / 2,
-    offsetY: ART_CELL * 2,
+    offsetX: WORLD_W / 2 - viewW / zoom / 2,
+    offsetY: GROUND_Y - viewH / zoom * 0.34,
     zoom,
   };
   clampCamera(cam, viewW, viewH);
