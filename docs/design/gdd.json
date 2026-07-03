@@ -79,11 +79,15 @@
       "startingKinds": [
         "bedroom", "kitchen", "hallway", "bathroom", "storage",
         "entertainment", "living", "gameroom", "dining", "chill", "buffet",
+        "closet", "classroom",
         "lab", "command", "vault", "garage", "racegarage", "elevator",
+        "stairs", "ladder", "gemmine", "observatory",
         "greenhouse", "library", "silo",
         "theater", "pool", "lava", "trampoline", "nerf", "junglegym",
-        "football", "soccer", "basketball", "baseball"
+        "vrroom", "gamingden", "dinoexhibit", "arcade", "aquarium", "petstore",
+        "football", "soccer", "basketball", "baseball", "dojo", "skatepark"
       ],
+      "verticalConnectors": "Kinds tagged \"vertical\" (elevator, stairs, ladder) are the base's circulation system. When two vertical connectors are stacked, the seam renderer merges them into one continuous open shaft instead of a small ladderway — stacking elevator segments builds one tall elevator.",
       "extensibility": "To add a kind: add an entry to modules.json, add a painter in src/render/procedural/rooms{Home,Fun,Ops}.ts (shared props live in kit.ts), register it in src/render/procedural/furniture.ts (or ship real PNGs), run npm run validate:content."
     },
     "themes": {
@@ -151,8 +155,9 @@
       "contents": "ONE card per module KIND (not per size — keeps the list short). Each card: live thumbnail, name, rarity, and TWO compact dropdowns side by side — STYLE (5 themes; thumbnail restyles live; the select's underline is painted in the theme accent) and SIZE ('S · 1×1' … tiers). Native selects keep cards slim and get free full-screen pickers on touch. Flow: pick size + style → drag in. Cards start on varied styles to show off the mix. Default sort: alphabetical.",
       "controls": ["text search", "category filter", "sort (A→Z default | size | category)", "per-card style + size dropdowns"]
     },
-    "topBar": ["base name (editable)", "environment switcher", "label-overlay toggle", "undo/redo", "export/import", "clear base (confirm)"],
-    "touchTargets": "Phones and tablets are first-class. Every interactive control (buttons, chips, flipper arrows, selects) is at least 42px tall/wide; style dots ≥32px. Pointer Events only, no hover-dependent functionality."
+    "topBar": ["base name (editable)", "environment switcher", "label-overlay toggle", "undo/redo", "photo export (PNG cropped to the built area + title banner — render/snapshot.ts)", "export/import", "clear base (confirm)"],
+    "touchTargets": "Phones and tablets are first-class. Every interactive control (buttons, chips, flipper arrows, selects) is at least 42px tall/wide; style dots ≥32px. Pointer Events only, no hover-dependent functionality.",
+    "touchScrollVsDrag": "Catalog cards use touch-action pan-y (pan-x in the phone bottom sheet) so list scrolling stays a native browser gesture; a browser-claimed gesture fires pointercancel which ABORTS the card drag (never places). Only pointer movement the browser leaves to the app can place modules."
   },
   "outOfScopeV1": [
     "Animated module interiors (hook: sprite pipeline returns static frames now; a frames[] extension is reserved in the sprite cache API)",

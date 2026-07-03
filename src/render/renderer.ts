@@ -4,8 +4,8 @@
  * connection seams → ghost preview → grid hint → selection → label overlay.
  */
 import { ART_CELL, COLS, GROUND_ROW, ROWS, allSeams, canPlace, placementRect } from '../core/grid';
-import { getDef, getEnvironment } from '../core/catalog';
-import type { DefId, ThemeId } from '../core/types';
+import { getDef, getEnvironment, KINDS } from '../core/catalog';
+import type { DefId, Placement, ThemeId } from '../core/types';
 import { getState, subscribe } from '../core/store';
 import { createCamera, WORLD_H, WORLD_W, type Camera } from './camera';
 import { getSprite, initSprites } from './sprites';
@@ -170,16 +170,33 @@ function draw(): void {
  * Doorway/ladder connectors wherever two modules share an edge.
  * Deliberately quiet: a slim arched opening cut into the shared wall, not a
  * framed box — the rooms should read as connected, not decorated.
+ * Special case: two stacked VERTICAL CONNECTORS (elevator/stairs/ladder —
+ * kinds tagged "vertical") merge into one continuous open shaft.
  */
 const SEAM_DARK = 'rgba(13,16,20,0.88)';
 const SEAM_EDGE = 'rgba(255,255,255,0.14)';
 const SEAM_GLOW = 'rgba(255,214,140,0.5)';
+
+const VERTICAL_KINDS = new Set(
+  KINDS.filter((k) => k.tags.includes('vertical')).map((k) => k.id),
+);
+
+function isVerticalConnector(placements: Placement[], id: string): boolean {
+  const p = placements.find((pl) => pl.id === id);
+  const def = p && getDef(p.defId);
+  return !!def && VERTICAL_KINDS.has(def.kind);
+}
 
 function drawSeams(c: CanvasRenderingContext2D): void {
   const state = getState();
   const placements = ghost?.moveId
     ? state.placements.filter((p) => p.id !== ghost!.moveId)
     : state.placements;
+  drawConnectors(c, placements);
+}
+
+/** Pure connector pass over ART_CELL world space — also used by snapshot export. */
+export function drawConnectors(c: CanvasRenderingContext2D, placements: Placement[]): void {
   for (const seam of allSeams(placements)) {
     // All seam geometry derives from ART_CELL so resolution bumps never
     // require retuning (u = 1/128th of a cell).
@@ -200,6 +217,19 @@ function drawSeams(c: CanvasRenderingContext2D): void {
       c.fillRect(x + 10 * u, yFloor - doorH + 12 * u, 2 * u, doorH - 12 * u);
       c.fillStyle = SEAM_GLOW;
       c.fillRect(x - 2 * u, yFloor - doorH + 8 * u, 4 * u, 4 * u); // doorway lamp
+    } else if (
+      isVerticalConnector(placements, seam.aId) &&
+      isVerticalConnector(placements, seam.bId)
+    ) {
+      // Stacked shafts merge: one wide continuous opening, faint side rails.
+      const hx = Math.round((seam.x + seam.len / 2) * ART_CELL);
+      const y = seam.y * ART_CELL;
+      const w = Math.min(seam.len * ART_CELL * 0.6, ART_CELL * 0.72);
+      c.fillStyle = SEAM_DARK;
+      c.fillRect(hx - w / 2, y - 30 * u, w, 60 * u);
+      c.fillStyle = SEAM_EDGE;
+      c.fillRect(hx - w / 2 - 2 * u, y - 30 * u, 2 * u, 60 * u);
+      c.fillRect(hx + w / 2, y - 30 * u, 2 * u, 60 * u);
     } else {
       // Slim ladderway through the floor at the middle of the overlap.
       const hx = Math.round((seam.x + seam.len / 2) * ART_CELL);

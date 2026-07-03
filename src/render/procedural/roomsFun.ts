@@ -6,7 +6,7 @@
 import type { Rng } from './rng';
 import {
   ceilingLamp, couch, disc, floodLight, halo, hl, r, ring, rug, scoreboard,
-  sh, shadow, table, wallScreen, type Ctx, type Interior, type Painter,
+  sh, shadow, shelf, table, wallScreen, type Ctx, type Interior, type Painter,
 } from './kit';
 
 /** Stepped bleachers with a colorful crowd — makes field halls read as stadiums. */
@@ -519,4 +519,342 @@ export const baseballP: Painter = (ctx, room, pal, rng) => {
   scoreboard(ctx, pal, room.x + room.w * 0.5 - 60, room.y + 16, 120);
   floodLight(ctx, room.x + room.w * 0.25, room.y);
   floodLight(ctx, room.x + room.w * 0.75, room.y);
+};
+
+export const vrroomP: Painter = (ctx, room, pal, rng) => {
+  // boundary grid glow on the walls
+  ctx.globalAlpha = 0.12;
+  for (let gx = room.x + 20; gx < room.x + room.w - 10; gx += 30) r(ctx, pal.accent, gx, room.y + 10, 2, room.h - 20);
+  for (let gy = room.y + 20; gy < room.floor - 10; gy += 30) r(ctx, pal.accent, room.x + 10, gy, room.w - 20, 2);
+  ctx.globalAlpha = 1;
+  // play mat
+  r(ctx, pal.accent, room.x + room.w * 0.28, room.floor - 6, room.w * 0.44, 6);
+  hl(ctx, room.x + room.w * 0.28, room.floor - 6, room.w * 0.44, 2, 0.3);
+  // headset on a stand
+  const hx = room.x + 28;
+  r(ctx, pal.trim, hx + 10, room.floor - 56, 5, 56);
+  r(ctx, pal.furnitureDark, hx, room.floor - 70, 26, 16); // headset
+  r(ctx, pal.glow, hx + 3, room.floor - 66, 20, 6); // lens strip
+  halo(ctx, pal.glow, hx - 6, room.floor - 74, 38, 22, 0.2);
+  // floating controllers with motion trails
+  const cxm = room.x + room.w * 0.5;
+  disc(ctx, pal.glow, cxm - 20, room.y + room.h * 0.5, 6);
+  disc(ctx, pal.glow, cxm + 24, room.y + room.h * 0.42, 6);
+  hl(ctx, cxm - 34, room.y + room.h * 0.52, 12, 3, 0.3);
+  hl(ctx, cxm + 32, room.y + room.h * 0.44, 12, 3, 0.3);
+  // wall screen mirroring the game
+  wallScreen(ctx, pal, room.x + room.w - 118, room.y + 22, 96, 60, rng);
+  // ceiling cable to headset zone
+  r(ctx, pal.trim, cxm, room.y, 3, 26);
+  r(ctx, pal.trim, cxm, room.y + 26, 20, 3);
+};
+
+export const gamingdenP: Painter = (ctx, room, pal, rng) => {
+  halo(ctx, pal.accent, room.x + 12, room.y + 4, room.w - 24, 6, 0.18); // RGB strip
+  // battlestation: desk + triple monitors + tower
+  const dx = room.x + 16;
+  r(ctx, pal.furniture, dx, room.floor - 52, 120, 8);
+  r(ctx, pal.furnitureDark, dx + 8, room.floor - 44, 6, 44);
+  r(ctx, pal.furnitureDark, dx + 106, room.floor - 44, 6, 44);
+  for (let m = 0; m < 3; m++) {
+    const mx = dx + 6 + m * 38;
+    r(ctx, '#0d1117', mx, room.floor - 88, 34, 26);
+    r(ctx, pal.glow, mx + 3, room.floor - 85, rng.int(10, 26), 6);
+    r(ctx, pal.accent, mx + 3, room.floor - 74, rng.int(8, 20), 5);
+    r(ctx, pal.trim, mx + 14, room.floor - 62, 6, 10); // stand
+  }
+  r(ctx, pal.glow, dx + 20, room.floor - 50, 30, 4); // RGB keyboard
+  // PC tower with RGB
+  const px = dx + 128;
+  shadow(ctx, px, room.floor, 34);
+  r(ctx, '#14181d', px, room.floor - 72, 34, 72);
+  r(ctx, pal.accent, px + 4, room.floor - 66, 4, 60); // light strip
+  disc(ctx, pal.glow, px + 20, room.floor - 52, 8); // fan
+  disc(ctx, pal.accent, px + 20, room.floor - 28, 8);
+  // gaming chair
+  const gx = dx + 40;
+  shadow(ctx, gx, room.floor, 40);
+  r(ctx, '#e8342a', gx + 8, room.floor - 78, 26, 48); // tall back
+  r(ctx, '#14181d', gx + 12, room.floor - 70, 18, 30);
+  r(ctx, '#e8342a', gx + 2, room.floor - 30, 38, 10);
+  r(ctx, pal.furnitureDark, gx + 18, room.floor - 20, 6, 14);
+  r(ctx, pal.furnitureDark, gx + 6, room.floor - 6, 30, 4);
+  // TV + console corner
+  if (room.w > 500) {
+    const tx = room.x + room.w - 150;
+    wallScreen(ctx, pal, tx, room.y + 30, 120, 66, rng);
+    r(ctx, pal.furniture, tx + 10, room.floor - 30, 100, 6);
+    r(ctx, '#14181d', tx + 26, room.floor - 42, 40, 12); // console
+    r(ctx, pal.glow, tx + 30, room.floor - 39, 4, 4);
+    disc(ctx, pal.furnitureDark, tx + 78, room.floor - 36, 7); // controller
+    disc(ctx, pal.furnitureDark, tx + 90, room.floor - 36, 7);
+  }
+  // headset stand + cans
+  r(ctx, pal.trim, room.x + room.w - 26, room.floor - 44, 4, 44);
+  r(ctx, pal.furnitureDark, room.x + room.w - 34, room.floor - 52, 20, 10);
+  for (let i = 0; i < 3; i++) r(ctx, ['#7fc95c', '#38e1ff', '#e8342a'][i], dx + 60 + i * 10, room.floor - 60, 7, 12); // energy cans
+};
+
+export const dinoexhibitP: Painter = (ctx, room, pal) => {
+  const BONE = '#efe8d8';
+  // display platform + spotlight
+  const px = room.x + room.w * 0.12;
+  const pw = room.w * 0.66;
+  r(ctx, pal.furnitureDark, px, room.floor - 14, pw, 14);
+  hl(ctx, px, room.floor - 14, pw, 4);
+  halo(ctx, '#fff3c2', px + pw * 0.2, room.y + 10, pw * 0.6, room.h - 40, 0.07); // spotlight wash
+  r(ctx, '#14181d', px + pw * 0.45, room.y + 4, 22, 10); // spot fixture
+  r(ctx, '#fff3c2', px + pw * 0.45 + 5, room.y + 14, 12, 4);
+  const base = room.floor - 14;
+  // T-rex skeleton: legs, spine arc, ribs, tail, skull
+  const hipX = px + pw * 0.52;
+  r(ctx, BONE, hipX, base - 96, 10, 96); // back leg
+  r(ctx, BONE, hipX - 8, base - 40, 26, 8); // foot
+  r(ctx, BONE, px + pw * 0.3, base - 78, 8, 78); // front leg
+  r(ctx, BONE, px + pw * 0.3 - 6, base - 8, 22, 8);
+  // spine: rising arc toward the head
+  for (let i = 0; i < 9; i++) {
+    disc(ctx, BONE, px + pw * 0.52 - i * (pw * 0.045), base - 100 - i * 7, 6);
+  }
+  // ribs hanging from spine
+  for (let i = 1; i < 7; i += 1) {
+    const rx2 = px + pw * 0.52 - i * (pw * 0.045);
+    r(ctx, BONE, rx2, base - 96 - i * 7, 4, 34 + i * 3);
+  }
+  // tail: descending behind
+  for (let i = 1; i < 8; i++) {
+    disc(ctx, BONE, hipX + 10 + i * (pw * 0.05), base - 96 + i * 9, Math.max(2, 6 - i * 0.5));
+  }
+  // skull: big head with jaw + teeth + eye
+  const skx = px + pw * 0.52 - 8 * (pw * 0.045);
+  const sky = base - 156;
+  r(ctx, BONE, skx - 34, sky, 48, 26);
+  r(ctx, BONE, skx - 30, sky + 26, 40, 12); // jaw
+  for (let t = 0; t < 5; t++) r(ctx, BONE, skx - 28 + t * 8, sky + 22, 3, 7); // teeth
+  r(ctx, '#14181d', skx - 2, sky + 6, 8, 8); // eye socket
+  // rope stanchions
+  for (const sx of [px + 10, px + pw - 20]) {
+    r(ctx, '#f5c542', sx, room.floor - 54, 6, 54);
+    disc(ctx, '#f5c542', sx + 3, room.floor - 56, 5);
+  }
+  ctx.globalAlpha = 0.6;
+  for (let i = 0; i < 10; i++) {
+    const t = i / 10;
+    r(ctx, '#e8342a', px + 16 + t * (pw - 40), room.floor - 50 + Math.sin(t * Math.PI) * 8, 8, 3); // drooping rope
+  }
+  ctx.globalAlpha = 1;
+  // info plaque
+  r(ctx, pal.trim, room.x + room.w - 60, room.floor - 44, 40, 26);
+  r(ctx, '#f2ecd8', room.x + room.w - 56, room.floor - 40, 32, 18);
+  sh(ctx, room.x + room.w - 52, room.floor - 36, 24, 2, 0.4);
+  sh(ctx, room.x + room.w - 52, room.floor - 30, 18, 2, 0.4);
+};
+
+export const arcadeP: Painter = (ctx, room, pal, rng) => {
+  // patterned carpet
+  r(ctx, '#2a1e4a', room.x, room.floor - 10, room.w, 10);
+  for (let i = 0; i < Math.floor(room.w / 24); i++) {
+    r(ctx, ['#38e1ff', '#ff8fdc', '#ffd166'][rng.int(0, 2)], room.x + 6 + i * 24, room.floor - 8 + (i % 2) * 3, 5, 3);
+  }
+  // claw machine
+  const cx = room.x + 14;
+  shadow(ctx, cx, room.floor, 62);
+  r(ctx, '#e8342a', cx, room.floor - 118, 62, 118);
+  r(ctx, '#bfe3f0', cx + 6, room.floor - 106, 50, 62); // glass
+  hl(ctx, cx + 8, room.floor - 104, 8, 58, 0.4);
+  for (let i = 0; i < 4; i++) {
+    disc(ctx, ['#ff8fdc', '#7fc95c', '#ffd166', '#38e1ff'][i], cx + 14 + i * 11, room.floor - 52, 6); // plushies
+  }
+  r(ctx, pal.trim, cx + 28, room.floor - 106, 2, 26); // claw cable
+  r(ctx, pal.trim, cx + 24, room.floor - 80, 10, 6); // claw
+  r(ctx, '#ffd166', cx + 22, room.floor - 36, 18, 8); // prize chute
+  // skee-ball lane
+  const sx = room.x + room.w * 0.42;
+  r(ctx, '#c9762e', sx, room.floor - 20, 90, 8); // lane flat
+  for (let i = 0; i < 5; i++) r(ctx, '#c9762e', sx + 50 + i * 8, room.floor - 24 - i * 5, 10, 6); // ramp
+  r(ctx, '#14181d', sx + 84, room.floor - 66, 34, 44); // target board
+  ring(ctx, '#ffd166', sx + 101, room.floor - 50, 10, 2);
+  ring(ctx, '#ff8fdc', sx + 101, room.floor - 50, 5, 2);
+  disc(ctx, '#eef2f5', sx + 20, room.floor - 24, 5); // ball
+  // ticket counter with prizes
+  const tx = room.x + room.w - 96;
+  r(ctx, pal.furniture, tx, room.floor - 54, 80, 10);
+  r(ctx, pal.furnitureDark, tx, room.floor - 44, 80, 44);
+  shelf(ctx, pal, tx - 4, room.y + 20, 84, 1, rng);
+  // ticket stream
+  ctx.globalAlpha = 0.9;
+  for (let i = 0; i < 6; i++) r(ctx, '#ffd166', tx + 20 + i * 6, room.floor - 40 + (i % 2) * 4, 6, 4);
+  ctx.globalAlpha = 1;
+  halo(ctx, '#ff8fdc', room.x + room.w * 0.4, room.y + 6, room.w * 0.3, 10, 0.2); // neon wash
+};
+
+export const aquariumP: Painter = (ctx, room, pal, rng) => {
+  // giant tank: frame + water
+  const tx = room.x + 10;
+  const tw = room.w - 20;
+  const ty = room.y + 16;
+  const th = room.h - 60;
+  r(ctx, pal.trim, tx - 4, ty - 4, tw + 8, th + 8);
+  r(ctx, '#0e3a52', tx, ty, tw, th);
+  r(ctx, '#1e5a7a', tx, ty, tw, th * 0.6);
+  hl(ctx, tx + 8, ty + 6, tw * 0.3, 4, 0.25); // surface shimmer
+  // coral + seaweed
+  for (let cxx = tx + 16; cxx < tx + tw - 20; cxx += rng.int(50, 90)) {
+    const ch = rng.int(16, 34);
+    r(ctx, ['#ff8fdc', '#ff9d4d', '#7fc95c'][rng.int(0, 2)], cxx, ty + th - ch, 8, ch);
+    r(ctx, ['#ff8fdc', '#ff9d4d'][rng.int(0, 1)], cxx - 6, ty + th - ch + 8, 6, 8);
+  }
+  r(ctx, '#e8d59a', tx, ty + th - 8, tw, 8); // sand
+  // fish school
+  for (let i = 0; i < Math.floor(tw / 40); i++) {
+    const fx = tx + rng.int(14, tw - 26);
+    const fy = ty + rng.int(14, th - 30);
+    const fc = ['#ffd166', '#ff8fdc', '#38e1ff', '#ff9d4d'][rng.int(0, 3)];
+    r(ctx, fc, fx, fy, 12, 7);
+    r(ctx, fc, fx - 5, fy + 1, 5, 5); // tail
+    r(ctx, '#14181d', fx + 8, fy + 2, 2, 2); // eye
+  }
+  // the shark
+  const shx = tx + tw * 0.55;
+  const shy = ty + th * 0.35;
+  r(ctx, '#8a99a8', shx, shy, 70, 18);
+  r(ctx, '#8a99a8', shx - 14, shy + 4, 14, 10); // tail
+  r(ctx, '#8a99a8', shx + 24, shy - 10, 12, 10); // dorsal fin
+  r(ctx, '#eef2f5', shx + 6, shy + 12, 58, 6); // belly
+  r(ctx, '#14181d', shx + 58, shy + 4, 3, 3); // eye
+  for (let t = 0; t < 3; t++) r(ctx, '#eef2f5', shx + 44 + t * 6, shy + 14, 3, 4); // teeth
+  // bubbles
+  for (let i = 0; i < 8; i++) {
+    ring(ctx, 'rgba(255,255,255,0.5)', tx + rng.int(20, tw - 20), ty + rng.int(10, th - 16), rng.int(2, 4), 1);
+  }
+  // viewing bench
+  r(ctx, pal.furniture, room.x + room.w * 0.3, room.floor - 24, room.w * 0.4, 8);
+  r(ctx, pal.furnitureDark, room.x + room.w * 0.32, room.floor - 16, 8, 16);
+  r(ctx, pal.furnitureDark, room.x + room.w * 0.66, room.floor - 16, 8, 16);
+};
+
+export const petstoreP: Painter = (ctx, room, pal) => {
+  // kennel wall: 2x2 windows with animal faces
+  const kx = room.x + 12;
+  for (let row = 0; row < 2; row++) {
+    for (let col = 0; col < 2; col++) {
+      const wx = kx + col * 62;
+      const wy = room.y + 26 + row * 58;
+      r(ctx, pal.trim, wx - 3, wy - 3, 58, 54);
+      r(ctx, '#1c2733', wx, wy, 52, 48);
+      const isDog = (row + col) % 2 === 0;
+      const fc = isDog ? '#a8763e' : '#8a99a8';
+      disc(ctx, fc, wx + 26, wy + 26, 13); // head
+      if (isDog) {
+        r(ctx, fc, wx + 10, wy + 12, 8, 14); // floppy ears
+        r(ctx, fc, wx + 34, wy + 12, 8, 14);
+      } else {
+        r(ctx, fc, wx + 12, wy + 8, 8, 10); // pointy ears
+        r(ctx, fc, wx + 32, wy + 8, 8, 10);
+      }
+      r(ctx, '#14181d', wx + 20, wy + 22, 3, 3); // eyes
+      r(ctx, '#14181d', wx + 30, wy + 22, 3, 3);
+      disc(ctx, '#14181d', wx + 26, wy + 30, 2); // nose
+      ctx.globalAlpha = 0.5;
+      for (let b = 0; b < 4; b++) r(ctx, pal.trim, wx + 6 + b * 12, wy, 2, 48); // bars
+      ctx.globalAlpha = 1;
+    }
+  }
+  // fish tank on a stand + bird cage
+  const ftx = room.x + room.w - 110;
+  r(ctx, pal.furniture, ftx, room.floor - 40, 60, 40);
+  r(ctx, '#1e5a7a', ftx + 4, room.floor - 74, 52, 34);
+  r(ctx, '#ffd166', ftx + 14, room.floor - 62, 10, 6); // fish
+  r(ctx, '#38e1ff', ftx + 34, room.floor - 56, 10, 6);
+  hl(ctx, ftx + 8, room.floor - 72, 6, 30, 0.3);
+  const bcx = room.x + room.w - 34;
+  r(ctx, pal.trim, bcx + 8, room.y + 10, 3, 12);
+  r(ctx, pal.trim, bcx - 2, room.y + 22, 24, 34); // cage
+  ctx.globalAlpha = 0.5;
+  for (let b = 0; b < 4; b++) r(ctx, '#0d1117', bcx + 2 + b * 5, room.y + 24, 2, 30);
+  ctx.globalAlpha = 1;
+  disc(ctx, '#7fc95c', bcx + 10, room.y + 40, 6); // bird
+  r(ctx, '#ffd166', bcx + 15, room.y + 39, 5, 3); // beak
+  // food bags + paw prints
+  for (let i = 0; i < 3; i++) {
+    r(ctx, ['#e86a5a', '#7fc95c', '#ffd166'][i], room.x + room.w * 0.52 + i * 22, room.floor - 34 + i * 4, 20, 34 - i * 4);
+  }
+  ctx.globalAlpha = 0.3;
+  for (let i = 0; i < 5; i++) disc(ctx, '#14181d', room.x + 30 + i * 40, room.floor - 5, 3);
+  ctx.globalAlpha = 1;
+};
+
+export const dojoP: Painter = (ctx, room, pal) => {
+  // tatami mat floor
+  r(ctx, '#d8c992', room.x, room.floor - 14, room.w, 14);
+  ctx.globalAlpha = 0.3;
+  for (let mx = room.x + 50; mx < room.x + room.w - 10; mx += 50) r(ctx, '#8a7a4a', mx, room.floor - 12, 3, 12);
+  ctx.globalAlpha = 1;
+  r(ctx, '#e8342a', room.x + room.w * 0.3, room.floor - 14, room.w * 0.4, 3); // sparring line
+  // belt rack: the whole rainbow
+  const belts = ['#eef2f5', '#ffd166', '#7fc95c', '#3a8fd4', '#e8342a', '#14181d'];
+  const brx = room.x + 16;
+  r(ctx, pal.furniture, brx - 4, room.y + 24, belts.length * 18 + 8, 6);
+  belts.forEach((b, i) => {
+    r(ctx, b, brx + i * 18, room.y + 30, 10, 36);
+    r(ctx, b, brx + i * 18 - 2, room.y + 46, 14, 5); // knot
+  });
+  // wall scroll
+  const wx = room.x + room.w * 0.48;
+  r(ctx, pal.trim, wx - 3, room.y + 18, 30, 5);
+  r(ctx, '#f2ecd8', wx, room.y + 23, 24, 64);
+  sh(ctx, wx + 6, room.y + 32, 12, 8, 0.5);
+  sh(ctx, wx + 6, room.y + 48, 12, 8, 0.5);
+  sh(ctx, wx + 6, room.y + 64, 12, 8, 0.5);
+  // punching bag
+  const pbx = room.x + room.w - 70;
+  r(ctx, pal.trim, pbx + 12, room.y, 4, 22);
+  r(ctx, '#e8342a', pbx, room.y + 22, 28, 74);
+  hl(ctx, pbx + 3, room.y + 26, 6, 66, 0.2);
+  r(ctx, '#14181d', pbx, room.y + 52, 28, 8); // strap
+  // kick pads + trophy
+  r(ctx, '#3a8fd4', room.x + room.w * 0.62, room.floor - 30, 14, 30);
+  r(ctx, '#e86a5a', room.x + room.w * 0.62 + 18, room.floor - 26, 14, 26);
+  r(ctx, '#f5c542', room.x + room.w * 0.36, room.floor - 34, 14, 12); // trophy
+  r(ctx, '#f5c542', room.x + room.w * 0.36 + 4, room.floor - 22, 6, 8);
+};
+
+export const skateparkP: Painter = (ctx, room, pal) => {
+  const CONCRETE = '#9a958c';
+  // halfpipe: two quarter curves + flat bottom
+  const hw = room.w - 40;
+  const hx = room.x + 20;
+  const steps = 10;
+  for (let i = 0; i < steps; i++) {
+    const t = i / steps;
+    const h = Math.round(90 * t * t); // quarter-pipe curve
+    r(ctx, CONCRETE, hx + i * 8, room.floor - 8 - h, 9, 8 + h);
+    r(ctx, CONCRETE, hx + hw - (i + 1) * 8, room.floor - 8 - h, 9, 8 + h);
+  }
+  r(ctx, CONCRETE, hx + steps * 8, room.floor - 8, hw - steps * 16, 8); // flat
+  r(ctx, pal.trim, hx - 2, room.floor - 98, 10, 4); // coping
+  r(ctx, pal.trim, hx + hw - 8, room.floor - 98, 10, 4);
+  hl(ctx, hx + 8, room.floor - 40, 20, 3, 0.2);
+  // grind rail
+  r(ctx, pal.trim, room.x + room.w * 0.42, room.floor - 26, room.w * 0.2, 4);
+  r(ctx, pal.trim, room.x + room.w * 0.44, room.floor - 22, 4, 14);
+  r(ctx, pal.trim, room.x + room.w * 0.58, room.floor - 22, 4, 14);
+  // skateboard + helmet
+  const sbx = room.x + room.w * 0.5;
+  r(ctx, '#e8342a', sbx, room.floor - 14, 34, 5);
+  disc(ctx, '#14181d', sbx + 7, room.floor - 6, 4);
+  disc(ctx, '#14181d', sbx + 27, room.floor - 6, 4);
+  disc(ctx, '#3a8fd4', room.x + room.w * 0.34, room.floor - 12, 8); // helmet
+  r(ctx, '#3a8fd4', room.x + room.w * 0.34 - 8, room.floor - 12, 16, 6);
+  // graffiti tag
+  ctx.globalAlpha = 0.85;
+  for (let i = 0; i < 6; i++) {
+    r(ctx, [pal.accent, '#ff8fdc', '#ffd166'][i % 3], room.x + room.w * 0.32 + i * 14, room.y + 34 + (i % 2) * 10, 14, 12);
+  }
+  ctx.globalAlpha = 1;
+  hl(ctx, room.x + room.w * 0.32, room.y + 30, 84, 3, 0.2);
+  // caution sign
+  r(ctx, '#ffd166', room.x + 10, room.y + 30, 26, 22);
+  r(ctx, '#14181d', room.x + 20, room.y + 34, 6, 10);
+  r(ctx, '#14181d', room.x + 20, room.y + 46, 6, 3);
 };

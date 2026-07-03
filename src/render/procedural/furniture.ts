@@ -8,15 +8,17 @@ import {
   ceilingLamp, crate, plant, poster, type Interior, type Painter,
 } from './kit';
 import {
-  bathroomP, bedroomP, buffetP, chillP, diningP, greenhouseP, hallwayP,
-  kitchenP, libraryP, livingP, storageP,
+  bathroomP, bedroomP, buffetP, chillP, classroomP, closetP, diningP,
+  greenhouseP, hallwayP, kitchenP, libraryP, livingP, storageP,
 } from './roomsHome';
 import {
-  baseballP, basketballP, entertainmentP, footballP, gameroomP, junglegymP,
-  lavaP, nerfP, poolP, soccerP, theaterP, trampolineP,
+  aquariumP, arcadeP, baseballP, basketballP, dinoexhibitP, dojoP,
+  entertainmentP, footballP, gamingdenP, gameroomP, junglegymP, lavaP, nerfP,
+  petstoreP, poolP, skateparkP, soccerP, theaterP, trampolineP, vrroomP,
 } from './roomsFun';
 import {
-  commandP, elevatorP, garageP, labP, racegarageP, siloP, vaultP,
+  commandP, elevatorP, garageP, gemmineP, labP, ladderP, observatoryP,
+  racegarageP, siloP, stairsP, vaultP,
 } from './roomsOps';
 
 export type { Interior, Painter };
@@ -55,13 +57,27 @@ export const PAINTERS: Record<string, Painter> = {
   soccer: soccerP,
   basketball: basketballP,
   baseball: baseballP,
+  closet: closetP,
+  classroom: classroomP,
+  vrroom: vrroomP,
+  gamingden: gamingdenP,
+  dinoexhibit: dinoexhibitP,
+  arcade: arcadeP,
+  aquarium: aquariumP,
+  petstore: petstoreP,
+  dojo: dojoP,
+  skatepark: skateparkP,
   // ops & infrastructure
   lab: labP,
   command: commandP,
   vault: vaultP,
   garage: garageP,
   racegarage: racegarageP,
+  gemmine: gemmineP,
+  observatory: observatoryP,
   elevator: elevatorP,
+  stairs: stairsP,
+  ladder: ladderP,
   silo: siloP,
 };
 

@@ -271,6 +271,132 @@
       "sizes": [ { "w": 4, "h": 2 }, { "w": 6, "h": 2 } ]
     },
     {
+      "id": "stairs",
+      "name": "Staircase",
+      "category": "infrastructure",
+      "rarity": "common",
+      "tags": ["connector", "vertical", "steps"],
+      "blurb": "Good old stairs. Stack them to go deeper.",
+      "sizes": [ { "w": 1, "h": 1 }, { "w": 2, "h": 2 } ]
+    },
+    {
+      "id": "ladder",
+      "name": "Ladder Shaft",
+      "category": "infrastructure",
+      "rarity": "common",
+      "tags": ["connector", "vertical", "climb"],
+      "blurb": "Straight down. Hold on with both hands.",
+      "sizes": [ { "w": 1, "h": 1 }, { "w": 1, "h": 2 } ]
+    },
+    {
+      "id": "vrroom",
+      "name": "VR Room",
+      "category": "fun",
+      "rarity": "uncommon",
+      "tags": ["virtual", "headset", "vr"],
+      "blurb": "Full-dive setup. Mind the play boundary!",
+      "sizes": [ { "w": 2, "h": 1 }, { "w": 3, "h": 1 } ]
+    },
+    {
+      "id": "closet",
+      "name": "Walk-in Closet",
+      "category": "living",
+      "rarity": "common",
+      "tags": ["clothes", "wardrobe", "shoes"],
+      "blurb": "Every outfit, including the disguises.",
+      "sizes": [ { "w": 1, "h": 1 }, { "w": 2, "h": 1 } ]
+    },
+    {
+      "id": "gamingden",
+      "name": "Gaming Den",
+      "category": "fun",
+      "rarity": "common",
+      "tags": ["console", "pc", "rgb", "gaming"],
+      "blurb": "Triple monitors, RGB everything, victory royale.",
+      "sizes": [ { "w": 2, "h": 1 }, { "w": 3, "h": 1 } ]
+    },
+    {
+      "id": "dinoexhibit",
+      "name": "Dinosaur Exhibit",
+      "category": "fun",
+      "rarity": "rare",
+      "tags": ["dinosaur", "museum", "fossil"],
+      "blurb": "A real T-rex skeleton. Please do not climb the dinosaur.",
+      "sizes": [ { "w": 3, "h": 2 }, { "w": 4, "h": 2 } ]
+    },
+    {
+      "id": "arcade",
+      "name": "Arcade",
+      "category": "fun",
+      "rarity": "uncommon",
+      "tags": ["claw", "tickets", "prizes"],
+      "blurb": "Claw machine, skee-ball, and a mountain of tickets.",
+      "sizes": [ { "w": 3, "h": 1 }, { "w": 4, "h": 1 } ]
+    },
+    {
+      "id": "aquarium",
+      "name": "Aquarium",
+      "category": "fun",
+      "rarity": "uncommon",
+      "tags": ["fish", "shark", "ocean"],
+      "blurb": "Wall-to-wall ocean. Yes, that's a shark.",
+      "sizes": [ { "w": 2, "h": 2 }, { "w": 3, "h": 2 } ]
+    },
+    {
+      "id": "gemmine",
+      "name": "Gem Mine",
+      "category": "utility",
+      "rarity": "rare",
+      "tags": ["gems", "mining", "cart"],
+      "blurb": "Your own mine. The sparkly veins go deep.",
+      "sizes": [ { "w": 3, "h": 2 }, { "w": 4, "h": 2 } ]
+    },
+    {
+      "id": "petstore",
+      "name": "Pet Store",
+      "category": "fun",
+      "rarity": "uncommon",
+      "tags": ["puppies", "kittens", "animals"],
+      "blurb": "Puppies, kittens, a very loud bird.",
+      "sizes": [ { "w": 2, "h": 1 }, { "w": 3, "h": 1 } ]
+    },
+    {
+      "id": "classroom",
+      "name": "Classroom",
+      "category": "living",
+      "rarity": "common",
+      "tags": ["school", "chalkboard", "desks"],
+      "blurb": "Spy school is still school.",
+      "sizes": [ { "w": 2, "h": 1 }, { "w": 3, "h": 1 } ]
+    },
+    {
+      "id": "dojo",
+      "name": "Taekwondo Dojo",
+      "category": "sports",
+      "rarity": "uncommon",
+      "tags": ["martial-arts", "belts", "kick"],
+      "blurb": "Bow first. Then HI-YAH!",
+      "sizes": [ { "w": 2, "h": 1 }, { "w": 3, "h": 1 } ]
+    },
+    {
+      "id": "observatory",
+      "name": "Observatory",
+      "category": "ops",
+      "rarity": "rare",
+      "tags": ["telescope", "stars", "space"],
+      "blurb": "A telescope pointed at everything up there.",
+      "sizes": [ { "w": 2, "h": 2 }, { "w": 3, "h": 2 } ]
+    },
+    {
+      "id": "skatepark",
+      "name": "Skate Park",
+      "category": "sports",
+      "rarity": "uncommon",
+      "tags": ["skate", "halfpipe", "rail"],
+      "blurb": "Indoor halfpipe. Helmets on, drop in.",
+      "sizes": [ { "w": 3, "h": 2 }, { "w": 4, "h": 2 } ]
+    },
+    {
       "id": "elevator",
       "name": "Elevator Shaft",
       "category": "infrastructure",

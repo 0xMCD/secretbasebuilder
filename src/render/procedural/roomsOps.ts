@@ -325,3 +325,138 @@ export const siloP: Painter = (ctx, room, pal) => {
   disc(ctx, '#e8342a', room.x + 26, room.floor - 18, 7); // big red button (do not press)
   hl(ctx, room.x + 22, room.floor - 22, 4, 3, 0.5);
 };
+
+export const gemmineP: Painter = (ctx, room, pal, rng) => {
+  // rough rock overlay on the walls
+  ctx.globalAlpha = 0.5;
+  for (let i = 0; i < Math.floor(room.w / 30); i++) {
+    r(ctx, '#2b2018', room.x + rng.int(0, room.w - 40), room.y + rng.int(0, room.h - 30), rng.int(20, 44), rng.int(12, 26));
+  }
+  ctx.globalAlpha = 1;
+  // timber support frames
+  for (let sx = room.x + 30; sx < room.x + room.w - 40; sx += 140) {
+    r(ctx, '#8a5f3c', sx, room.y + 10, 12, room.h - 16);
+    r(ctx, '#8a5f3c', sx + room.w > room.x + room.w ? 0 : sx + 96, room.y + 10, 12, room.h - 16);
+    r(ctx, '#a8763e', sx - 8, room.y + 6, 128, 12); // lintel
+    sh(ctx, sx - 8, room.y + 16, 128, 4, 0.3);
+  }
+  // glowing gem veins
+  const gems = ['#7fd4ff', '#ff8fdc', '#a5ff9e', '#ffd166'];
+  for (let i = 0; i < Math.floor(room.w / 60); i++) {
+    const gx = room.x + rng.int(16, room.w - 30);
+    const gy = room.y + rng.int(20, room.h - 40);
+    const c = gems[rng.int(0, gems.length - 1)];
+    r(ctx, c, gx, gy, 8, 14);
+    r(ctx, c, gx - 5, gy + 5, 6, 8);
+    r(ctx, c, gx + 9, gy + 3, 6, 9);
+    hl(ctx, gx + 2, gy + 2, 3, 3, 0.6);
+    halo(ctx, c, gx - 8, gy - 4, 28, 24, 0.15);
+  }
+  // rails + mine cart full of gems
+  r(ctx, '#5a5f66', room.x, room.floor - 6, room.w, 3);
+  for (let tx = room.x + 8; tx < room.x + room.w - 12; tx += 26) r(ctx, '#8a5f3c', tx, room.floor - 4, 14, 4);
+  const cx = room.x + room.w * 0.4;
+  shadow(ctx, cx, room.floor, 70);
+  r(ctx, '#4a4f56', cx, room.floor - 44, 70, 34);
+  hl(ctx, cx, room.floor - 44, 70, 4);
+  disc(ctx, '#14181d', cx + 16, room.floor - 8, 8);
+  disc(ctx, '#14181d', cx + 54, room.floor - 8, 8);
+  for (let g = 0; g < 5; g++) {
+    r(ctx, gems[rng.int(0, 3)], cx + 6 + g * 12, room.floor - 52 + rng.int(0, 6), 9, 10);
+  }
+  // pickaxe + lantern
+  r(ctx, '#8a5f3c', room.x + 20, room.floor - 40, 5, 34); // handle
+  r(ctx, '#8a99a8', room.x + 8, room.floor - 44, 30, 6); // head
+  r(ctx, pal.trim, room.x + room.w - 40, room.y + 20, 3, 10);
+  r(ctx, '#14181d', room.x + room.w - 46, room.y + 30, 16, 18);
+  r(ctx, '#ffd166', room.x + room.w - 42, room.y + 34, 8, 10);
+  halo(ctx, '#ffd166', room.x + room.w - 52, room.y + 28, 28, 24, 0.2);
+};
+
+export const observatoryP: Painter = (ctx, room, pal, rng) => {
+  // star dome: dark band + stars across the ceiling half
+  r(ctx, '#101528', room.x, room.y, room.w, room.h * 0.45);
+  for (let i = 0; i < Math.floor(room.w / 14); i++) {
+    const big = rng.chance(0.2);
+    r(ctx, '#ffffff', room.x + rng.int(4, room.w - 6), room.y + rng.int(4, room.h * 0.42), big ? 3 : 2, big ? 3 : 2);
+  }
+  // roof slit with sky
+  r(ctx, pal.trim, room.x + room.w * 0.55 - 6, room.y, 6, room.h * 0.45);
+  r(ctx, '#1a2244', room.x + room.w * 0.55, room.y, room.w * 0.14, room.h * 0.45);
+  r(ctx, '#f4f1de', room.x + room.w * 0.6, room.y + 12, 10, 10); // moon through the slit
+  r(ctx, pal.trim, room.x + room.w * 0.55 + room.w * 0.14, room.y, 6, room.h * 0.45);
+  // the big telescope: angled tube on a mount
+  const bx = room.x + room.w * 0.42;
+  const by = room.floor - 30;
+  for (let i = 0; i < 7; i++) {
+    r(ctx, pal.trim, bx + i * 14, by - 40 - i * 12, 26, 18); // stepped tube
+  }
+  hl(ctx, bx + 8, by - 48, 70, 4, 0.2);
+  r(ctx, pal.accent, bx + 7 * 14, by - 40 - 7 * 12, 22, 16); // lens end
+  r(ctx, pal.furnitureDark, bx - 6, by - 34, 22, 10); // eyepiece
+  r(ctx, pal.furnitureDark, bx + 10, by - 24, 14, 24); // mount column
+  r(ctx, pal.furnitureDark, bx - 6, by, 46, 6); // base
+  // control desk with star chart
+  const dx = room.x + 20;
+  r(ctx, pal.furniture, dx, room.floor - 52, 90, 8);
+  r(ctx, pal.furnitureDark, dx + 8, room.floor - 44, 6, 44);
+  r(ctx, pal.furnitureDark, dx + 76, room.floor - 44, 6, 44);
+  r(ctx, '#0d1826', dx + 10, room.floor - 82, 70, 28); // chart screen
+  for (let i = 0; i < 6; i++) r(ctx, pal.glow, dx + 14 + rng.int(0, 60), room.floor - 78 + rng.int(0, 20), 2, 2);
+  ctx.globalAlpha = 0.5;
+  r(ctx, pal.glow, dx + 18, room.floor - 70, 50, 1); // constellation line
+  ctx.globalAlpha = 1;
+  // star chart poster + stool
+  r(ctx, pal.trim, room.x + room.w - 70, room.y + room.h * 0.5, 48, 36);
+  r(ctx, '#101528', room.x + room.w - 66, room.y + room.h * 0.5 + 4, 40, 28);
+  for (let i = 0; i < 5; i++) r(ctx, '#ffffff', room.x + room.w - 62 + rng.int(0, 32), room.y + room.h * 0.5 + 6 + rng.int(0, 22), 2, 2);
+  r(ctx, pal.furnitureDark, room.x + room.w - 40, room.floor - 26, 6, 26);
+  r(ctx, pal.furniture, room.x + room.w - 50, room.floor - 32, 26, 6);
+};
+
+export const stairsP: Painter = (ctx, room, pal, rng) => {
+  // staircase climbing left-low to right-high, with railing
+  const steps = 8;
+  const stepW = room.w / steps;
+  const stepH = (room.h - 20) / steps;
+  for (let i = 0; i < steps; i++) {
+    const sx = room.x + i * stepW;
+    const sy = room.floor - (i + 1) * stepH;
+    r(ctx, pal.furniture, sx, sy, stepW + 1, room.floor - sy);
+    hl(ctx, sx, sy, stepW + 1, 3);
+    sh(ctx, sx, sy + stepH * 0.6, stepW + 1, 2, 0.2);
+  }
+  // railing
+  for (let i = 0; i <= steps; i += 2) {
+    const px = room.x + i * stepW + stepW * 0.4;
+    const py = room.floor - (i + 1) * stepH;
+    r(ctx, pal.trim, px, py - 34, 4, 34);
+  }
+  ctx.globalAlpha = 0.9;
+  for (let i = 0; i < steps; i++) {
+    const px = room.x + i * stepW;
+    const py = room.floor - (i + 1) * stepH - 34;
+    r(ctx, pal.trim, px, py + stepH * 0.4, stepW + 2, 4); // handrail segments
+  }
+  ctx.globalAlpha = 1;
+  if (rng.chance(0.5)) r(ctx, pal.accent, room.x + stepW * 0.3, room.floor - 6, 14, 6); // dropped sneaker
+};
+
+export const ladderP: Painter = (ctx, room, pal) => {
+  // full-height ladder with rails, rungs, top hatch ring + caution stripe
+  const cx = room.x + room.w / 2;
+  r(ctx, pal.trim, cx - 20, room.y, 6, room.h);
+  r(ctx, pal.trim, cx + 14, room.y, 6, room.h);
+  for (let y = room.y + 14; y < room.floor - 6; y += 24) {
+    r(ctx, pal.furniture, cx - 16, y, 32, 5);
+    sh(ctx, cx - 16, y + 5, 32, 2, 0.3);
+  }
+  // hatch ring at the top
+  r(ctx, pal.furnitureDark, cx - 28, room.y, 56, 8);
+  r(ctx, pal.glow, cx - 6, room.y + 2, 12, 4);
+  // caution stripes at the base
+  for (let x = room.x + 6; x < room.x + room.w - 18; x += 20) {
+    r(ctx, x % 40 < 20 ? '#ffd166' : '#14181d', x, room.floor - 5, 16, 5);
+  }
+  halo(ctx, pal.glow, cx - 12, room.y + 2, 24, 10, 0.2);
+};

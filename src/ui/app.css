@@ -248,7 +248,10 @@ canvas.world {
   align-items: center;
   gap: 10px;
   cursor: grab;
-  touch-action: none; /* pointer-drag owns this element on touch */
+  /* Vertical swipes stay native list scrolling; horizontal pulls (toward the
+     canvas) start the module drag. Browser scroll fires pointercancel, which
+     aborts the drag cleanly. */
+  touch-action: pan-y;
 }
 
 .card-thumb {
@@ -645,6 +648,11 @@ canvas.world {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+  }
+
+  /* Bottom sheet scrolls sideways; vertical pulls (up to the canvas) drag. */
+  .card-drag-zone {
+    touch-action: pan-x;
   }
 
   .inspector {

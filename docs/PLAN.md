@@ -93,6 +93,16 @@ How to resume a session:
   (`.github/workflows/deploy-pages.yml`, deploys on push to main; assets are
   BASE_URL-relative so subpath hosting works). One-time: enable Pages
   (Settings → Pages → Source: GitHub Actions) and merge to main.
+- [x] **P1.1 Playtest feedback round** — tablet fix: cards use touch-action
+  pan-y (pan-x on phone) so list scrolling stays native and pointercancel
+  aborts drags (also fixed a bug where pointercancel *placed* the module);
+  📸 Photo export (PNG cropped to built area + title banner,
+  `render/snapshot.ts`); stairs + ladder connector kinds; stacked vertical
+  connectors (tagged "vertical") merge into one continuous shaft; 12 new
+  rooms: vrroom, closet, gamingden, dinoexhibit, arcade, aquarium, gemmine,
+  petstore, classroom, dojo, observatory, skatepark. 44 kinds → 95 defs →
+  475 sprite variants.
+
 - [ ] J. Decorations/props layer (posters, plants, rugs) placed ON modules.
 - [ ] K. More environments (treehouse, city rooftop, island volcano) + art
   scan script that auto-regenerates `art-manifest.json`.

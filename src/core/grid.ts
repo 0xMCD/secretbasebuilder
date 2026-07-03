@@ -93,9 +93,15 @@ export function sharedSeam(a: Rect, b: Rect): Seam | null {
   return null;
 }
 
+/** A seam annotated with the two placements that share it. */
+export interface PlacementSeam extends Seam {
+  aId: string;
+  bId: string;
+}
+
 /** All seams among the given placements (each pair reported once). */
-export function allSeams(placements: Placement[]): Seam[] {
-  const seams: Seam[] = [];
+export function allSeams(placements: Placement[]): PlacementSeam[] {
+  const seams: PlacementSeam[] = [];
   for (let i = 0; i < placements.length; i++) {
     const a = placementRect(placements[i]);
     if (!a) continue;
@@ -103,7 +109,7 @@ export function allSeams(placements: Placement[]): Seam[] {
       const b = placementRect(placements[j]);
       if (!b) continue;
       const seam = sharedSeam(a, b);
-      if (seam) seams.push(seam);
+      if (seam) seams.push({ ...seam, aId: placements[i].id, bId: placements[j].id });
     }
   }
   return seams;

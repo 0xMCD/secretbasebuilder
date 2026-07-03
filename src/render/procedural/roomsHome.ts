@@ -425,3 +425,82 @@ export const greenhouseP: Painter = (ctx, room, pal, rng) => {
   r(ctx, '#7fd4d4', room.x + 8, room.floor - 18, 22, 18);
   r(ctx, '#7fd4d4', room.x + 28, room.floor - 14, 10, 4);
 };
+
+export const closetP: Painter = (ctx, room, pal, rng) => {
+  // hat shelf up top
+  r(ctx, pal.furniture, room.x + 8, room.y + 34, room.w - 16, 6);
+  const hats = ['#e86a5a', '#3a8fd4', '#ffd166'];
+  for (let i = 0; i < Math.floor(room.w / 70); i++) {
+    const hx = room.x + 18 + i * 66;
+    r(ctx, hats[i % 3], hx, room.y + 22, 26, 8);
+    r(ctx, hats[i % 3], hx + 6, room.y + 14, 14, 8); // crown
+  }
+  // hanging rod with clothes
+  r(ctx, pal.trim, room.x + 8, room.y + 56, room.w - 16, 5);
+  const shirts = [pal.accent, pal.glow, '#7fc95c', '#e86a5a', '#3a8fd4', '#ff8fdc'];
+  let cx = room.x + 16;
+  let i = 0;
+  while (cx < room.x + room.w - 40) {
+    r(ctx, pal.trim, cx + 10, room.y + 61, 3, 8); // hanger neck
+    r(ctx, shirts[i % shirts.length], cx, room.y + 69, 24, rng.int(40, 62)); // garment
+    sh(ctx, cx + 20, room.y + 69, 4, 40, 0.2);
+    cx += 30;
+    i++;
+  }
+  // shoe rack
+  for (let row = 0; row < 2; row++) {
+    const sy = room.floor - 14 - row * 20;
+    r(ctx, pal.furniture, room.x + 10, sy + 10, room.w * 0.6, 4);
+    for (let sxx = room.x + 16; sxx < room.x + room.w * 0.6 - 10; sxx += 30) {
+      r(ctx, shirts[rng.int(0, 5)], sxx, sy, 18, 9); // shoes
+      r(ctx, '#ffffff', sxx, sy + 6, 18, 3);
+    }
+  }
+  // full-length mirror
+  const mx = room.x + room.w - 34;
+  r(ctx, '#f5c542', mx - 3, room.floor - 102, 28, 102);
+  r(ctx, '#bfe3f0', mx, room.floor - 98, 22, 94);
+  hl(ctx, mx + 2, room.floor - 94, 6, 80, 0.4);
+};
+
+export const classroomP: Painter = (ctx, room, pal, rng) => {
+  // alphabet strip
+  ctx.globalAlpha = 0.8;
+  for (let i = 0; i < Math.floor((room.w - 40) / 22); i++) {
+    r(ctx, ['#e86a5a', '#ffd166', '#3a8fd4', '#7fc95c'][i % 4], room.x + 20 + i * 22, room.y + 14, 16, 12);
+  }
+  ctx.globalAlpha = 1;
+  // chalkboard with scribbles
+  const bx = room.x + 16;
+  r(ctx, pal.furniture, bx - 4, room.y + 36, room.w * 0.44 + 8, 74);
+  r(ctx, '#2e5d3a', bx, room.y + 40, room.w * 0.44, 66);
+  hl(ctx, bx + 8, room.y + 50, 40, 3, 0.6); // "2+2=4"
+  hl(ctx, bx + 8, room.y + 62, 60, 3, 0.5);
+  hl(ctx, bx + 8, room.y + 74, 30, 3, 0.5);
+  r(ctx, '#ffffff', bx + room.w * 0.44 - 20, room.y + 98, 14, 4); // chalk
+  // teacher desk with apple
+  const tdx = room.x + room.w - 90;
+  table(ctx, pal, tdx, room.floor, 70);
+  disc(ctx, '#e8342a', tdx + 16, room.floor - 46, 6); // apple
+  r(ctx, '#7fc95c', tdx + 15, room.floor - 54, 3, 4);
+  r(ctx, '#f2ecd8', tdx + 34, room.floor - 45, 22, 5); // papers
+  // student desks with chairs
+  for (let d = 0; d < Math.max(2, Math.floor(room.w / 180)); d++) {
+    const dx = room.x + 24 + d * 130;
+    r(ctx, pal.furniture, dx, room.floor - 36, 52, 6);
+    r(ctx, pal.furnitureDark, dx + 4, room.floor - 30, 5, 30);
+    r(ctx, pal.furnitureDark, dx + 43, room.floor - 30, 5, 30);
+    r(ctx, '#f2ecd8', dx + 12, room.floor - 41, 18, 5); // notebook
+    r(ctx, pal.furnitureDark, dx + 62, room.floor - 50, 6, 50); // chair
+    r(ctx, pal.furniture, dx + 58, room.floor - 28, 20, 5);
+  }
+  // globe + backpack + clock
+  disc(ctx, pal.accent, room.x + room.w - 24, room.floor - 60, 11);
+  r(ctx, pal.furnitureDark, room.x + room.w - 27, room.floor - 48, 6, 10);
+  r(ctx, '#3a8fd4', room.x + 8, room.floor - 26, 20, 26); // backpack
+  r(ctx, '#1e4a8a', room.x + 12, room.floor - 20, 12, 12);
+  disc(ctx, '#eef2f5', room.x + room.w * 0.55, room.y + 24, 10); // clock
+  r(ctx, '#14181d', room.x + room.w * 0.55 - 1, room.y + 18, 2, 7);
+  r(ctx, '#14181d', room.x + room.w * 0.55, room.y + 23, 5, 2);
+  if (rng.chance(0.5)) r(ctx, '#f2ecd8', room.x + room.w * 0.4, room.floor - 4, 10, 4); // paper plane crash
+};

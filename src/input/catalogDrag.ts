@@ -2,6 +2,12 @@
  * Custom drag-from-sidebar (HTML5 drag-and-drop doesn't work on touch).
  * A floating thumbnail follows the pointer; over the canvas it becomes a
  * grid-snapped ghost; releasing places the module (centered on the pointer).
+ *
+ * Touch coexistence: cards use `touch-action: pan-y` (pan-x in the phone
+ * bottom-sheet), so scrolling the list stays a native browser gesture. When
+ * the browser claims the gesture it fires pointercancel — that ABORTS the
+ * drag (never places). Only a drag the browser leaves to us (toward the
+ * canvas) can place a module.
  */
 import type { DefId, ThemeId } from '../core/types';
 import { getDef } from '../core/catalog';
@@ -50,18 +56,25 @@ export function beginCatalogDrag(
     }
   };
 
-  const onUp = (ev: PointerEvent) => {
+  const cleanup = () => {
     window.removeEventListener('pointermove', onMove);
     window.removeEventListener('pointerup', onUp);
-    window.removeEventListener('pointercancel', onUp);
+    window.removeEventListener('pointercancel', onCancel);
     preview.remove();
-    const cell = cellFor(ev);
     setGhost(null);
+  };
+
+  const onUp = (ev: PointerEvent) => {
+    const cell = cellFor(ev);
+    cleanup();
     if (cell) placeModule(defId, theme, cell[0], cell[1]); // no-op if invalid spot
   };
 
+  /** Browser took the gesture over (e.g. the list started scrolling). */
+  const onCancel = () => cleanup();
+
   window.addEventListener('pointermove', onMove);
   window.addEventListener('pointerup', onUp);
-  window.addEventListener('pointercancel', onUp);
+  window.addEventListener('pointercancel', onCancel);
   onMove(e);
 }

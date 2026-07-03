@@ -3,6 +3,7 @@ import { ENVIRONMENTS } from '../core/catalog';
 import { setBaseName, setEnvironment, setOverlay, startOver } from '../core/actions';
 import { canRedo, canUndo, redo, undo } from '../core/undo';
 import { clearAutosave, exportBase, importBase } from '../persistence/save';
+import { downloadSnapshot } from '../render/snapshot';
 import { useGameState } from './hooks';
 
 export function TopBar() {
@@ -60,6 +61,14 @@ export function TopBar() {
       </button>
       <button className="btn" onClick={redo} disabled={!canRedo()} title="Redo (Ctrl+Y)">
         ↪
+      </button>
+      <button
+        className="btn"
+        onClick={downloadSnapshot}
+        disabled={state.placements.length === 0}
+        title="Download a picture of your base to save or print"
+      >
+        📸 Photo
       </button>
       <button className="btn" onClick={exportBase} title="Download this base as a file">
         ⬇ Save file
