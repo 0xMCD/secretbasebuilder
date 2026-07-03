@@ -23,7 +23,8 @@ let onSpriteReady: (() => void) | null = null;
 export async function initSprites(requestRedraw: () => void): Promise<void> {
   onSpriteReady = requestRedraw;
   try {
-    const res = await fetch('/art/art-manifest.json');
+    // BASE_URL-relative so subpath hosting (e.g. GitHub Pages) works.
+    const res = await fetch(`${import.meta.env.BASE_URL}art/art-manifest.json`);
     if (res.ok) {
       const manifest = (await res.json()) as { modules?: string[] };
       finalArtKeys = new Set(manifest.modules ?? []);
@@ -56,7 +57,7 @@ export function getSprite(def: ModuleDef, themeId: string): SpriteEntry {
       thumbnailCache.delete(key);
       onSpriteReady?.();
     };
-    img.src = `/art/modules/${key}.png`;
+    img.src = `${import.meta.env.BASE_URL}art/modules/${key}.png`;
   }
   return placeholder;
 }

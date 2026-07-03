@@ -76,12 +76,25 @@ How to resume a session:
   start screen is up); vertical seams draw exactly ONE doorway at the seam's
   bottom-row floor line (upper-row portholes removed).
 
-## Phase P1 — Catalog explosion *(future sessions)*
+## Phase P1 — Catalog explosion
 
-- [ ] G. 15+ more module kinds (gym, pool, aquarium, armory, library, kennel,
-  rocket silo, greenhouse, server room, escape tube, ...).
-- [ ] H. Decorations/props layer (posters, plants, rugs) placed ON modules.
-- [ ] I. More environments (treehouse, city rooftop, island volcano) + art
+- [x] **G. 14 new rooms + Sports category** — football/soccer/basketball/
+  baseball fields (with crowd bleachers), movie theater, indoor pool, lava
+  room, trampoline park, nerf arena, food buffet, jungle gym, chill-out room,
+  dining room, race car garage. 30 kinds → 67 defs → 335 sprite variants.
+- [x] **H. Fidelity pass 2** — ART_CELL 128 → 256 (real resolution); painters
+  reorganized into `procedural/kit.ts` (shared theme-aware props) +
+  `rooms{Home,Fun,Ops}.ts` + `furniture.ts` registry; THEMES ARE CONSTRUCTION:
+  per-theme shells (metal/stone/concrete/wallpaper/velvet), themeFlavor
+  signature props, and theme-variant beds/couches/lamps. Default zoom
+  ~120px/cell. Save verified end-to-end in-browser (autosave reload, export
+  file contents, import restore).
+- [x] **I. Public deployment** — GitHub Pages workflow
+  (`.github/workflows/deploy-pages.yml`, deploys on push to main; assets are
+  BASE_URL-relative so subpath hosting works). One-time: enable Pages
+  (Settings → Pages → Source: GitHub Actions) and merge to main.
+- [ ] J. Decorations/props layer (posters, plants, rugs) placed ON modules.
+- [ ] K. More environments (treehouse, city rooftop, island volcano) + art
   scan script that auto-regenerates `art-manifest.json`.
 
 ## Phase P2 — Final art

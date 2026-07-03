@@ -22,10 +22,13 @@ React (UI) + hand-rolled Canvas2D renderer (base view). No backend.
 - All sprite art is addressed by key `${kindId}_${w}x${h}_${themeId}`. Real
   PNGs in `public/art/modules/` (listed in `public/art/art-manifest.json`)
   override procedural placeholders. Never hardcode sprite pixel sizes —
-  everything derives from `ART_CELL` (128px per grid cell; the environment
+  everything derives from `ART_CELL` (256px per grid cell; the environment
   layer is authored at 64px logical and upscaled — see render/environment.ts).
-- Adding a module kind = edit `src/content/modules.json` + add a furniture
-  painter case in `src/render/procedural/furniture.ts`. No engine changes.
+- Adding a module kind = edit `src/content/modules.json` + add a painter in
+  `src/render/procedural/rooms{Home,Fun,Ops}.ts` (shared theme-aware props in
+  `kit.ts`) + register it in `src/render/procedural/furniture.ts`. No engine
+  changes. Themes are CONSTRUCTION, not tint — shells, flavor props, and key
+  furniture all switch on the theme id.
 - Save format is versioned (`persistence/save.ts`); bump + migrate, never break.
 - Input is Pointer Events only (touch parity). No HTML5 drag-and-drop, no
   mouse-only events.

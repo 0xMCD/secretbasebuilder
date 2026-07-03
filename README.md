@@ -7,16 +7,17 @@ A web-based creative sandbox where kids build the ultimate secret base in a
 resource constraints. Drag rooms from a giant catalog into the dirt and watch
 them snap together into a living hideout.
 
-![Desktop: a fantasy rocket silo under a suburban house](docs/images/overview.png)
+![A soccer stadium with a cheering crowd under a suburban house](docs/images/overview.png)
 
-Rooms placed next to each other automatically connect with doorways and
-ladder hatches. 1-tall rooms come in size tiers (S/M/L/XL) with a per-card
-style flipper across five themes (tech, fantasy, realistic, cozy, glam) —
-style is per-room, so mixing is half the fun. Selecting a room opens an
-inspector to restyle, resize, or remove it. Works on phones too (bottom-sheet
-catalog, big touch targets):
+30 room kinds and counting — bedrooms to rocket silos to a full soccer
+stadium with a cheering crowd. Rooms placed next to each other automatically
+connect with doorways and ladder hatches. Every room comes in five themes
+(tech, fantasy, realistic, cozy, glam) that change the *construction*, not
+just the colors — a tech bedroom has a sleep pod under a glowing ceiling
+strip; the fantasy one has a four-poster bed, stone walls, and torches.
+Style is per-room, so mixing is half the fun:
 
-![Phone layout with the selection inspector open](docs/images/phone.png)
+![The same bedroom in five different themes](docs/images/connected-rooms.png)
 
 ## Play with it
 
@@ -34,6 +35,17 @@ catalog into the underground. Works with mouse and touch.
 - **Ctrl+Z / Ctrl+Y** undo/redo, 🏷 **Labels** toggles room-name overlay
 - Autosaves in the browser; **Save file / Load** exports and imports `.json`
   bases you can share
+
+## Put it on the internet
+
+The game is a fully static site. Two easy options:
+
+- **GitHub Pages (included)**: merge to `main`, then enable Pages once in
+  repo Settings → Pages → Source: "GitHub Actions". The workflow in
+  `.github/workflows/deploy-pages.yml` builds and deploys on every push to
+  main. Live at `https://<owner>.github.io/<repo>/`.
+- **Vercel / Netlify**: import the repo; the defaults (build `npm run build`,
+  output `dist`) just work.
 
 ## For developers (and AI models)
 

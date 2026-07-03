@@ -11,9 +11,9 @@ export const ROWS = 26;
 export const GROUND_ROW = 6;
 /**
  * Art pixels per grid cell. All sprite dimensions derive from this.
- * 128 = the "high-detail" resolution (final art is authored at w*128 × h*128).
+ * 256 = the "high-fidelity" resolution (final art is authored at w*256 × h*256).
  */
-export const ART_CELL = 128;
+export const ART_CELL = 256;
 
 /** Max module footprint — keep in sync with scripts/validate-content.mjs. */
 export const MAX_W = 6;

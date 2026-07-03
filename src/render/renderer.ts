@@ -181,31 +181,34 @@ function drawSeams(c: CanvasRenderingContext2D): void {
     ? state.placements.filter((p) => p.id !== ghost!.moveId)
     : state.placements;
   for (const seam of allSeams(placements)) {
+    // All seam geometry derives from ART_CELL so resolution bumps never
+    // require retuning (u = 1/128th of a cell).
+    const u = ART_CELL / 128;
     if (seam.orientation === 'vertical') {
       // ONE arched doorway per seam, at the floor line of the seam's bottom
       // row — rooms connect where you'd walk through, nowhere else.
       const x = seam.x * ART_CELL;
       const yTop = (seam.y + seam.len - 1) * ART_CELL;
-      const yFloor = yTop + ART_CELL - 24;
-      const doorH = 68;
+      const yFloor = yTop + ART_CELL - 24 * u;
+      const doorH = 68 * u;
       c.fillStyle = SEAM_DARK;
-      c.fillRect(x - 10, yFloor - doorH + 12, 20, doorH - 12);
-      c.fillRect(x - 8, yFloor - doorH + 6, 16, 6); // arch steps
-      c.fillRect(x - 6, yFloor - doorH, 12, 6);
+      c.fillRect(x - 10 * u, yFloor - doorH + 12 * u, 20 * u, doorH - 12 * u);
+      c.fillRect(x - 8 * u, yFloor - doorH + 6 * u, 16 * u, 6 * u); // arch steps
+      c.fillRect(x - 6 * u, yFloor - doorH, 12 * u, 6 * u);
       c.fillStyle = SEAM_EDGE;
-      c.fillRect(x - 12, yFloor - doorH + 12, 2, doorH - 12); // whisper-thin jambs
-      c.fillRect(x + 10, yFloor - doorH + 12, 2, doorH - 12);
+      c.fillRect(x - 12 * u, yFloor - doorH + 12 * u, 2 * u, doorH - 12 * u); // jambs
+      c.fillRect(x + 10 * u, yFloor - doorH + 12 * u, 2 * u, doorH - 12 * u);
       c.fillStyle = SEAM_GLOW;
-      c.fillRect(x - 2, yFloor - doorH + 8, 4, 4); // tiny doorway lamp
+      c.fillRect(x - 2 * u, yFloor - doorH + 8 * u, 4 * u, 4 * u); // doorway lamp
     } else {
       // Slim ladderway through the floor at the middle of the overlap.
       const hx = Math.round((seam.x + seam.len / 2) * ART_CELL);
       const y = seam.y * ART_CELL;
       c.fillStyle = SEAM_DARK;
-      c.fillRect(hx - 16, y - 24, 32, 48);
+      c.fillRect(hx - 16 * u, y - 24 * u, 32 * u, 48 * u);
       c.fillStyle = SEAM_EDGE;
-      for (let ry = y - 16; ry < y + 20; ry += 12) {
-        c.fillRect(hx - 10, ry, 20, 2); // rungs
+      for (let ry = y - 16 * u; ry < y + 20 * u; ry += 12 * u) {
+        c.fillRect(hx - 10 * u, ry, 20 * u, 2 * u); // rungs
       }
     }
   }

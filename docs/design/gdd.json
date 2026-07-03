@@ -59,10 +59,10 @@
       "groundRow": 6,
       "buildableRegion": "x in [0, cols), y in [groundRow, rows)"
     },
-    "artCellPx": 128,
-    "artCellPxNote": "Each grid cell is authored at 128x128 art pixels (doubled from 64 in the detail pass — real resolution, not zoom). Final art must be authored at exactly moduleWidth*128 x moduleHeight*128. Rendering scales by camera zoom with image smoothing disabled. The ENVIRONMENT (sky/dirt/structure) is authored in a 64px logical space and upscaled 2x at draw time to keep the cached world canvas memory-friendly — the high-detail budget is spent on module interiors, which is what players zoom into.",
+    "artCellPx": 256,
+    "artCellPxNote": "Each grid cell is authored at 256x256 art pixels (doubled twice from the original 64 — real resolution, not zoom). Final art must be authored at exactly moduleWidth*256 x moduleHeight*256. Rendering scales by camera zoom with image smoothing disabled. The ENVIRONMENT (sky/dirt/structure) is authored in a 64px logical space and upscaled 4x at draw time to keep the cached world canvas memory-friendly — the high-detail budget is spent on module interiors, which is what players zoom into.",
     "camera": {
-      "defaultZoom": "1.5 — one grid cell renders at ~96 CSS px ≈ 1 inch. Modules should feel big and chunky by default; players zoom out for overview.",
+      "defaultZoom": "one grid cell renders at ~120 CSS px. Modules should feel big, chunky, and detail-forward by default; players zoom out for overview.",
       "controls": "One-finger / left-drag on empty space pans. Wheel or pinch zooms toward pointer. Zoom clamped to [0.25, 3.0].",
       "persistence": "Camera state is session-only, not saved."
     }
@@ -78,15 +78,17 @@
       },
       "startingKinds": [
         "bedroom", "kitchen", "hallway", "bathroom", "storage",
-        "entertainment", "living", "gameroom",
-        "lab", "command", "vault", "garage", "elevator",
-        "greenhouse", "library", "silo"
+        "entertainment", "living", "gameroom", "dining", "chill", "buffet",
+        "lab", "command", "vault", "garage", "racegarage", "elevator",
+        "greenhouse", "library", "silo",
+        "theater", "pool", "lava", "trampoline", "nerf", "junglegym",
+        "football", "soccer", "basketball", "baseball"
       ],
-      "extensibility": "To add a kind: add an entry to modules.json, add a furniture painter in src/render/procedural/furniture.ts (or ship real PNGs), run npm run validate:content."
+      "extensibility": "To add a kind: add an entry to modules.json, add a painter in src/render/procedural/rooms{Home,Fun,Ops}.ts (shared props live in kit.ts), register it in src/render/procedural/furniture.ts (or ship real PNGs), run npm run validate:content."
     },
     "themes": {
       "sourceFile": "src/content/themes.json",
-      "contract": "Exactly the style axis. Every module def gets one sprite per theme. v1 themes: tech, fantasy, realistic, cozy, glam. Each theme declares a pixel-art palette (wall, wallShadow, floor, accent, glow, trim) consumed by the procedural sprite generator.",
+      "contract": "Exactly the style axis. Every module def gets one sprite per theme. v1 themes: tech, fantasy, realistic, cozy, glam. Each theme declares a pixel-art palette consumed by the procedural sprite generator — but THEMES ARE CONSTRUCTION, NOT TINT: the room shell differs per theme (riveted metal + treadplate / stone blocks + plank floors / concrete + I-beams / wallpaper + wainscot / tufted velvet + checkerboard marble), themeFlavor() stamps signature props (cable trays / torches + banners / pipes + hazard signs / string lights / chandeliers + sparkles), and key furniture switches construction per theme (tech sleep pod vs fantasy four-poster vs cozy patchwork quilt bed, etc.). See src/render/procedural/kit.ts and moduleSprite.ts.",
       "selection": "Player picks a theme per placement (a theme selector in the sidebar filters/styles the catalog). Mixed-theme bases are allowed and encouraged."
     },
     "environments": {

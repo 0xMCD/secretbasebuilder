@@ -7,8 +7,8 @@ import { ART_CELL, COLS, GROUND_ROW, ROWS } from '../core/grid';
 export const WORLD_W = COLS * ART_CELL;
 export const WORLD_H = ROWS * ART_CELL;
 const GROUND_Y = GROUND_ROW * ART_CELL;
-export const MIN_ZOOM = 0.25;
-export const MAX_ZOOM = 3;
+export const MIN_ZOOM = 0.08; // far enough out to survey a whole big base
+export const MAX_ZOOM = 2; // 512 screen px per cell — deep detail inspection
 
 export interface Camera {
   offsetX: number;
@@ -16,8 +16,8 @@ export interface Camera {
   zoom: number;
 }
 
-/** Default zoom: one grid cell ≈ 96 CSS px ≈ 1 inch — big and chunky. */
-export const DEFAULT_ZOOM = 96 / ART_CELL;
+/** Default zoom: one grid cell ≈ 120 CSS px — big, chunky, detail-forward. */
+export const DEFAULT_ZOOM = 120 / ART_CELL;
 
 export function createCamera(viewW: number, viewH: number): Camera {
   // Frame the hatch area: surface in the top third, building space below.

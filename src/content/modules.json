@@ -3,6 +3,7 @@
   "categories": [
     { "id": "living", "name": "Living" },
     { "id": "fun", "name": "Fun & Games" },
+    { "id": "sports", "name": "Sports" },
     { "id": "utility", "name": "Utility" },
     { "id": "infrastructure", "name": "Infrastructure" },
     { "id": "ops", "name": "Secret Ops" }
@@ -142,6 +143,132 @@
       "tags": ["rocket", "launch", "space"],
       "blurb": "Every serious base keeps a rocket. Just in case.",
       "sizes": [ { "w": 2, "h": 3 }, { "w": 3, "h": 3 } ]
+    },
+    {
+      "id": "football",
+      "name": "Football Field",
+      "category": "sports",
+      "rarity": "rare",
+      "tags": ["sports", "touchdown", "turf"],
+      "blurb": "Full gridiron underground. Touchdowns echo down here.",
+      "sizes": [ { "w": 6, "h": 2 } ]
+    },
+    {
+      "id": "soccer",
+      "name": "Soccer Field",
+      "category": "sports",
+      "rarity": "rare",
+      "tags": ["sports", "goal", "futbol"],
+      "blurb": "GOOOAL! Regulation-ish pitch, zero rain delays.",
+      "sizes": [ { "w": 6, "h": 2 } ]
+    },
+    {
+      "id": "basketball",
+      "name": "Basketball Court",
+      "category": "sports",
+      "rarity": "uncommon",
+      "tags": ["sports", "hoops", "dunk"],
+      "blurb": "Hardwood, two hoops, and your best trash talk.",
+      "sizes": [ { "w": 4, "h": 2 }, { "w": 5, "h": 2 } ]
+    },
+    {
+      "id": "baseball",
+      "name": "Baseball Field",
+      "category": "sports",
+      "rarity": "rare",
+      "tags": ["sports", "homerun", "diamond"],
+      "blurb": "A whole diamond down here. Watch the lights.",
+      "sizes": [ { "w": 5, "h": 2 }, { "w": 6, "h": 2 } ]
+    },
+    {
+      "id": "theater",
+      "name": "Movie Theater",
+      "category": "fun",
+      "rarity": "uncommon",
+      "tags": ["movies", "popcorn", "cinema"],
+      "blurb": "Stadium seats and a screen bigger than your house.",
+      "sizes": [ { "w": 4, "h": 2 }, { "w": 5, "h": 2 } ]
+    },
+    {
+      "id": "pool",
+      "name": "Indoor Pool",
+      "category": "fun",
+      "rarity": "uncommon",
+      "tags": ["swim", "water", "diving"],
+      "blurb": "Cannonball! The deep end is extra deep.",
+      "sizes": [ { "w": 4, "h": 2 }, { "w": 5, "h": 2 } ]
+    },
+    {
+      "id": "lava",
+      "name": "Lava Room",
+      "category": "fun",
+      "rarity": "rare",
+      "tags": ["danger", "floor-is-lava", "hot"],
+      "blurb": "The floor is ACTUALLY lava. Mind the stepping stones.",
+      "sizes": [ { "w": 3, "h": 2 }, { "w": 4, "h": 2 } ]
+    },
+    {
+      "id": "trampoline",
+      "name": "Trampoline Park",
+      "category": "fun",
+      "rarity": "uncommon",
+      "tags": ["bounce", "jump", "foam"],
+      "blurb": "Wall-to-wall bounce with a foam pit for landings.",
+      "sizes": [ { "w": 3, "h": 2 }, { "w": 4, "h": 2 } ]
+    },
+    {
+      "id": "nerf",
+      "name": "Nerf Battle Arena",
+      "category": "fun",
+      "rarity": "uncommon",
+      "tags": ["nerf", "darts", "battle"],
+      "blurb": "Barricades up. Darts everywhere. No mercy.",
+      "sizes": [ { "w": 4, "h": 2 }, { "w": 5, "h": 2 } ]
+    },
+    {
+      "id": "buffet",
+      "name": "Food Buffet",
+      "category": "living",
+      "rarity": "common",
+      "tags": ["food", "snacks", "dessert"],
+      "blurb": "All you can eat, forever. Dessert bar included.",
+      "sizes": [ { "w": 3, "h": 1 }, { "w": 4, "h": 1 } ]
+    },
+    {
+      "id": "junglegym",
+      "name": "Jungle Gym",
+      "category": "fun",
+      "rarity": "uncommon",
+      "tags": ["climb", "slide", "ballpit"],
+      "blurb": "Climb it, slide it, swing it, ball-pit it.",
+      "sizes": [ { "w": 3, "h": 2 }, { "w": 4, "h": 2 } ]
+    },
+    {
+      "id": "chill",
+      "name": "Chill Out Room",
+      "category": "living",
+      "rarity": "common",
+      "tags": ["relax", "beanbag", "vibes"],
+      "blurb": "Bean bags, lava lamp, zero responsibilities.",
+      "sizes": [ { "w": 2, "h": 1 }, { "w": 3, "h": 1 } ]
+    },
+    {
+      "id": "dining",
+      "name": "Dining Room",
+      "category": "living",
+      "rarity": "common",
+      "tags": ["table", "dinner", "feast"],
+      "blurb": "One very long table for very big feasts.",
+      "sizes": [ { "w": 2, "h": 1 }, { "w": 3, "h": 1 }, { "w": 4, "h": 1 } ]
+    },
+    {
+      "id": "racegarage",
+      "name": "Race Car Garage",
+      "category": "ops",
+      "rarity": "rare",
+      "tags": ["race", "speed", "pitstop"],
+      "blurb": "Pit crew ready. The car has a number and everything.",
+      "sizes": [ { "w": 4, "h": 2 }, { "w": 6, "h": 2 } ]
     },
     {
       "id": "elevator",
