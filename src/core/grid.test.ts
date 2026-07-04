@@ -94,3 +94,35 @@ describe('placementAt', () => {
     expect(placementAt(placements, 14, 9)).toBeNull();
   });
 });
+
+describe('decor layer placement', () => {
+  const plantpot = getDef('plantpot_1x1')!;
+  const bedroom4 = getDef('bedroom_4x1')!;
+
+  it('decor must sit inside a room', () => {
+    const room = [place('bedroom_4x1', 10, 8, 'room')];
+    expect(canPlace(room, plantpot, 11, 8)).toBe(true); // inside
+    expect(canPlace(room, plantpot, 14, 8)).toBe(false); // outside, bare dirt
+    expect(canPlace([], plantpot, 11, 8)).toBe(false); // no rooms at all
+  });
+
+  it('decor collides with decor but not with rooms', () => {
+    const placements = [
+      place('bedroom_4x1', 10, 8, 'room'),
+      { id: 'pot', defId: 'plantpot_1x1', theme: 'tech', x: 11, y: 8 },
+    ];
+    expect(canPlace(placements, plantpot, 11, 8)).toBe(false); // decor overlap
+    expect(canPlace(placements, plantpot, 12, 8)).toBe(true);
+    // moving the room ignores decor entirely
+    expect(canPlace(placements, bedroom4, 10, 9, 'room')).toBe(true);
+  });
+
+  it('placementAt prefers decor over the room under it', () => {
+    const placements = [
+      place('bedroom_4x1', 10, 8, 'room'),
+      { id: 'pot', defId: 'plantpot_1x1', theme: 'tech', x: 11, y: 8 },
+    ];
+    expect(placementAt(placements, 11, 8)?.id).toBe('pot');
+    expect(placementAt(placements, 10, 8)?.id).toBe('room');
+  });
+});

@@ -19,6 +19,13 @@ export interface ModuleSize {
   h: number; // grid cells tall, 1..3
 }
 
+/**
+ * Placement layer. Default (undefined) = a ROOM: occupies grid cells, collides
+ * with rooms, gets a shell + seams. 'decor' = a PROP: transparent-background
+ * sprite that must sit INSIDE a room, ignores room collision, draws on top.
+ */
+export type Layer = 'decor';
+
 /** A module kind as authored in src/content/modules.json. */
 export interface KindDef {
   id: KindId;
@@ -28,6 +35,7 @@ export interface KindDef {
   tags: string[];
   blurb: string;
   sizes: ModuleSize[];
+  layer?: Layer;
 }
 
 /** A concrete placeable module: one kind at one size. */
@@ -41,6 +49,7 @@ export interface ModuleDef {
   blurb: string;
   w: number;
   h: number;
+  layer?: Layer;
 }
 
 export interface ThemePalette {

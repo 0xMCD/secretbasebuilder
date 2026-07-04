@@ -6,7 +6,8 @@
     { "id": "sports", "name": "Sports" },
     { "id": "utility", "name": "Utility" },
     { "id": "infrastructure", "name": "Infrastructure" },
-    { "id": "ops", "name": "Secret Ops" }
+    { "id": "ops", "name": "Secret Ops" },
+    { "id": "decor", "name": "Decorations" }
   ],
   "kinds": [
     {
@@ -395,6 +396,86 @@
       "tags": ["skate", "halfpipe", "rail"],
       "blurb": "Indoor halfpipe. Helmets on, drop in.",
       "sizes": [ { "w": 3, "h": 2 }, { "w": 4, "h": 2 } ]
+    },
+    {
+      "id": "plantpot",
+      "name": "Big Plant",
+      "category": "decor",
+      "layer": "decor",
+      "rarity": "common",
+      "tags": ["decor", "plant", "green"],
+      "blurb": "A very leafy roommate. Goes in any room.",
+      "sizes": [ { "w": 1, "h": 1 } ]
+    },
+    {
+      "id": "trophy",
+      "name": "Giant Trophy",
+      "category": "decor",
+      "layer": "decor",
+      "rarity": "common",
+      "tags": ["decor", "winner", "gold"],
+      "blurb": "For being the best at something. Details unclear.",
+      "sizes": [ { "w": 1, "h": 1 } ]
+    },
+    {
+      "id": "banner",
+      "name": "Party Banner",
+      "category": "decor",
+      "layer": "decor",
+      "rarity": "common",
+      "tags": ["decor", "party", "flags"],
+      "blurb": "Instant party. Just add any room.",
+      "sizes": [ { "w": 1, "h": 1 } ]
+    },
+    {
+      "id": "discoball",
+      "name": "Disco Ball",
+      "category": "decor",
+      "layer": "decor",
+      "rarity": "uncommon",
+      "tags": ["decor", "disco", "sparkle"],
+      "blurb": "Every room is a dance floor if you believe.",
+      "sizes": [ { "w": 1, "h": 1 } ]
+    },
+    {
+      "id": "sleepingpet",
+      "name": "Sleeping Dog",
+      "category": "decor",
+      "layer": "decor",
+      "rarity": "common",
+      "tags": ["decor", "dog", "pet"],
+      "blurb": "He lives here now. Do not disturb.",
+      "sizes": [ { "w": 1, "h": 1 } ]
+    },
+    {
+      "id": "lavalamp",
+      "name": "Lava Lamp",
+      "category": "decor",
+      "layer": "decor",
+      "rarity": "common",
+      "tags": ["decor", "groovy", "glow"],
+      "blurb": "Maximum vibes per square foot.",
+      "sizes": [ { "w": 1, "h": 1 } ]
+    },
+    {
+      "id": "painting",
+      "name": "Fancy Painting",
+      "category": "decor",
+      "layer": "decor",
+      "rarity": "common",
+      "tags": ["decor", "art", "fancy"],
+      "blurb": "Probably priceless. Probably.",
+      "sizes": [ { "w": 1, "h": 1 } ]
+    },
+    {
+      "id": "robobuddy",
+      "name": "Robo Buddy",
+      "category": "decor",
+      "layer": "decor",
+      "rarity": "uncommon",
+      "tags": ["decor", "robot", "beep"],
+      "blurb": "Beeps supportively. Occasionally vacuums.",
+      "sizes": [ { "w": 1, "h": 1 } ]
     },
     {
       "id": "elevator",

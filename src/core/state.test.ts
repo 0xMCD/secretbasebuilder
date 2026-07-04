@@ -168,3 +168,22 @@ describe('loadBase', () => {
     expect(canUndo()).toBe(false);
   });
 });
+
+describe('share codes', () => {
+  it('round-trips a base through encode/decode', async () => {
+    const { encodeShare, decodeShare } = await import('../persistence/share');
+    placeModule('bedroom_2x1', 'tech', 10, Y);
+    placeModule('silo_2x3', 'fantasy', 14, Y);
+    const save = serialize(getState());
+    const code = await encodeShare(save);
+    expect(code.length).toBeLessThan(1200); // stays URL-friendly
+    const { save: restored, skipped } = deserialize(await decodeShare(code));
+    expect(skipped).toBe(0);
+    expect(restored).toEqual(save);
+  });
+
+  it('rejects garbage codes', async () => {
+    const { decodeShare } = await import('../persistence/share');
+    await expect(decodeShare('xnotacode')).rejects.toThrow();
+  });
+});

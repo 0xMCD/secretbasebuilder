@@ -20,6 +20,10 @@ import {
   commandP, elevatorP, garageP, gemmineP, labP, ladderP, observatoryP,
   racegarageP, siloP, stairsP, vaultP,
 } from './roomsOps';
+import {
+  bannerP, discoballP, lavalampP, paintingP, plantpotP, robobuddyP,
+  sleepingpetP, trophyP,
+} from './roomsDecor';
 
 export type { Interior, Painter };
 
@@ -79,6 +83,15 @@ export const PAINTERS: Record<string, Painter> = {
   stairs: stairsP,
   ladder: ladderP,
   silo: siloP,
+  // decor props (transparent background, placed inside rooms)
+  plantpot: plantpotP,
+  trophy: trophyP,
+  banner: bannerP,
+  discoball: discoballP,
+  sleepingpet: sleepingpetP,
+  lavalamp: lavalampP,
+  painting: paintingP,
+  robobuddy: robobuddyP,
 };
 
 export function getPainter(kind: string): Painter {

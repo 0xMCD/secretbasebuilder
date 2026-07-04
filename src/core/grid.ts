@@ -39,9 +39,20 @@ export function inBuildableRegion(r: Rect): boolean {
   return r.x >= 0 && r.x + r.w <= COLS && r.y >= GROUND_ROW && r.y + r.h <= ROWS;
 }
 
+function containsRect(outer: Rect, inner: Rect): boolean {
+  return (
+    inner.x >= outer.x &&
+    inner.y >= outer.y &&
+    inner.x + inner.w <= outer.x + outer.w &&
+    inner.y + inner.h <= outer.y + outer.h
+  );
+}
+
 /**
  * Can `def` be placed with its top-left at (x, y)?
  * `ignoreId` excludes a placement from collision checks (used while moving it).
+ * Rooms collide with rooms only; DECOR must sit fully inside a room and only
+ * collides with other decor.
  */
 export function canPlace(
   placements: Placement[],
@@ -52,8 +63,23 @@ export function canPlace(
 ): boolean {
   const rect: Rect = { x, y, w: def.w, h: def.h };
   if (!inBuildableRegion(rect)) return false;
+  if (def.layer === 'decor') {
+    let insideRoom = false;
+    for (const p of placements) {
+      if (p.id === ignoreId) continue;
+      const other = placementRect(p);
+      if (!other) continue;
+      if (getDef(p.defId)?.layer === 'decor') {
+        if (rectsOverlap(rect, other)) return false;
+      } else if (containsRect(other, rect)) {
+        insideRoom = true;
+      }
+    }
+    return insideRoom;
+  }
   for (const p of placements) {
     if (p.id === ignoreId) continue;
+    if (getDef(p.defId)?.layer === 'decor') continue; // rooms slide under decor
     const other = placementRect(p);
     if (other && rectsOverlap(rect, other)) return false;
   }
@@ -115,13 +141,18 @@ export function allSeams(placements: Placement[]): PlacementSeam[] {
   return seams;
 }
 
-/** Topmost placement whose rect contains the given cell, or null. */
+/** Topmost placement whose rect contains the given cell (decor wins), or null. */
 export function placementAt(placements: Placement[], cx: number, cy: number): Placement | null {
-  for (let i = placements.length - 1; i >= 0; i--) {
-    const r = placementRect(placements[i]);
-    if (r && cx >= r.x && cx < r.x + r.w && cy >= r.y && cy < r.y + r.h) {
-      return placements[i];
+  const hit = (wantDecor: boolean): Placement | null => {
+    for (let i = placements.length - 1; i >= 0; i--) {
+      const isDecor = getDef(placements[i].defId)?.layer === 'decor';
+      if (isDecor !== wantDecor) continue;
+      const r = placementRect(placements[i]);
+      if (r && cx >= r.x && cx < r.x + r.w && cy >= r.y && cy < r.y + r.h) {
+        return placements[i];
+      }
     }
-  }
-  return null;
+    return null;
+  };
+  return hit(true) ?? hit(false);
 }

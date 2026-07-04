@@ -1,8 +1,10 @@
 import { useRef, useState } from 'react';
 import { ENVIRONMENTS } from '../core/catalog';
 import { setBaseName, setEnvironment, setOverlay, startOver } from '../core/actions';
+import { getState } from '../core/store';
 import { canRedo, canUndo, redo, undo } from '../core/undo';
-import { clearAutosave, exportBase, importBase } from '../persistence/save';
+import { clearAutosave, exportBase, importBase, serialize } from '../persistence/save';
+import { encodeShare, shareUrl } from '../persistence/share';
 import { downloadSnapshot } from '../render/snapshot';
 import { useGameState } from './hooks';
 
@@ -12,6 +14,22 @@ export function TopBar() {
   // In-app confirm dialog: window.confirm() is silently blocked in sandboxed
   // iframes (e.g. the hosted artifact build), so never rely on it.
   const [confirmingClear, setConfirmingClear] = useState(false);
+  // Share: 'copied' flashes on the button; 'show' opens a manual-copy dialog
+  // (clipboard access can be blocked in sandboxed iframes).
+  const [shareState, setShareState] = useState<'idle' | 'copied' | 'show'>('idle');
+  const [shareLink, setShareLink] = useState('');
+
+  const onShare = async () => {
+    const url = shareUrl(await encodeShare(serialize(getState())));
+    setShareLink(url);
+    try {
+      await navigator.clipboard.writeText(url);
+      setShareState('copied');
+      setTimeout(() => setShareState('idle'), 2000);
+    } catch {
+      setShareState('show');
+    }
+  };
 
   const onImportFile = async (file: File | undefined) => {
     if (!file) return;
@@ -64,6 +82,14 @@ export function TopBar() {
       </button>
       <button
         className="btn"
+        onClick={() => void onShare()}
+        disabled={state.placements.length === 0}
+        title="Copy a link that opens this exact base"
+      >
+        {shareState === 'copied' ? '✓ Copied!' : '🔗 Share'}
+      </button>
+      <button
+        className="btn"
         onClick={downloadSnapshot}
         disabled={state.placements.length === 0}
         title="Download a picture of your base to save or print"
@@ -89,6 +115,26 @@ export function TopBar() {
       <button className="btn danger" onClick={() => setConfirmingClear(true)}>
         🗑 Clear
       </button>
+      {shareState === 'show' && (
+        <div className="confirm-backdrop" onClick={() => setShareState('idle')}>
+          <div className="confirm-dialog" onClick={(e) => e.stopPropagation()}>
+            <div className="confirm-title">Share this base</div>
+            <p className="confirm-text">Copy this link — opening it loads your base anywhere:</p>
+            <input
+              className="share-url"
+              readOnly
+              value={shareLink}
+              onFocus={(e) => e.target.select()}
+              onClick={(e) => (e.target as HTMLInputElement).select()}
+            />
+            <div className="confirm-actions">
+              <button className="btn" onClick={() => setShareState('idle')}>
+                Done
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       {confirmingClear && (
         <div className="confirm-backdrop" onClick={() => setConfirmingClear(false)}>
           <div className="confirm-dialog" onClick={(e) => e.stopPropagation()}>

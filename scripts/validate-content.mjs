@@ -61,6 +61,12 @@ for (const kind of modules.kinds ?? []) {
   if (!categoryIds.has(kind.category)) err(`${label}: unknown category "${kind.category}"`);
   if (!RARITIES.includes(kind.rarity)) err(`${label}: rarity must be one of ${RARITIES}`);
   if (!Array.isArray(kind.tags)) err(`${label}: tags must be an array`);
+  if (kind.layer !== undefined && kind.layer !== 'decor') {
+    err(`${label}: layer must be omitted (room) or "decor"`);
+  }
+  if (kind.layer === 'decor' && kind.sizes?.some((s) => s.w !== 1 || s.h !== 1)) {
+    err(`${label}: decor props must be 1x1`);
+  }
   if (!Array.isArray(kind.sizes) || kind.sizes.length === 0) {
     err(`${label}: sizes must be a non-empty array`);
     continue;

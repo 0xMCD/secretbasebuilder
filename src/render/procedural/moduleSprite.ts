@@ -37,6 +37,14 @@ export function generateModuleSprite(
 
   const rng = createRng(`${def.kind}_${def.w}x${def.h}_${themeId}`);
 
+  // Decor props are transparent-background sprites: no shell, no bolts —
+  // just the prop, drawn to sit on the floor of whatever room hosts it.
+  if (def.layer === 'decor') {
+    const room: Interior = { x: 12, y: 12, w: W - 24, h: H - 36, floor: H - 24 };
+    getPainter(def.kind)(ctx, room, pal, rng, def, themeId);
+    return canvas;
+  }
+
   drawShell(ctx, W, H, pal, themeId, rng);
 
   const room: Interior = {

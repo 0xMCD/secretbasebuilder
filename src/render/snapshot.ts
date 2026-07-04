@@ -78,12 +78,15 @@ export function downloadSnapshot(): void {
   c.translate(0, BANNER_H);
   c.scale(OUT_CELL / ART_CELL, OUT_CELL / ART_CELL);
   c.translate(-minX * ART_CELL, -minY * ART_CELL);
-  for (const p of state.placements) {
+  const roomPlacements = state.placements.filter((p) => getDef(p.defId)?.layer !== 'decor');
+  const decorPlacements = state.placements.filter((p) => getDef(p.defId)?.layer === 'decor');
+  const drawSprite = (p: (typeof state.placements)[number]) => {
     const def = getDef(p.defId);
-    if (!def) continue;
-    c.drawImage(getSprite(def, p.theme).image, p.x * ART_CELL, p.y * ART_CELL);
-  }
-  drawConnectors(c, state.placements);
+    if (def) c.drawImage(getSprite(def, p.theme).image, p.x * ART_CELL, p.y * ART_CELL);
+  };
+  roomPlacements.forEach(drawSprite);
+  drawConnectors(c, roomPlacements);
+  decorPlacements.forEach(drawSprite);
   c.restore();
 
   canvas.toBlob((blob) => {

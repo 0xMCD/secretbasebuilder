@@ -103,7 +103,13 @@ How to resume a session:
   petstore, classroom, dojo, observatory, skatepark. 44 kinds → 95 defs →
   475 sprite variants.
 
-- [ ] J. Decorations/props layer (posters, plants, rugs) placed ON modules.
+- [x] **P1.2 Inhabitants + share codes + decorations** — ambient residents
+  (`render/agents.ts`) walk floors, use doorways, climb shafts (spy suits on
+  every third one); 🔗 Share compresses the save into the URL hash
+  (`persistence/share.ts`, replace-confirm on open); decor layer: kinds with
+  `layer:'decor'` are 1×1 transparent props placed INSIDE rooms (8 props:
+  plant, trophy, banner, disco ball, sleeping dog, lava lamp, painting, robo
+  buddy). 52 kinds → 103 defs → 515 sprite variants.
 - [ ] K. More environments (treehouse, city rooftop, island volcano) + art
   scan script that auto-regenerates `art-manifest.json`.
 

@@ -29,6 +29,7 @@ export const MODULE_DEFS: ModuleDef[] = KINDS.flatMap((kind) =>
     blurb: kind.blurb,
     w: size.w,
     h: size.h,
+    layer: kind.layer,
   })),
 );
 

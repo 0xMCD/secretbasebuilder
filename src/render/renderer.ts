@@ -10,6 +10,7 @@ import { getState, subscribe } from '../core/store';
 import { createCamera, WORLD_H, WORLD_W, type Camera } from './camera';
 import { getSprite, initSprites } from './sprites';
 import { drawWeather, getEnvironmentCanvas } from './environment';
+import { drawAgents, updateAgents } from './agents';
 
 /** A module being placed (from sidebar) or moved (existing placement). */
 export interface Ghost {
@@ -30,6 +31,7 @@ let dpr = 1;
 let ghost: Ghost | null = null;
 let rafId = 0;
 const startTime = performance.now();
+let lastFrame = startTime;
 
 /** "Pop" scale-in when a module lands. */
 const POP_MS = 200;
@@ -104,6 +106,8 @@ function draw(): void {
   const env = getEnvironment(state.environmentId)!;
   const now = performance.now();
   const t = (now - startTime) / 1000;
+  const dt = Math.min(0.1, (now - lastFrame) / 1000); // clamp tab-sleep jumps
+  lastFrame = now;
 
   // Register pop animations for newly landed modules.
   for (const p of state.placements) {
@@ -126,35 +130,18 @@ function draw(): void {
   c.drawImage(getEnvironmentCanvas(env), 0, 0, WORLD_W, WORLD_H);
   drawWeather(c, env, t);
 
-  // Module sprites (skip the one being moved — its ghost is drawn instead)
-  for (const p of state.placements) {
-    if (ghost?.moveId === p.id) continue;
-    const def = getDef(p.defId);
-    if (!def) continue;
-    const img = getSprite(def, p.theme).image;
-    const pop = pops.get(p.id);
-    if (pop !== undefined) {
-      const e = (now - pop) / POP_MS;
-      if (e >= 1) {
-        pops.delete(p.id);
-        c.drawImage(img, p.x * ART_CELL, p.y * ART_CELL);
-      } else {
-        // ease-out overshoot: scale 1.14 → 1 around the module center
-        const s = 1 + 0.14 * (1 - e) * (1 - e);
-        const cxm = (p.x + def.w / 2) * ART_CELL;
-        const cym = (p.y + def.h / 2) * ART_CELL;
-        c.save();
-        c.translate(cxm, cym);
-        c.scale(s, s);
-        c.drawImage(img, (-def.w * ART_CELL) / 2, (-def.h * ART_CELL) / 2);
-        c.restore();
-      }
-    } else {
-      c.drawImage(img, p.x * ART_CELL, p.y * ART_CELL);
-    }
-  }
+  // Layered draw: rooms → seams → decor props → inhabitants → ghost.
+  const livePlacements = ghost?.moveId
+    ? state.placements.filter((p) => p.id !== ghost!.moveId)
+    : state.placements;
+  const roomPlacements = livePlacements.filter((p) => getDef(p.defId)?.layer !== 'decor');
+  const decorPlacements = livePlacements.filter((p) => getDef(p.defId)?.layer === 'decor');
 
-  drawSeams(c);
+  for (const p of roomPlacements) drawPlacementSprite(c, p, now);
+  drawConnectors(c, roomPlacements);
+  for (const p of decorPlacements) drawPlacementSprite(c, p, now);
+  updateAgents(roomPlacements, dt);
+  drawAgents(c);
   if (ghost) {
     drawGridHint(c);
     drawGhost(c);
@@ -164,6 +151,33 @@ function draw(): void {
   // --- screen space ---
   drawSelection(c, cam);
   if (state.overlayOn) drawLabels(c, cam);
+}
+
+/** One placement sprite, with the landing "pop" animation for new arrivals. */
+function drawPlacementSprite(c: CanvasRenderingContext2D, p: Placement, now: number): void {
+  const def = getDef(p.defId);
+  if (!def) return;
+  const img = getSprite(def, p.theme).image;
+  const pop = pops.get(p.id);
+  if (pop !== undefined) {
+    const e = (now - pop) / POP_MS;
+    if (e >= 1) {
+      pops.delete(p.id);
+      c.drawImage(img, p.x * ART_CELL, p.y * ART_CELL);
+    } else {
+      // ease-out overshoot: scale 1.14 → 1 around the module center
+      const s = 1 + 0.14 * (1 - e) * (1 - e);
+      const cxm = (p.x + def.w / 2) * ART_CELL;
+      const cym = (p.y + def.h / 2) * ART_CELL;
+      c.save();
+      c.translate(cxm, cym);
+      c.scale(s, s);
+      c.drawImage(img, (-def.w * ART_CELL) / 2, (-def.h * ART_CELL) / 2);
+      c.restore();
+    }
+  } else {
+    c.drawImage(img, p.x * ART_CELL, p.y * ART_CELL);
+  }
 }
 
 /**
@@ -185,14 +199,6 @@ function isVerticalConnector(placements: Placement[], id: string): boolean {
   const p = placements.find((pl) => pl.id === id);
   const def = p && getDef(p.defId);
   return !!def && VERTICAL_KINDS.has(def.kind);
-}
-
-function drawSeams(c: CanvasRenderingContext2D): void {
-  const state = getState();
-  const placements = ghost?.moveId
-    ? state.placements.filter((p) => p.id !== ghost!.moveId)
-    : state.placements;
-  drawConnectors(c, placements);
 }
 
 /** Pure connector pass over ART_CELL world space — also used by snapshot export. */

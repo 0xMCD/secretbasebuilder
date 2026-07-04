@@ -129,6 +129,18 @@
     "labelOverlay": {
       "rule": "A global toggle draws each placement's display name (and size) centered on the module in a readable badge. Off by default."
     },
+    "inhabitants": {
+      "rule": "Ambient little residents (1 per ~2 rooms, max 8; every third one wears a spy suit + shades) wander the base: they walk room floors, pass through doorway seams (only where both floors align), and climb hatches/shafts. Derived from placements — never saved; every base is simply lived-in. Source: render/agents.ts; the connection graph is the same allSeams() data the seam renderer draws.",
+      "future": "Hooks for later: named residents, tasks/schedules (sleep in bedrooms at night), reactions to room kinds (cheer in stadiums)."
+    },
+    "decorLayer": {
+      "rule": "Kinds with layer:'decor' are 1×1 PROPS, not rooms: transparent-background sprites that must sit fully INSIDE a room, collide only with other decor, draw on top of rooms, take no seams, and are ignored by room collision (rooms slide under them). Same Placement shape, same save format — purely additive. Selection prefers decor over the room beneath.",
+      "extensibility": "Add a decor kind = modules.json entry with layer:'decor' + painter in render/procedural/roomsDecor.ts + register in furniture.ts."
+    },
+    "shareCodes": {
+      "rule": "🔗 Share compresses the whole save into the URL hash (#b=<deflate+base64url>) — the link IS the base, no backend. Opening a share link with an existing base asks before replacing it. Source: persistence/share.ts; typical link ≈ 300-800 chars.",
+      "fallbacks": "Plain-JSON prefix when CompressionStream is unavailable; manual-copy dialog when clipboard access is blocked (sandboxed iframes)."
+    },
     "persistence": {
       "autosave": "Full base state serialized to localStorage on every mutation (debounced).",
       "saveFormat": {
@@ -161,9 +173,8 @@
   },
   "outOfScopeV1": [
     "Animated module interiors (hook: sprite pipeline returns static frames now; a frames[] extension is reserved in the sprite cache API)",
-    "Characters walking around the base (hook: placements expose a walkability graph via shared-edge connections — the same data as visualConnection)",
     "Resource/economy constraints",
-    "Multiplayer or share links / backend",
+    "Real-time multiplayer / backend (share LINKS exist — see systems.shareCodes)",
     "Sound"
   ],
   "roadmap": {
