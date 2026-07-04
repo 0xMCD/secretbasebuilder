@@ -326,6 +326,56 @@ function drawWeatherLogical(ctx: CanvasRenderingContext2D, env: EnvironmentDef, 
   }
 }
 
+// --- day/night cycle ---
+
+/** Seconds for a full day→night→day loop. */
+const DAY_LENGTH = 120;
+
+/** 0 = high noon … 1 = midnight. Starts at day so builders see their base. */
+export function nightAmount(t: number): number {
+  const c = (t % DAY_LENGTH) / DAY_LENGTH;
+  return (1 - Math.cos(c * Math.PI * 2)) / 2;
+}
+
+/**
+ * Darkens the world as night falls: the sky goes deep blue with stars and a
+ * moon, the dirt dims gently — but rooms are drawn AFTER this pass, so the
+ * base glows warm and lit against the night. Skips most of the effect for
+ * always-night environments (desert), which are already dark.
+ */
+export function drawDayNight(ctx: CanvasRenderingContext2D, env: EnvironmentDef, t: number): void {
+  const n = nightAmount(t);
+  if (n < 0.03) return;
+  ctx.save();
+  ctx.scale(ENV_SCALE, ENV_SCALE);
+  const alwaysNight = env.weather === 'night';
+  ctx.fillStyle = `rgba(8, 12, 42, ${(alwaysNight ? 0.12 : 0.58) * n})`;
+  ctx.fillRect(0, 0, WORLD_W, GROUND_Y);
+  ctx.fillStyle = `rgba(8, 12, 42, ${0.22 * n})`;
+  ctx.fillRect(0, GROUND_Y, WORLD_W, WORLD_H - GROUND_Y);
+  if (!alwaysNight && n > 0.35) {
+    const a = (n - 0.35) / 0.65;
+    const rng = createRng(`nightsky_${env.id}`);
+    for (let i = 0; i < 110; i++) {
+      const big = rng.chance(0.2);
+      const tw = 0.4 + 0.6 * Math.abs(Math.sin(t * (0.6 + rng.next() * 1.4) + i));
+      ctx.fillStyle = `rgba(255,255,255,${(a * tw).toFixed(2)})`;
+      ctx.fillRect(rng.int(0, WORLD_W), rng.int(8, GROUND_Y - 70), big ? 2 : 1, big ? 2 : 1);
+    }
+    // moon rises opposite where the sun sits
+    ctx.globalAlpha = a;
+    ctx.fillStyle = '#f4f1de';
+    ctx.fillRect(220, 54, 40, 40);
+    ctx.fillStyle = 'rgba(20,30,60,0.35)';
+    ctx.fillRect(230, 62, 16, 16);
+    ctx.globalAlpha = a * 0.16;
+    ctx.fillStyle = '#f4f1de';
+    ctx.fillRect(208, 42, 64, 64);
+    ctx.globalAlpha = 1;
+  }
+  ctx.restore();
+}
+
 function cloud(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, color: string): void {
   ctx.fillStyle = color;
   ctx.fillRect(x, y + 8, w, 16);

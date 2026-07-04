@@ -4,12 +4,12 @@
  * connection seams → ghost preview → grid hint → selection → label overlay.
  */
 import { ART_CELL, COLS, GROUND_ROW, ROWS, allSeams, canPlace, placementRect } from '../core/grid';
-import { getDef, getEnvironment, KINDS } from '../core/catalog';
+import { getDef, getEnvironment, getTheme, KINDS } from '../core/catalog';
 import type { DefId, Placement, ThemeId } from '../core/types';
 import { getState, subscribe } from '../core/store';
 import { createCamera, WORLD_H, WORLD_W, type Camera } from './camera';
 import { getSprite, initSprites } from './sprites';
-import { drawWeather, getEnvironmentCanvas } from './environment';
+import { drawDayNight, drawWeather, getEnvironmentCanvas } from './environment';
 import { drawAgents, updateAgents } from './agents';
 
 /** A module being placed (from sidebar) or moved (existing placement). */
@@ -129,6 +129,9 @@ function draw(): void {
   // to world size is nearest-neighbor so it stays crisp pixel art.
   c.drawImage(getEnvironmentCanvas(env), 0, 0, WORLD_W, WORLD_H);
   drawWeather(c, env, t);
+  // Night falls BEFORE rooms are drawn, so the base stays warm and lit
+  // against the dark — lights-on-at-night is the whole vibe.
+  drawDayNight(c, env, t);
 
   // Layered draw: rooms → seams → decor props → inhabitants → ghost.
   const livePlacements = ghost?.moveId
@@ -227,15 +230,55 @@ export function drawConnectors(c: CanvasRenderingContext2D, placements: Placemen
       isVerticalConnector(placements, seam.aId) &&
       isVerticalConnector(placements, seam.bId)
     ) {
-      // Stacked shafts merge: one wide continuous opening, faint side rails.
-      const hx = Math.round((seam.x + seam.len / 2) * ART_CELL);
+      // Stacked shafts MERGE: erase the shared floor/ceiling band and repaint
+      // the shaft interior (theme-matched, top/bottom halves) so the two
+      // segments read as one continuous shaft, then re-draw the continuity
+      // elements (ladder rungs / elevator cables) across the joint.
+      const a = placements.find((p) => p.id === seam.aId)!;
+      const b = placements.find((p) => p.id === seam.bId)!;
+      const upper = a.y < b.y ? a : b;
+      const lower = upper === a ? b : a;
+      const upPal = getTheme(upper.theme)!.palette;
+      const loPal = getTheme(lower.theme)!.palette;
       const y = seam.y * ART_CELL;
-      const w = Math.min(seam.len * ART_CELL * 0.6, ART_CELL * 0.72);
-      c.fillStyle = SEAM_DARK;
-      c.fillRect(hx - w / 2, y - 30 * u, w, 60 * u);
-      c.fillStyle = SEAM_EDGE;
-      c.fillRect(hx - w / 2 - 2 * u, y - 30 * u, 2 * u, 60 * u);
-      c.fillRect(hx + w / 2, y - 30 * u, 2 * u, 60 * u);
+      const inset = 22 * u; // stay inside both modules' side walls
+      const x0 = seam.x * ART_CELL + inset;
+      const w = seam.len * ART_CELL - 2 * inset;
+      const reach = 52 * u; // covers wall + floor band + ceiling shadow
+      c.fillStyle = upPal.roomBg;
+      c.fillRect(x0, y - reach, w, reach);
+      c.fillStyle = loPal.roomBg;
+      c.fillRect(x0, y, w, reach);
+      // subtle inner shading at the shaft sides
+      c.fillStyle = 'rgba(0,0,0,0.2)';
+      c.fillRect(x0, y - reach, 4 * u, reach * 2);
+      c.fillRect(x0 + w - 4 * u, y - reach, 4 * u, reach * 2);
+      const kind = getDef(lower.defId)?.kind;
+      const cxm = seam.x * ART_CELL + (seam.len * ART_CELL) / 2;
+      if (kind === 'ladder') {
+        // rails + rungs continue straight through the joint
+        for (const [pal2, y0] of [
+          [upPal, y - reach],
+          [loPal, y],
+        ] as const) {
+          c.fillStyle = pal2.trim;
+          c.fillRect(cxm - 20, y0, 6, reach);
+          c.fillRect(cxm + 14, y0, 6, reach);
+        }
+        for (let ry = y - reach + 10; ry < y + reach - 8; ry += 24) {
+          c.fillStyle = (ry < y ? upPal : loPal).furniture;
+          c.fillRect(cxm - 16, ry, 32, 5);
+        }
+      } else if (kind === 'elevator') {
+        // cables run through; rails live outside the cover and stay intact
+        c.fillStyle = upPal.furnitureDark;
+        c.fillRect(cxm - 8, y - reach, 4, reach);
+        c.fillRect(cxm + 4, y - reach, 4, reach);
+        c.fillStyle = loPal.furnitureDark;
+        c.fillRect(cxm - 8, y, 4, reach);
+        c.fillRect(cxm + 4, y, 4, reach);
+      }
+      // stairs need nothing extra: the open well reads on its own
     } else {
       // Slim ladderway through the floor at the middle of the overlap.
       const hx = Math.round((seam.x + seam.len / 2) * ART_CELL);

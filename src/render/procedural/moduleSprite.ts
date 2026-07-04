@@ -16,6 +16,7 @@ import type { ModuleDef, ThemePalette } from '../../core/types';
 import { createRng } from './rng';
 import type { Rng } from './rng';
 import { getPainter } from './furniture';
+import { DECOR_META } from './roomsDecor';
 import { halo, hl, r, sh, themeFlavor, type Ctx, type Interior } from './kit';
 
 const WALL = 16; // wall thickness in art px
@@ -38,8 +39,15 @@ export function generateModuleSprite(
   const rng = createRng(`${def.kind}_${def.w}x${def.h}_${themeId}`);
 
   // Decor props are transparent-background sprites: no shell, no bolts —
-  // just the prop, drawn to sit on the floor of whatever room hosts it.
+  // just the prop, scaled per kind (see DECOR_META) around its floor or
+  // ceiling anchor so props come in a variety of sizes.
   if (def.layer === 'decor') {
+    const meta = DECOR_META[def.kind] ?? { scale: 0.66, anchor: 'floor' as const };
+    const px = W / 2;
+    const py = meta.anchor === 'floor' ? H - 24 : 12;
+    ctx.translate(px, py);
+    ctx.scale(meta.scale, meta.scale);
+    ctx.translate(-px, -py);
     const room: Interior = { x: 12, y: 12, w: W - 24, h: H - 36, floor: H - 24 };
     getPainter(def.kind)(ctx, room, pal, rng, def, themeId);
     return canvas;

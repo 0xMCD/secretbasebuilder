@@ -5,6 +5,22 @@
  */
 import { disc, halo, hl, r, ring, sh, type Painter } from './kit';
 
+/**
+ * Per-prop render size + pivot. Painters draw at full-cell scale; the sprite
+ * generator scales them down around this anchor so props come in a variety of
+ * believable sizes (a lava lamp is NOT the size of a fridge).
+ */
+export const DECOR_META: Record<string, { scale: number; anchor: 'floor' | 'ceiling' }> = {
+  plantpot: { scale: 0.72, anchor: 'floor' },
+  trophy: { scale: 0.58, anchor: 'floor' },
+  banner: { scale: 0.95, anchor: 'ceiling' },
+  discoball: { scale: 0.62, anchor: 'ceiling' },
+  sleepingpet: { scale: 0.66, anchor: 'floor' },
+  lavalamp: { scale: 0.48, anchor: 'floor' },
+  painting: { scale: 0.75, anchor: 'ceiling' },
+  robobuddy: { scale: 0.62, anchor: 'floor' },
+};
+
 export const plantpotP: Painter = (ctx, room, pal) => {
   const cx = room.x + room.w / 2;
   sh(ctx, cx - 40, room.floor - 4, 80, 4, 0.25);

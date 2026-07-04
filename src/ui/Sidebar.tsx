@@ -40,7 +40,9 @@ export function Sidebar({ canvasRef }: { canvasRef: RefObject<HTMLCanvasElement>
         a.sizes[0].w * a.sizes[0].h - b.sizes[0].w * b.sizes[0].h || a.name.localeCompare(b.name),
       category: (a, b) => a.category.localeCompare(b.category) || a.name.localeCompare(b.name),
     };
-    return [...filtered].sort(by[sort]);
+    // Decor props always sort AFTER rooms — they're a different kind of thing.
+    const layerRank = (k: KindDef) => (k.layer === 'decor' ? 1 : 0);
+    return [...filtered].sort((a, b) => layerRank(a) - layerRank(b) || by[sort](a, b));
   }, [search, category, sort]);
 
   return (
@@ -70,15 +72,19 @@ export function Sidebar({ canvasRef }: { canvasRef: RefObject<HTMLCanvasElement>
       </div>
       <div className="card-list">
         {kinds.map((kind, i) => (
-          <KindCard
-            key={kind.id}
-            kind={kind}
-            themeId={styleChoice[kind.id] ?? THEMES[i % THEMES.length].id}
-            defId={sizeChoice[kind.id] ?? `${kind.id}_${kind.sizes[0].w}x${kind.sizes[0].h}`}
-            onChooseStyle={(themeId) => setStyleChoice((s) => ({ ...s, [kind.id]: themeId }))}
-            onChooseSize={(defId) => setSizeChoice((s) => ({ ...s, [kind.id]: defId }))}
-            canvasRef={canvasRef}
-          />
+          <div key={kind.id} className="card-slot">
+            {kind.layer === 'decor' && kinds[i - 1]?.layer !== 'decor' && (
+              <div className="list-divider">🪴 Decorations · go inside rooms</div>
+            )}
+            <KindCard
+              kind={kind}
+              themeId={styleChoice[kind.id] ?? THEMES[i % THEMES.length].id}
+              defId={sizeChoice[kind.id] ?? `${kind.id}_${kind.sizes[0].w}x${kind.sizes[0].h}`}
+              onChooseStyle={(themeId) => setStyleChoice((s) => ({ ...s, [kind.id]: themeId }))}
+              onChooseSize={(defId) => setSizeChoice((s) => ({ ...s, [kind.id]: defId }))}
+              canvasRef={canvasRef}
+            />
+          </div>
         ))}
         {kinds.length === 0 && <div className="empty-list">No rooms match. Try another search!</div>}
       </div>
@@ -104,8 +110,12 @@ function KindCard({
   const theme = THEMES.find((t) => t.id === themeId) ?? THEMES[0];
   const def = getDef(defId)!;
   const stop = (e: React.PointerEvent) => e.stopPropagation();
+  const decorClass = kind.layer === 'decor' ? ' card-decor' : '';
   return (
-    <div className={`card rarity-${kind.rarity}`} title={`${kind.blurb} — drag me into the base!`}>
+    <div
+      className={`card rarity-${kind.rarity}${decorClass}`}
+      title={`${kind.blurb} — drag me into the base!`}
+    >
       <div
         className="card-drag-zone"
         onPointerDown={(e) => {

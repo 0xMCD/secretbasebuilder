@@ -364,6 +364,32 @@ canvas.world {
   font-size: 13px;
 }
 
+.card-slot {
+  display: contents; /* divider + card flow as normal list items */
+}
+
+.list-divider {
+  color: #8fd8ea;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 12px 4px 2px;
+  border-top: 1px dashed #334153;
+  margin-top: 8px;
+}
+
+.card-decor {
+  background: #1c2618;
+  border-style: dashed;
+  border-color: #4a6a3a;
+}
+
+.card-decor:hover {
+  border-color: #7fc95c;
+  box-shadow: 0 2px 12px rgba(127, 201, 92, 0.15);
+}
+
 /* ---------- selection inspector ---------- */
 
 .inspector {

@@ -110,6 +110,12 @@ How to resume a session:
   `layer:'decor'` are 1×1 transparent props placed INSIDE rooms (8 props:
   plant, trophy, banner, disco ball, sleeping dog, lava lamp, painting, robo
   buddy). 52 kinds → 103 defs → 515 sprite variants.
+- [x] **P1.3 Playtest polish** — decor size variety (DECOR_META scale+anchor
+  per prop); decor separated in the sidebar (always sorts last, divider +
+  dashed green cards); stacked vertical connectors now truly merge (themed
+  cover erases the shared floor band; ladder rungs/elevator cables continue
+  through the joint — no more giant dark boxes); day/night cycle (120s, stars
+  + moon at night, rooms stay warm and lit).
 - [ ] K. More environments (treehouse, city rooftop, island volcano) + art
   scan script that auto-regenerates `art-manifest.json`.
 

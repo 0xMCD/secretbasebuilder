@@ -87,7 +87,7 @@
         "vrroom", "gamingden", "dinoexhibit", "arcade", "aquarium", "petstore",
         "football", "soccer", "basketball", "baseball", "dojo", "skatepark"
       ],
-      "verticalConnectors": "Kinds tagged \"vertical\" (elevator, stairs, ladder) are the base's circulation system. When two vertical connectors are stacked, the seam renderer merges them into one continuous open shaft instead of a small ladderway — stacking elevator segments builds one tall elevator.",
+      "verticalConnectors": "Kinds tagged \"vertical\" (elevator, stairs, ladder) are the base's circulation system. When two vertical connectors are stacked, the seam renderer ERASES the shared floor/ceiling band and repaints the shaft interior theme-matched (top/bottom halves), then re-draws continuity elements — ladder rungs and rails run straight through the joint, elevator cables continue — so stacked segments read as ONE tall shaft, not two boxes with a hole.",
       "extensibility": "To add a kind: add an entry to modules.json, add a painter in src/render/procedural/rooms{Home,Fun,Ops}.ts (shared props live in kit.ts), register it in src/render/procedural/furniture.ts (or ship real PNGs), run npm run validate:content."
     },
     "themes": {
@@ -135,7 +135,12 @@
     },
     "decorLayer": {
       "rule": "Kinds with layer:'decor' are 1×1 PROPS, not rooms: transparent-background sprites that must sit fully INSIDE a room, collide only with other decor, draw on top of rooms, take no seams, and are ignored by room collision (rooms slide under them). Same Placement shape, same save format — purely additive. Selection prefers decor over the room beneath.",
-      "extensibility": "Add a decor kind = modules.json entry with layer:'decor' + painter in render/procedural/roomsDecor.ts + register in furniture.ts."
+      "sizing": "Props come in varied believable sizes via DECOR_META in roomsDecor.ts: each kind declares a scale (0.48–0.95) and an anchor ('floor' props shrink toward the floor, 'ceiling' props stay pinned up top). A lava lamp is NOT the size of a fridge.",
+      "catalogUI": "Decor always sorts AFTER rooms in the sidebar under a '🪴 Decorations · go inside rooms' divider, with dashed green card styling so props read as a different kind of thing.",
+      "extensibility": "Add a decor kind = modules.json entry with layer:'decor' + painter + DECOR_META entry in render/procedural/roomsDecor.ts + register in furniture.ts."
+    },
+    "dayNight": {
+      "rule": "A 120-second day→night→day cycle (render/environment.ts: nightAmount/drawDayNight). At night the sky deepens with twinkling stars and a moon, the surface structure and dirt dim — but rooms are drawn AFTER the darkness pass, so the base glows warm and lit against the night. Always-night environments (desert) only dim slightly."
     },
     "shareCodes": {
       "rule": "🔗 Share compresses the whole save into the URL hash (#b=<deflate+base64url>) — the link IS the base, no backend. Opening a share link with an existing base asks before replacing it. Source: persistence/share.ts; typical link ≈ 300-800 chars.",
