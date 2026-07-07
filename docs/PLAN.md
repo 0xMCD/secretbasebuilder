@@ -192,10 +192,14 @@ for one-off hero assets but is no longer the plan of record.
   residents may only change floors through a vertical connector
   (elevator / stairs / ladder) touching both. Side-by-side doorways stay.
   (`VERTICAL_KINDS` moved to core/catalog; renderer + agent graph share it.)
-- [ ] **P4.1 Interactive props** — tap reactions: silo's big red button
-  launches the rocket (countdown, steam, parachute return); disco ball
-  starts a dance party (lights sweep, residents dance); aquarium feeding
-  (fish swarm); trampoline mega-bounce. One-shot animations, no state.
+- [x] **P4.1 Interactive props** — tap a room and it pokes back
+  (`render/reactions.ts`, triggered from the tap-select path; one-shot
+  world-space overlays, no state, no save impact): silo → test-fire
+  (countdown strobes + 3-2-1 lamps, engine flame, billowing steam, TEST-OK
+  confetti); disco ball → 8s dance party (orbiting color spots, flashing
+  ball, and every resident bounces + waves via agents.startParty); aquarium
+  → feeding time (flakes rain, fish dart up); trampoline → bounce show
+  (flying balls, star pops at apex). `?perf` also exposes `__reactions`.
 - [ ] **P4.2 Blueprint challenges** — a deck of optional prompt cards
   ("a spy needs: a bedroom next to a rocket silo and somewhere to swim");
   completion stamps a cosmetic badge. Pure placement-logic checks, no

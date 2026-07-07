@@ -13,6 +13,7 @@ import { getSprite, initSprites, spriteCacheStats, variantForId } from './sprite
 import { drawDayNight, drawWeather, getEnvironmentCanvas } from './environment';
 import { drawFx, fxSeed } from './fx';
 import { drawAgents, updateAgents } from './agents';
+import { drawReactions } from './reactions';
 
 /** A module being placed (from sidebar) or moved (existing placement). */
 export interface Ghost {
@@ -186,6 +187,7 @@ function draw(): void {
   }
   updateAgents(roomPlacements, dt);
   drawAgents(c);
+  drawReactions(c); // steam/confetti/party lights land in front of everyone
   if (ghost) {
     drawGridHint(c);
     drawGhost(c);

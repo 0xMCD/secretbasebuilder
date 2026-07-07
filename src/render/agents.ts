@@ -57,6 +57,12 @@ const SKINS = ['#ffd9b3', '#e8b088', '#c98a5c', '#8a5a3b'];
 let rooms = new Map<string, RoomNode>();
 let agents: Agent[] = [];
 let signature = '';
+let partyUntil = 0;
+
+/** Disco time: every resident drops what they're doing and dances. */
+export function startParty(seconds: number): void {
+  partyUntil = performance.now() + seconds * 1000;
+}
 
 function buildGraph(placements: Placement[]): void {
   rooms = new Map();
@@ -154,10 +160,12 @@ function sync(placements: Placement[]): void {
 
 export function updateAgents(placements: Placement[], dt: number): void {
   sync(placements);
+  const party = performance.now() < partyUntil;
   for (const a of agents) {
     const room = rooms.get(a.roomId);
     if (!room) continue;
-    a.phase += dt * (a.mode === 'walk' ? 9 : a.mode === 'climb' ? 6 : 1.5);
+    a.phase += dt * (a.mode === 'walk' ? 9 : a.mode === 'climb' ? 6 : party ? 10 : 1.5);
+    if (party && a.mode === 'idle') a.timer = Math.max(a.timer, 0.5); // stay put and dance
     if (a.mode === 'idle') {
       a.timer -= dt;
       if (a.timer <= 0) {
@@ -217,10 +225,13 @@ export function updateAgents(placements: Placement[], dt: number): void {
 
 /** Draws all agents in ART_CELL world space (~66px tall pixel people). */
 export function drawAgents(c: CanvasRenderingContext2D): void {
+  const party = performance.now() < partyUntil;
   for (const a of agents) {
+    const dancing = party && a.mode !== 'climb';
+    const bounce = dancing ? Math.abs(Math.sin(a.phase * 1.6)) * 9 : 0;
     const walkBob = a.mode === 'walk' ? Math.sin(a.phase * 2) * 2 : 0;
     const x = Math.round(a.x);
-    const feet = Math.round(a.y + walkBob);
+    const feet = Math.round(a.y + walkBob - bounce);
     const legSwing = a.mode === 'walk' ? Math.sin(a.phase * 2) * 6 : a.mode === 'climb' ? Math.sin(a.phase * 2) * 4 : 0;
     c.fillStyle = 'rgba(0,0,0,0.2)';
     c.fillRect(x - 12, Math.round(a.y) - 2, 24, 3); // ground shadow
@@ -237,11 +248,15 @@ export function drawAgents(c: CanvasRenderingContext2D): void {
       c.fillStyle = '#8e2f3c';
       c.fillRect(x - 1, feet - 44, 2, 12); // tie
     }
-    // arms (up while climbing)
+    // arms (up while climbing or dancing — one arm waves at the disco)
     c.fillStyle = a.spy ? '#1c222b' : a.shirt;
     if (a.mode === 'climb') {
       c.fillRect(x - 14, feet - 58, 5, 16);
       c.fillRect(x + 9, feet - 58, 5, 16);
+    } else if (dancing) {
+      const wave = Math.sin(a.phase * 1.6) > 0;
+      c.fillRect(x - 14, feet - (wave ? 60 : 44), 5, 16);
+      c.fillRect(x + 9, feet - (wave ? 44 : 60), 5, 16);
     } else {
       c.fillRect(x - 14, feet - 44, 5, 18);
       c.fillRect(x + 9, feet - 44, 5, 18);

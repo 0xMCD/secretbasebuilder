@@ -6,6 +6,7 @@
 import { placementAt } from '../core/grid';
 import { getState } from '../core/store';
 import { moveModule, select } from '../core/actions';
+import { triggerReaction } from '../render/reactions';
 import { panBy, screenToCell, zoomAt } from '../render/camera';
 import { getCamera, getGhost, getViewSize, requestRedraw, setGhost } from '../render/renderer';
 
@@ -123,8 +124,13 @@ export function attachPointerController(canvas: HTMLCanvasElement): () => void {
       }
       setGhost(null);
     } else if (!movedPastSlop) {
-      // Tap: select module under pointer, or clear selection.
+      // Tap: select module under pointer, or clear selection — and if the
+      // module has a tap reaction (rocket test-fire, disco party, feeding
+      // time, bounce show), set it off.
       select(movingId);
+      if (movingId) {
+        triggerReaction(getState().placements.find((p) => p.id === movingId));
+      }
     }
     mode = 'idle';
     movingId = null;
