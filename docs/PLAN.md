@@ -168,6 +168,16 @@ for one-off hero assets but is no longer the plan of record.
   id — survives save/load for free; moved modules keep their variant; PNG
   overrides apply to all variants. Verified: adjacent identical libraries/
   bedrooms render visibly different (pixel-hash check).
+- [x] **P2.E Performance pass** — measured first (Playwright probe + `?perf`
+  query flag that records real draw() CPU cost on `window.__drawMs`, and
+  `window.__spriteStats()` for canvas memory, which the JS heap hides).
+  Findings on a 154-module stress base: draw cost was fine (2ms @ 60fps
+  budget) but the sprite cache held 116MB of canvases, unbounded. Fixes:
+  viewport culling (draw@default 2.0→0.9ms, and sprite generation became
+  lazy — boot memory 116→59MB since offscreen rooms don't paint until
+  scrolled into view); LRU byte budget (192MB) on the sprite cache so long
+  restyling sessions can't grow without bound; environment world canvases
+  (~20MB each) evict on switch instead of accumulating.
 - [x] **P2.D Catalog & picker polish** — thumbnails render at 2× CSS size
   with progressive-halving downscale (area-average quality instead of
   nearest-neighbor mush); environment picker cards show a real rendered

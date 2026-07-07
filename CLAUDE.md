@@ -15,6 +15,8 @@ React (UI) + hand-rolled Canvas2D renderer (base view). No backend.
 - `npm run validate:content` — validate `src/content/*.json` (run after any content edit)
 - `npm run scan:art` — regenerate `art-manifest.json` from `public/art/modules/*.png`
 - `npm run build` — typecheck + production build
+- Perf: open the app with `?perf` — `window.__drawMs` (per-frame draw cost
+  ring buffer) and `window.__spriteStats()` (sprite-cache canvas memory)
 
 ## Hard rules
 - `src/core/` must stay DOM-free (pure logic; it's the tested layer).

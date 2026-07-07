@@ -16,9 +16,39 @@ export interface SpriteEntry {
   fx: FxHint[];
 }
 
+/**
+ * LRU sprite cache with a byte budget. 256px-per-cell canvases are heavy
+ * (a 3×1 room ≈ 0.8MB), and theme/style flipping can otherwise grow the
+ * cache without bound over a long session. The budget is set well above any
+ * realistic on-screen working set so eviction never thrashes visible
+ * sprites — it only reclaims rooms you restyled away from long ago.
+ * (Map iteration order is insertion order; re-inserting on hit = LRU.)
+ */
+const CACHE_BUDGET_BYTES = 192 * 1048576;
 const cache = new Map<string, SpriteEntry>();
+let cacheBytes = 0;
 let finalArtKeys: Set<string> = new Set();
 let onSpriteReady: (() => void) | null = null;
+
+function entryBytes(entry: SpriteEntry): number {
+  const img = entry.image as { width?: number; height?: number; naturalWidth?: number; naturalHeight?: number };
+  const w = img.naturalWidth ?? img.width ?? 0;
+  const h = img.naturalHeight ?? img.height ?? 0;
+  return w * h * 4;
+}
+
+function cacheSet(key: string, entry: SpriteEntry): void {
+  const old = cache.get(key);
+  if (old) cacheBytes -= entryBytes(old);
+  cache.set(key, entry);
+  cacheBytes += entryBytes(entry);
+  for (const [k, e] of cache) {
+    if (cacheBytes <= CACHE_BUDGET_BYTES) break;
+    if (k === key) continue; // never evict what we just added
+    cache.delete(k);
+    cacheBytes -= entryBytes(e);
+  }
+}
 
 /**
  * Per-placement variation: each def×theme renders in a few rng-seeded
@@ -61,19 +91,24 @@ export function getSprite(def: ModuleDef, themeId: string, variant = 0): SpriteE
   const baseKey = spriteKey(def, themeId);
   const key = `${baseKey}#${variant}`;
   const hit = cache.get(key);
-  if (hit) return hit;
+  if (hit) {
+    // refresh LRU recency
+    cache.delete(key);
+    cache.set(key, hit);
+    return hit;
+  }
 
   const theme = getTheme(themeId);
   const generated = generateModuleSprite(def, themeId, theme!.palette, variant);
   const placeholder: SpriteEntry = { image: generated.canvas, fx: generated.fx };
-  cache.set(key, placeholder);
+  cacheSet(key, placeholder);
 
   if (finalArtKeys.has(baseKey)) {
     const img = new Image();
     img.onload = () => {
       // Final PNG art replaces the look wholesale (all variants); procedural
       // fx hints no longer line up with it, so they're dropped.
-      for (let v = 0; v < SPRITE_VARIANTS; v++) cache.set(`${baseKey}#${v}`, { image: img, fx: [] });
+      for (let v = 0; v < SPRITE_VARIANTS; v++) cacheSet(`${baseKey}#${v}`, { image: img, fx: [] });
       thumbnailCache.delete(baseKey);
       onSpriteReady?.();
     };
@@ -123,5 +158,16 @@ export function getThumbnailURL(def: ModuleDef, themeId: string): string {
 /** Test/dev helper. */
 export function clearSpriteCache(): void {
   cache.clear();
+  cacheBytes = 0;
   thumbnailCache.clear();
+}
+
+/** Dev/perf helper: how much canvas memory the sprite cache holds. */
+export function spriteCacheStats(): { entries: number; mb: number } {
+  let bytes = 0;
+  for (const entry of cache.values()) {
+    const img = entry.image as HTMLCanvasElement;
+    if (img.width) bytes += img.width * img.height * 4;
+  }
+  return { entries: cache.size, mb: Math.round(bytes / 1048576) };
 }

@@ -29,6 +29,9 @@ const envCache = new Map<string, HTMLCanvasElement>();
 export function getEnvironmentCanvas(env: EnvironmentDef): HTMLCanvasElement {
   const hit = envCache.get(env.id);
   if (hit) return hit;
+  // Each cached world canvas is ~20MB; only the active environment is worth
+  // keeping. Switching back regenerates in one frame.
+  envCache.clear();
   const canvas = document.createElement('canvas');
   canvas.width = WORLD_W;
   canvas.height = WORLD_H;

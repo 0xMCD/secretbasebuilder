@@ -9,7 +9,7 @@ import { getDef, getEnvironment, getTheme, KINDS } from '../core/catalog';
 import type { DefId, Placement, ThemeId } from '../core/types';
 import { getState, subscribe } from '../core/store';
 import { createCamera, WORLD_H, WORLD_W, type Camera } from './camera';
-import { getSprite, initSprites, variantForId } from './sprites';
+import { getSprite, initSprites, spriteCacheStats, variantForId } from './sprites';
 import { drawDayNight, drawWeather, getEnvironmentCanvas } from './environment';
 import { drawFx, fxSeed } from './fx';
 import { drawAgents, updateAgents } from './agents';
@@ -84,9 +84,26 @@ export function initRenderer(el: HTMLCanvasElement): () => void {
   const unsubscribe = subscribe(requestRedraw);
   knownIds = new Set(getState().placements.map((p) => p.id));
 
+  // Opt-in perf probe (?perf): records draw() CPU cost so we can measure the
+  // real frame budget, which rAF cadence hides behind vsync.
+  const perfBuf: number[] | null = location.search.includes('perf') ? [] : null;
+  if (perfBuf) {
+    const w = window as unknown as { __drawMs: number[]; __spriteStats: typeof spriteCacheStats };
+    w.__drawMs = perfBuf;
+    w.__spriteStats = spriteCacheStats;
+  }
+
   const loop = () => {
     rafId = requestAnimationFrame(loop);
-    if (camera) draw();
+    if (!camera) return;
+    if (perfBuf) {
+      const t0 = performance.now();
+      draw();
+      perfBuf.push(performance.now() - t0);
+      if (perfBuf.length > 600) perfBuf.shift();
+    } else {
+      draw();
+    }
   };
   rafId = requestAnimationFrame(loop);
 
@@ -142,14 +159,28 @@ function draw(): void {
   const roomPlacements = livePlacements.filter((p) => getDef(p.defId)?.layer !== 'decor');
   const decorPlacements = livePlacements.filter((p) => getDef(p.defId)?.layer === 'decor');
 
-  for (const p of roomPlacements) drawPlacementSprite(c, p, now);
+  // Viewport culling (world-cell rect + 1 cell of margin). Beyond skipping
+  // draw calls, this makes sprite GENERATION lazy: a room's sprite isn't
+  // painted or cached until it scrolls into view.
+  const cull = {
+    x0: cam.offsetX / ART_CELL - 1,
+    y0: cam.offsetY / ART_CELL - 1,
+    x1: (cam.offsetX + viewW / cam.zoom) / ART_CELL + 1,
+    y1: (cam.offsetY + viewH / cam.zoom) / ART_CELL + 1,
+  };
+  const visible = (p: Placement): boolean => {
+    const def = getDef(p.defId);
+    return !!def && p.x + def.w > cull.x0 && p.x < cull.x1 && p.y + def.h > cull.y0 && p.y < cull.y1;
+  };
+
+  for (const p of roomPlacements) if (visible(p)) drawPlacementSprite(c, p, now);
   drawConnectors(c, roomPlacements);
-  for (const p of decorPlacements) drawPlacementSprite(c, p, now);
+  for (const p of decorPlacements) if (visible(p)) drawPlacementSprite(c, p, now);
   // Ambient animation: replay each sprite's cached fx hints (screens flicker,
   // water shimmers, glows breathe) — see render/fx.ts.
   for (const p of livePlacements) {
-    const def = getDef(p.defId);
-    if (!def) continue;
+    if (!visible(p)) continue;
+    const def = getDef(p.defId)!;
     const { fx } = getSprite(def, p.theme, variantForId(p.id));
     if (fx.length > 0) drawFx(c, fx, p.x * ART_CELL, p.y * ART_CELL, t, fxSeed(p.id));
   }
