@@ -219,6 +219,134 @@ function drawStructure(ctx: CanvasRenderingContext2D, env: EnvironmentDef): void
       ctx.fillRect(cx + 1, g - 210, 24, 12);
       break;
     }
+    case 'treehouse': {
+      // trunk with root flare (kept short so the canopy fits the default view)
+      ctx.fillStyle = p.structureDark;
+      ctx.fillRect(cx - 18, g - 104, 36, 104);
+      ctx.fillRect(cx - 30, g - 14, 60, 14);
+      ctx.fillRect(cx - 42, g - 6, 84, 6);
+      // side branch for the swing
+      ctx.fillRect(cx + 14, g - 88, 74, 10);
+      // layered leafy canopy
+      const leafDark = mix(p.structureRoof, '#000000', 0.25);
+      ctx.fillStyle = leafDark;
+      ctx.fillRect(cx - 122, g - 148, 244, 56);
+      ctx.fillRect(cx - 90, g - 176, 180, 40);
+      ctx.fillStyle = p.structureRoof;
+      ctx.fillRect(cx - 110, g - 158, 220, 44);
+      ctx.fillRect(cx - 76, g - 184, 152, 34);
+      ctx.fillRect(cx - 40, g - 200, 88, 22);
+      // plank cabin nestled in the leaves
+      ctx.fillStyle = p.structureMain;
+      ctx.fillRect(cx - 58, g - 142, 116, 62);
+      ctx.fillStyle = p.structureDark;
+      for (let y = g - 132; y < g - 84; y += 14) ctx.fillRect(cx - 58, y, 116, 3);
+      ctx.fillStyle = leafDark;
+      ctx.fillRect(cx - 66, g - 152, 132, 12);
+      window_(ctx, cx - 40, g - 130, 26, 22);
+      window_(ctx, cx + 16, g - 130, 26, 22);
+      // rope ladder from the cabin down to the grass
+      ctx.fillStyle = '#d9c48a';
+      ctx.fillRect(cx - 8, g - 80, 3, 80);
+      ctx.fillRect(cx + 6, g - 80, 3, 80);
+      for (let y = g - 70; y < g - 6; y += 16) ctx.fillRect(cx - 8, y, 17, 3);
+      // tire swing on the branch
+      ctx.fillStyle = '#d9c48a';
+      ctx.fillRect(cx + 66, g - 80, 3, 36);
+      ctx.fillStyle = '#2e2e34';
+      ctx.fillRect(cx + 56, g - 44, 24, 24);
+      ctx.fillStyle = p.skyBottom;
+      ctx.fillRect(cx + 62, g - 38, 12, 12);
+      break;
+    }
+    case 'skyline': {
+      // distant city towers span the whole horizon, windows lit for night
+      const rng = createRng('skyline');
+      for (let i = 0; i < 11; i++) {
+        const bw = rng.int(46, 88);
+        const bh = rng.int(70, 200);
+        const bx = Math.round((WORLD_W - 80) * (i / 10)) + rng.int(-14, 14);
+        ctx.fillStyle = rng.chance(0.4) ? mix(p.structureMain, '#000000', 0.25) : p.structureMain;
+        ctx.fillRect(bx, g - bh, bw, bh);
+        ctx.fillStyle = p.structureRoof;
+        for (let wy = g - bh + 8; wy < g - 10; wy += 14) {
+          for (let wx = bx + 6; wx < bx + bw - 8; wx += 12) {
+            if (rng.chance(0.55)) ctx.fillRect(wx, wy, 6, 8);
+          }
+        }
+      }
+      // your building's rooftop: stair shed, water tower, AC, antenna
+      ctx.fillStyle = p.structureDark;
+      ctx.fillRect(cx - 92, g - 64, 84, 64); // stair shed
+      ctx.fillStyle = mix(p.structureDark, '#ffffff', 0.12);
+      ctx.fillRect(cx - 96, g - 72, 92, 10);
+      door(ctx, p, cx - 68, g);
+      // water tower on legs
+      ctx.fillStyle = p.structureDark;
+      ctx.fillRect(cx + 34, g - 46, 6, 46);
+      ctx.fillRect(cx + 88, g - 46, 6, 46);
+      ctx.fillStyle = mix(p.structureMain, '#ffffff', 0.18);
+      ctx.fillRect(cx + 24, g - 118, 80, 72);
+      ctx.fillStyle = p.structureDark;
+      for (let y = g - 108; y < g - 50; y += 16) ctx.fillRect(cx + 24, y, 80, 3);
+      ctx.fillStyle = mix(p.structureDark, '#ffffff', 0.12);
+      for (let i = 0; i < 4; i++) ctx.fillRect(cx + 30 + i * 8, g - 126 - i * 4, 68 - i * 16, 8);
+      // AC unit with fan
+      ctx.fillStyle = mix(p.structureMain, '#ffffff', 0.25);
+      ctx.fillRect(cx + 120, g - 26, 40, 26);
+      ctx.fillStyle = p.structureDark;
+      ctx.fillRect(cx + 128, g - 20, 14, 14);
+      // antenna with beacon
+      ctx.fillStyle = p.structureDark;
+      ctx.fillRect(cx - 44, g - 120, 4, 56);
+      ctx.fillStyle = '#ff5555';
+      ctx.fillRect(cx - 46, g - 126, 8, 8);
+      // a pigeon on the shed roof
+      ctx.fillStyle = '#9aa2ad';
+      ctx.fillRect(cx - 34, g - 80, 10, 7);
+      ctx.fillRect(cx - 26, g - 84, 6, 6);
+      break;
+    }
+    case 'volcano': {
+      // smoke puffs above the crater
+      ctx.fillStyle = 'rgba(120,116,124,0.55)';
+      ctx.fillRect(cx - 26, g - 212, 52, 20);
+      ctx.fillRect(cx - 6, g - 234, 44, 18);
+      ctx.fillRect(cx + 18, g - 252, 34, 14);
+      // stepped craggy cone (crater stays inside the default camera view)
+      const steps = 7;
+      for (let i = 0; i < steps; i++) {
+        const w = 264 - i * 30;
+        ctx.fillStyle = i % 2 === 0 ? p.structureMain : p.structureDark;
+        ctx.fillRect(cx - w / 2, g - (i + 1) * 24, w, 26);
+      }
+      // crater rim + lava pool
+      ctx.fillStyle = p.structureDark;
+      ctx.fillRect(cx - 32, g - 178, 64, 12);
+      ctx.fillStyle = p.structureRoof;
+      ctx.fillRect(cx - 24, g - 176, 48, 8);
+      ctx.fillStyle = '#ffd23c';
+      ctx.fillRect(cx - 11, g - 174, 22, 4);
+      // lava drips down the slope
+      ctx.fillStyle = p.structureRoof;
+      ctx.fillRect(cx - 28, g - 168, 8, 62);
+      ctx.fillRect(cx + 24, g - 168, 8, 92);
+      ctx.fillRect(cx - 2, g - 166, 6, 40);
+      ctx.fillStyle = '#ffd23c';
+      ctx.fillRect(cx - 26, g - 158, 4, 36);
+      ctx.fillRect(cx + 26, g - 148, 4, 44);
+      // palm tree off to the side
+      ctx.fillStyle = '#8a6742';
+      for (let i = 0; i < 6; i++) ctx.fillRect(cx - 176 + i * 3, g - 18 - i * 14, 8, 16);
+      ctx.fillStyle = '#3f8f4a';
+      ctx.fillRect(cx - 196, g - 108, 64, 10);
+      ctx.fillRect(cx - 184, g - 120, 52, 10);
+      ctx.fillRect(cx - 172, g - 100, 48, 8);
+      ctx.fillStyle = '#6b4d2e';
+      ctx.fillRect(cx - 162, g - 102, 7, 7);
+      ctx.fillRect(cx - 152, g - 98, 7, 7);
+      break;
+    }
   }
 }
 

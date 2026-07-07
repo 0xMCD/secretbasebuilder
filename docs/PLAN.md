@@ -116,8 +116,13 @@ How to resume a session:
   cover erases the shared floor band; ladder rungs/elevator cables continue
   through the joint — no more giant dark boxes); day/night cycle (120s, stars
   + moon at night, rooms stay warm and lit).
-- [ ] K. More environments (treehouse, city rooftop, island volcano) + art
-  scan script that auto-regenerates `art-manifest.json`.
+- [x] **K. More environments + art scan** — 3 new environments: Treehouse
+  Hideaway (canopy cabin, rope ladder, tire swing), City Rooftop (night
+  skyline with lit windows, water tower, stair shed), Island Volcano (lava
+  drips, smoke, palm) — new `StructureKind`s `treehouse|skyline|volcano`,
+  structures tuned to fit the default camera. `npm run scan:art`
+  (`scripts/scan-art.mjs`) regenerates `art-manifest.json` from the PNGs in
+  `public/art/modules/`, rejecting filenames that match no kind×size×theme.
 
 ## Phase P2 — Final art
 

@@ -90,6 +90,60 @@
         "structureRoof": "#a06a3a",
         "structureDark": "#b5824a"
       }
+    },
+    {
+      "id": "treehouse",
+      "name": "Treehouse Hideaway",
+      "blurb": "A plank fort up in the leaves. The REAL fort is under the roots.",
+      "structure": "treehouse",
+      "weather": "sunny",
+      "palette": {
+        "skyTop": "#6fc1ff",
+        "skyBottom": "#c2e8b8",
+        "surface": "#4d8f3c",
+        "dirt": "#5c4030",
+        "dirtDark": "#46311f",
+        "dirtSpeckle": "#7a5a3d",
+        "structureMain": "#8a6742",
+        "structureRoof": "#5d9c4f",
+        "structureDark": "#6b4d2e"
+      }
+    },
+    {
+      "id": "rooftop",
+      "name": "City Rooftop",
+      "blurb": "A water tower, some pigeons, and a whole base hidden in the building.",
+      "structure": "skyline",
+      "weather": "night",
+      "palette": {
+        "skyTop": "#141a33",
+        "skyBottom": "#4a3b63",
+        "surface": "#6f7480",
+        "dirt": "#4a4e57",
+        "dirtDark": "#383b42",
+        "dirtSpeckle": "#5d626c",
+        "structureMain": "#2a3247",
+        "structureRoof": "#d8b04a",
+        "structureDark": "#1c2333"
+      }
+    },
+    {
+      "id": "volcano",
+      "name": "Island Volcano",
+      "blurb": "Palm trees, warm sand, and a rumbling crater. Lava keeps visitors away.",
+      "structure": "volcano",
+      "weather": "sunny",
+      "palette": {
+        "skyTop": "#46b9e8",
+        "skyBottom": "#bfe9f5",
+        "surface": "#ecd9a0",
+        "dirt": "#514550",
+        "dirtDark": "#3a3138",
+        "dirtSpeckle": "#6e5f6b",
+        "structureMain": "#6e5a52",
+        "structureRoof": "#ff7a3c",
+        "structureDark": "#55453f"
+      }
     }
   ]
 }

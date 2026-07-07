@@ -9,7 +9,8 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
-    "validate:content": "node scripts/validate-content.mjs"
+    "validate:content": "node scripts/validate-content.mjs",
+    "scan:art": "node scripts/scan-art.mjs"
   },
   "dependencies": {
     "react": "^18.3.1",

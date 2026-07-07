@@ -13,6 +13,7 @@ React (UI) + hand-rolled Canvas2D renderer (base view). No backend.
 - `npm run dev` — dev server
 - `npm test` — vitest (core logic)
 - `npm run validate:content` — validate `src/content/*.json` (run after any content edit)
+- `npm run scan:art` — regenerate `art-manifest.json` from `public/art/modules/*.png`
 - `npm run build` — typecheck + production build
 
 ## Hard rules

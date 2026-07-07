@@ -18,7 +18,7 @@ const HEX = /^#[0-9a-f]{6}$/i;
 const ID = /^[a-z][a-z0-9-]*$/;
 const RARITIES = ['common', 'uncommon', 'rare'];
 const WEATHERS = ['sunny', 'rain', 'snow', 'night'];
-const STRUCTURES = ['house', 'cabin', 'shack', 'dome', 'tower'];
+const STRUCTURES = ['house', 'cabin', 'shack', 'dome', 'tower', 'treehouse', 'skyline', 'volcano'];
 const THEME_PALETTE_KEYS = [
   'wall', 'wallDark', 'floor', 'roomBg', 'accent', 'glow', 'trim',
   'furniture', 'furnitureDark',

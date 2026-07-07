@@ -72,7 +72,7 @@ export interface ThemeDef {
 }
 
 export type WeatherKind = 'sunny' | 'rain' | 'snow' | 'night';
-export type StructureKind = 'house' | 'cabin' | 'shack' | 'dome' | 'tower';
+export type StructureKind = 'house' | 'cabin' | 'shack' | 'dome' | 'tower' | 'treehouse' | 'skyline' | 'volcano';
 
 export interface EnvironmentPalette {
   skyTop: string;
