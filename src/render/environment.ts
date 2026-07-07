@@ -382,6 +382,42 @@ function drawHatch(ctx: CanvasRenderingContext2D, env: EnvironmentDef): void {
   }
 }
 
+// --- start-screen previews (small cropped scene per environment) ---
+
+const previewCache = new Map<string, string>();
+
+/**
+ * A real rendered scene for the environment picker cards: the crop around
+ * the aboveground structure (sky, weather sample, surface, first dirt band).
+ * Drawn straight into a small canvas — fills outside it just clip — so we
+ * never materialize the full world canvas for environments not in play.
+ */
+export function getEnvironmentPreviewURL(env: EnvironmentDef): string {
+  const hit = previewCache.get(env.id);
+  if (hit) return hit;
+  const cropW = 560;
+  const cropH = 400;
+  const cropX = WORLD_W / 2 - cropW / 2;
+  const cropY = GROUND_Y - (cropH - 72); // structure + sky above, dirt strip below
+  const canvas = document.createElement('canvas');
+  canvas.width = cropW / 2;
+  canvas.height = cropH / 2;
+  const ctx = canvas.getContext('2d')!;
+  ctx.imageSmoothingEnabled = false;
+  ctx.scale(0.5, 0.5);
+  ctx.translate(-cropX, -cropY);
+  drawSky(ctx, env);
+  drawCelestialBody(ctx, env);
+  drawDirt(ctx, env);
+  drawSurfaceStrip(ctx, env);
+  drawStructure(ctx, env);
+  drawHatch(ctx, env);
+  drawWeatherLogical(ctx, env, 1.6); // frozen weather sample (clouds/rain/stars)
+  const url = canvas.toDataURL();
+  previewCache.set(env.id, url);
+  return url;
+}
+
 // --- animated weather overlay (drawn every frame) ---
 
 /** t = seconds since app start. Draws only above-ground effects. Caller's ctx

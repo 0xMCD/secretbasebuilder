@@ -8,7 +8,7 @@ import { getDef, getEnvironment } from '../core/catalog';
 import { getState } from '../core/store';
 import { getEnvironmentCanvas } from './environment';
 import { drawConnectors } from './renderer';
-import { getSprite } from './sprites';
+import { getSprite, variantForId } from './sprites';
 
 const OUT_CELL = 128; // output px per cell — poster-sized without being huge
 const BANNER_H = 72;
@@ -82,7 +82,7 @@ export function downloadSnapshot(): void {
   const decorPlacements = state.placements.filter((p) => getDef(p.defId)?.layer === 'decor');
   const drawSprite = (p: (typeof state.placements)[number]) => {
     const def = getDef(p.defId);
-    if (def) c.drawImage(getSprite(def, p.theme).image, p.x * ART_CELL, p.y * ART_CELL);
+    if (def) c.drawImage(getSprite(def, p.theme, variantForId(p.id)).image, p.x * ART_CELL, p.y * ART_CELL);
   };
   roomPlacements.forEach(drawSprite);
   drawConnectors(c, roomPlacements);

@@ -34,6 +34,7 @@ export function generateModuleSprite(
   def: ModuleDef,
   themeId: string,
   pal: ThemePalette,
+  variant = 0,
 ): GeneratedSprite {
   const W = def.w * ART_CELL;
   const H = def.h * ART_CELL;
@@ -43,7 +44,9 @@ export function generateModuleSprite(
   const ctx = canvas.getContext('2d')!;
   ctx.imageSmoothingEnabled = false;
 
-  const rng = createRng(`${def.kind}_${def.w}x${def.h}_${themeId}`);
+  // The variant seeds every rng roll (shell stains, plank joints, shelf
+  // books, prop chances), so variants differ naturally with no painter work.
+  const rng = createRng(`${def.kind}_${def.w}x${def.h}_${themeId}_v${variant}`);
   beginFx();
 
   // Decor props are transparent-background sprites: no shell, no bolts —

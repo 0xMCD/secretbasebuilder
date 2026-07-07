@@ -9,7 +9,7 @@ import { getDef, getEnvironment, getTheme, KINDS } from '../core/catalog';
 import type { DefId, Placement, ThemeId } from '../core/types';
 import { getState, subscribe } from '../core/store';
 import { createCamera, WORLD_H, WORLD_W, type Camera } from './camera';
-import { getSprite, initSprites } from './sprites';
+import { getSprite, initSprites, variantForId } from './sprites';
 import { drawDayNight, drawWeather, getEnvironmentCanvas } from './environment';
 import { drawFx, fxSeed } from './fx';
 import { drawAgents, updateAgents } from './agents';
@@ -150,7 +150,7 @@ function draw(): void {
   for (const p of livePlacements) {
     const def = getDef(p.defId);
     if (!def) continue;
-    const { fx } = getSprite(def, p.theme);
+    const { fx } = getSprite(def, p.theme, variantForId(p.id));
     if (fx.length > 0) drawFx(c, fx, p.x * ART_CELL, p.y * ART_CELL, t, fxSeed(p.id));
   }
   updateAgents(roomPlacements, dt);
@@ -170,7 +170,7 @@ function draw(): void {
 function drawPlacementSprite(c: CanvasRenderingContext2D, p: Placement, now: number): void {
   const def = getDef(p.defId);
   if (!def) return;
-  const img = getSprite(def, p.theme).image;
+  const img = getSprite(def, p.theme, variantForId(p.id)).image;
   const pop = pops.get(p.id);
   if (pop !== undefined) {
     const e = (now - pop) / POP_MS;
@@ -311,7 +311,8 @@ function drawGhost(c: CanvasRenderingContext2D): void {
   const x = ghost.cx * ART_CELL;
   const y = ghost.cy * ART_CELL;
   c.globalAlpha = 0.75;
-  c.drawImage(getSprite(def, ghost.theme).image, x, y);
+  // A moved module keeps its variant; a fresh drop previews variant 0.
+  c.drawImage(getSprite(def, ghost.theme, ghost.moveId ? variantForId(ghost.moveId) : 0).image, x, y);
   c.globalAlpha = 0.28;
   c.fillStyle = valid ? '#3dff7a' : '#ff4a4a';
   c.fillRect(x, y, def.w * ART_CELL, def.h * ART_CELL);

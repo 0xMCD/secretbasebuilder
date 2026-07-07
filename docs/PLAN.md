@@ -161,12 +161,19 @@ for one-off hero assets but is no longer the plan of record.
   reaches the roof slit, dome ribs, comet, twinkling stars); gemmine
   (twinkling gem veins). Color policy codified in kit.ts: theme palette for
   construction/furniture, deliberate fixed hero colors stay.
-- [ ] P2.C Per-placement variation — variant index in the sprite cache key
-  (3-4 variants per def, seeded choices: book colors, posters, clutter) so
-  two copies of a room aren't pixel-identical.
-- [ ] P2.D Catalog & picker polish — two-step downscale for sidebar
-  thumbnails; environment picker cards show a real rendered scene preview
-  instead of four color swatches.
+- [x] **P2.C Per-placement variation** — sprite cache key gains a variant
+  index (3 variants per def×theme); the variant seeds every rng roll during
+  painting (shell stains, plank joints, shelf books, prop chances) so no
+  painter changes were needed. A placement picks its variant by hashing its
+  id — survives save/load for free; moved modules keep their variant; PNG
+  overrides apply to all variants. Verified: adjacent identical libraries/
+  bedrooms render visibly different (pixel-hash check).
+- [x] **P2.D Catalog & picker polish** — thumbnails render at 2× CSS size
+  with progressive-halving downscale (area-average quality instead of
+  nearest-neighbor mush); environment picker cards show a real rendered
+  scene (structure + weather sample + dirt strip, cropped from the painters
+  directly — the full world canvas is never materialized) instead of four
+  color swatches.
 
 ## Phase P3 — Life
 

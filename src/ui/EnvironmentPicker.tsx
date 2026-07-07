@@ -1,5 +1,6 @@
 import { ENVIRONMENTS } from '../core/catalog';
 import { confirmEnvironmentPick } from '../core/actions';
+import { getEnvironmentPreviewURL } from '../render/environment';
 
 const WEATHER_ICON: Record<string, string> = {
   sunny: '☀️',
@@ -18,12 +19,7 @@ export function EnvironmentPicker() {
         <div className="env-grid">
           {ENVIRONMENTS.map((env) => (
             <button key={env.id} className="env-card" onClick={() => confirmEnvironmentPick(env.id)}>
-              <div className="env-swatches">
-                <span style={{ background: env.palette.skyTop }} />
-                <span style={{ background: env.palette.structureMain }} />
-                <span style={{ background: env.palette.surface }} />
-                <span style={{ background: env.palette.dirt }} />
-              </div>
+              <img className="env-preview" src={getEnvironmentPreviewURL(env)} alt="" draggable={false} />
               <div className="env-name">
                 {WEATHER_ICON[env.weather]} {env.name}
               </div>

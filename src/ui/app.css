@@ -257,7 +257,6 @@ canvas.world {
 .card-thumb {
   height: 46px;
   max-width: 130px;
-  image-rendering: pixelated;
   border-radius: 4px;
   flex-shrink: 0;
   pointer-events: none;
@@ -595,16 +594,14 @@ canvas.world {
   box-shadow: 0 4px 18px rgba(61, 255, 122, 0.15);
 }
 
-.env-swatches {
-  display: flex;
-  height: 26px;
+.env-preview {
+  width: 100%;
+  height: 92px;
+  object-fit: cover;
+  image-rendering: pixelated;
   border-radius: 6px;
-  overflow: hidden;
   margin-bottom: 8px;
-}
-
-.env-swatches span {
-  flex: 1;
+  border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 .env-name {
