@@ -138,10 +138,22 @@ for one-off hero assets but is no longer the plan of record.
   aquarium water shimmer, swimming fish, rising bubbles (lava, lava lamp),
   lava heat-haze, claw-machine glass sparkle, disco-ball mirror + room-dot
   sparkles, robo-buddy antenna blink + face flicker. Verified 61fps.
-- [ ] P2.B Painter style sweep — codify shading rules as kit helpers (one
-  shade ramp, consistent floor-contact shadows, light direction), sweep all
-  four rooms files through them; audit hardcoded hexes → theme palette;
-  give XL/tall sizes deliberate compositions instead of tiled props.
+- [x] **P2.B Big-room composition pass** — contact-sheet audit (Photo export
+  of every big kind at max size) found tall rooms with dead upper halves and
+  capped hero props. Fixed the heavy hitters: grandstand rebuild shared by
+  all 4 sports fields (raised deck on columns, packed crowd, sponsor boards,
+  bunting, scaled scoreboards); theater (movie composed to fill the screen,
+  full-height curtains, seat rows that pack + scale); pool (high-dive tower,
+  curved water slide, swim-meet bunting); garage (hydraulic lift w/ second
+  car, pegboard wall, chain-hoist engine); race garage (bigger car, pit
+  gantry w/ lights + air hoses, blinking timing board, tire wall); silo
+  (warm-white hero rocket, second service arm + fuel line, blinking beacon,
+  steam); lab (ceiling pipe run, hanging monitors, canister rack, live tank
+  bubbles).
+- [ ] P2.B2 Remaining-room densify — same treatment for the second tier:
+  gameroom, trampoline, junglegym, skatepark, dinoexhibit, gemmine, vault
+  2×2, observatory; plus the deferred shading-consistency audit (hardcoded
+  hexes that should be theme palette; deliberate fixed hero colors stay).
 - [ ] P2.C Per-placement variation — variant index in the sprite cache key
   (3-4 variants per def, seeded choices: book colors, posters, clutter) so
   two copies of a room aren't pixel-identical.

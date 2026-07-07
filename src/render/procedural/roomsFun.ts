@@ -10,28 +10,54 @@ import {
   sh, shadow, shelf, table, wallScreen, type Ctx, type Interior, type Painter,
 } from './kit';
 
-/** Stepped bleachers with a colorful crowd — makes field halls read as stadiums. */
+/** Grandstand: raised deck on supports, packed crowd, ad boards, bunting —
+ * makes field halls read as real stadiums (fills the tall rooms' upper half). */
 function bleachers(ctx: Ctx, room: Interior, rng: Rng) {
-  const bw = room.w * 0.62;
+  const bw = room.w * 0.86;
   const bx = room.x + (room.w - bw) / 2;
-  const rows = 3;
+  const rows = room.h > 380 ? 4 : 3;
   const rowH = 20;
-  const topY = room.y + room.h * 0.3;
+  const topY = room.y + room.h * 0.16;
+  const deckY = topY + rows * rowH + 14;
   const crowd = ['#e86a5a', '#ffd166', '#3a8fd4', '#7fc95c', '#ff8fdc', '#eef2f5'];
+  // back wall band behind the crowd
+  sh(ctx, bx - (rows - 1) * 14 - 8, topY - 14, bw + (rows - 1) * 28 + 16, rows * rowH + 22, 0.22);
   for (let i = 0; i < rows; i++) {
     const y = topY + i * rowH;
     const rowX = bx - i * 14;
     const rowW = bw + i * 28;
     r(ctx, '#3a3f45', rowX, y + 12, rowW, 8); // bench
     sh(ctx, rowX, y + 20, rowW, 4, 0.3);
-    for (let cx = rowX + 8; cx < rowX + rowW - 8; cx += rng.int(14, 24)) {
-      if (rng.chance(0.7)) {
+    for (let cx = rowX + 8; cx < rowX + rowW - 8; cx += rng.int(12, 20)) {
+      if (rng.chance(0.8)) {
         const c = crowd[rng.int(0, crowd.length - 1)];
         disc(ctx, c, cx, y + 4, 4); // head
         r(ctx, crowd[rng.int(0, crowd.length - 1)], cx - 4, y + 7, 9, 6); // shirt
         if (rng.chance(0.2)) r(ctx, c, cx - 6, y - 2, 3, 6); // arm up — GOAL!
       }
     }
+  }
+  // stand deck with ad boards along the front edge
+  const deckX = bx - (rows - 1) * 14 - 8;
+  const deckW = bw + (rows - 1) * 28 + 16;
+  r(ctx, '#3a3f45', deckX, deckY, deckW, 10);
+  hl(ctx, deckX, deckY, deckW, 3, 0.2);
+  const ads = ['#e86a5a', '#3a8fd4', '#7fc95c', '#ffd166'];
+  for (let ax = deckX + 6, i = 0; ax < deckX + deckW - 60; ax += 66, i++) {
+    r(ctx, ads[i % ads.length], ax, deckY + 10, 58, 14);
+    hl(ctx, ax, deckY + 10, 58, 3, 0.3);
+    sh(ctx, ax + 8, deckY + 15, 42, 4, 0.25); // "sponsor text"
+  }
+  // support columns down to the field
+  for (let sx = deckX + 20; sx < deckX + deckW - 10; sx += Math.max(90, deckW / 6)) {
+    r(ctx, '#2c3138', sx, deckY + 24, 8, room.floor - deckY - 44);
+    hl(ctx, sx, deckY + 24, 2, room.floor - deckY - 44, 0.15);
+  }
+  // pennant bunting hanging below the deck
+  const pennants = ['#ffd166', '#e86a5a', '#3a8fd4', '#ff8fdc'];
+  for (let px = deckX + 10, i = 0; px < deckX + deckW - 16; px += 26, i++) {
+    r(ctx, pennants[i % pennants.length], px, deckY + 26, 12, 10);
+    r(ctx, pennants[i % pennants.length], px + 3, deckY + 36, 6, 5);
   }
 }
 
@@ -127,34 +153,66 @@ export const gameroomP: Painter = (ctx, room, pal, rng) => {
 };
 
 export const theaterP: Painter = (ctx, room, pal) => {
-  // giant screen with marquee bulbs
-  const sx = room.x + 16;
-  const sw = room.w * 0.44;
+  // giant screen with marquee bulbs, framed by velvet curtains
+  const sx = room.x + 34;
+  const sw = room.w * 0.42;
   const sh2 = room.h * 0.62;
   r(ctx, '#14181d', sx - 6, room.y + 18, sw + 12, sh2 + 12);
   r(ctx, '#0d1117', sx, room.y + 24, sw, sh2);
-  // movie: sunset chase scene, abstract
-  r(ctx, '#e86a5a', sx + 8, room.y + 32, sw - 16, sh2 * 0.4);
-  r(ctx, '#ffd166', sx + sw * 0.3, room.y + 40, 24, 18); // sun
-  r(ctx, '#14181d', sx + 8, room.y + 32 + sh2 * 0.4, sw - 16, sh2 * 0.4);
-  r(ctx, pal.glow, sx + sw * 0.2, room.y + 30 + sh2 * 0.55, 20, 10); // car
-  disc(ctx, '#14181d', sx + sw * 0.22, room.y + 42 + sh2 * 0.55, 4);
-  disc(ctx, '#14181d', sx + sw * 0.32, room.y + 42 + sh2 * 0.55, 4);
+  // the movie, composed to FILL the screen: sunset chase
+  const my = room.y + 24;
+  r(ctx, '#e86a5a', sx, my, sw, sh2 * 0.52); // sunset sky
+  r(ctx, '#c9402a', sx, my + sh2 * 0.3, sw, sh2 * 0.22); // horizon band
+  disc(ctx, '#ffd166', sx + sw * 0.68, my + sh2 * 0.24, sh2 * 0.16); // giant sun
+  for (let m = 0; m < 4; m++) { // mountain silhouettes
+    const mw = sw * 0.2;
+    const mx = sx + sw * 0.05 + m * sw * 0.24;
+    for (let s = 0; s < 5; s++) {
+      r(ctx, '#5a2430', mx + s * mw * 0.1, my + sh2 * 0.34 + s * sh2 * 0.035, mw - s * mw * 0.2, sh2 * 0.045);
+    }
+  }
+  r(ctx, '#14181d', sx, my + sh2 * 0.52, sw, sh2 * 0.48); // road at night
+  ctx.globalAlpha = 0.7;
+  for (let d = 0; d < 5; d++) r(ctx, '#ffd166', sx + sw * 0.08 + d * sw * 0.19, my + sh2 * 0.78, sw * 0.09, sh2 * 0.03); // lane dashes
+  ctx.globalAlpha = 1;
+  const carW = sw * 0.3; // hero car, big enough to read from the seats
+  const carX = sx + sw * 0.3;
+  const carY = my + sh2 * 0.58;
+  r(ctx, pal.glow, carX + carW * 0.2, carY, carW * 0.55, sh2 * 0.09); // cabin
+  r(ctx, pal.glow, carX, carY + sh2 * 0.08, carW, sh2 * 0.1); // body
+  r(ctx, '#ffd166', carX + carW * 0.92, carY + sh2 * 0.1, carW * 0.1, sh2 * 0.04); // headlight
+  hl(ctx, carX + carW, carY + sh2 * 0.08, sw - (carX - sx) - carW, sh2 * 0.12, 0.12); // beam
+  disc(ctx, '#2c3138', carX + carW * 0.2, carY + sh2 * 0.19, sh2 * 0.045);
+  disc(ctx, '#2c3138', carX + carW * 0.8, carY + sh2 * 0.19, sh2 * 0.045);
   for (let bx = sx - 4; bx < sx + sw + 6; bx += 16) {
     r(ctx, '#ffd166', bx, room.y + 14, 5, 5); // marquee bulbs
     r(ctx, '#ffd166', bx, room.y + 26 + sh2, 5, 5);
   }
-  // stepped seat rows on risers
-  const rows = 3;
+  // velvet curtains flanking the screen, full height
+  for (const cxx of [room.x + 4, sx + sw + 12]) {
+    r(ctx, '#8e2f3c', cxx, room.y + 10, 22, room.h - 14);
+    hl(ctx, cxx + 2, room.y + 10, 4, room.h - 14, 0.18);
+    sh(ctx, cxx + 12, room.y + 10, 6, room.h - 14, 0.25);
+    r(ctx, '#f5c542', cxx - 2, room.y + room.h * 0.45, 26, 8); // gold tieback
+  }
+  // stepped seat rows on risers — packed, scaling with the room
+  const seatAreaX = sx + sw + 48;
+  const seatAreaW = room.x + room.w - seatAreaX - 76;
+  const rows = room.h > 380 ? 3 : 2;
+  const rowW = seatAreaW / rows;
   for (let i = 0; i < rows; i++) {
-    const rx = room.x + room.w * 0.52 + i * (room.w * 0.15);
-    const ry = room.floor - i * 34;
-    r(ctx, pal.furnitureDark, rx, ry - 20, room.w * 0.14, 20); // riser
-    for (let s = 0; s < 3; s++) {
-      const seatX = rx + 6 + s * 26;
-      r(ctx, '#8e2f3c', seatX, ry - 56, 20, 36); // seat back
-      hl(ctx, seatX, ry - 56, 20, 4);
-      r(ctx, '#6a222d', seatX + 2, ry - 24, 16, 6); // cushion edge
+    const rx = seatAreaX + i * rowW;
+    const riserH = 14 + i * 22;
+    r(ctx, pal.furnitureDark, rx, room.floor - riserH, rowW, riserH); // riser
+    hl(ctx, rx, room.floor - riserH, rowW, 3, 0.15);
+    const seats = Math.max(2, Math.floor((rowW - 10) / 30));
+    for (let s = 0; s < seats; s++) {
+      const seatX = rx + 6 + s * ((rowW - 12) / seats);
+      const seatY = room.floor - riserH;
+      r(ctx, '#8e2f3c', seatX, seatY - 40, 20, 40); // seat back
+      hl(ctx, seatX, seatY - 40, 20, 4);
+      r(ctx, '#6a222d', seatX + 2, seatY - 14, 22, 8); // cushion
+      r(ctx, '#5a1c26', seatX + 18, seatY - 26, 6, 14); // armrest
     }
   }
   // projector + beam
@@ -168,8 +226,8 @@ export const theaterP: Painter = (ctx, room, pal) => {
     ctx.fillRect(sx + sw + 10 + t * (px - sx - sw - 14), room.y + 24 + t * 4 - i, px - sx - sw, 8 + i * 2);
   }
   ctx.globalAlpha = 1;
-  // popcorn cart + aisle lights
-  const cx = room.x + room.w * 0.52;
+  // popcorn cart by the entrance + riser step lights
+  const cx = room.x + room.w - 56;
   r(ctx, '#e86a5a', cx, room.floor - 44, 34, 44);
   r(ctx, pal.glow, cx + 4, room.floor - 38, 26, 18); // glass w/ popcorn
   r(ctx, '#ffd166', cx + 8, room.floor - 36, 4, 4);
@@ -203,6 +261,45 @@ export const poolP: Painter = (ctx, room, pal, rng) => {
   r(ctx, '#eef2f5', bx - 14, room.floor - 78, 8, 44);
   r(ctx, '#7fd4d4', bx - 18, room.floor - 82, 60, 8);
   hl(ctx, bx - 18, room.floor - 82, 60, 3);
+  // high-dive tower over the deep end
+  const hdx = bx + bw * 0.16;
+  r(ctx, '#eef2f5', hdx, room.y + room.h * 0.2, 8, room.floor - 34 - (room.y + room.h * 0.2));
+  for (let ry = room.y + room.h * 0.24; ry < room.floor - 44; ry += 22) {
+    r(ctx, '#c9d4da', hdx - 5, ry, 18, 4); // ladder rungs
+  }
+  r(ctx, '#7fd4d4', hdx - 4, room.y + room.h * 0.2, 52, 8); // top platform
+  hl(ctx, hdx - 4, room.y + room.h * 0.2, 52, 3);
+  r(ctx, '#7fd4d4', hdx - 4, room.y + room.h * 0.42, 40, 7); // mid platform
+  r(ctx, '#e86a5a', hdx + 40, room.y + room.h * 0.2 - 12, 10, 12); // flag on top
+  // water slide winding in from the right wall
+  const slTopX = room.x + room.w - 118;
+  const slTopY = room.y + room.h * 0.24;
+  r(ctx, '#eef2f5', slTopX + 10, slTopY, 8, room.floor - slTopY - 30); // support mast
+  r(ctx, '#7fd4d4', slTopX - 8, slTopY - 8, 64, 10); // launch platform
+  hl(ctx, slTopX - 8, slTopY - 8, 64, 3);
+  const slideEndX = bx + bw * 0.7;
+  const steps = 22; // many small chunks → contiguous ribbon
+  const span = slTopX - slideEndX;
+  const drop = room.floor - 46 - slTopY;
+  for (let i = 0; i < steps; i++) {
+    const t0 = i / steps;
+    const x0 = slTopX - span * t0;
+    const y0 = slTopY + drop * t0 * t0; // accelerating drop
+    const segW = span / steps + 6;
+    r(ctx, '#5cb85c', x0 - segW, y0, segW + 3, 13); // flume
+    r(ctx, '#3e8f3e', x0 - segW, y0 + 10, segW + 3, 3); // underside shade
+    if (i % 6 === 3) r(ctx, '#eef2f5', x0 - segW / 2, y0 + 13, 6, room.floor - y0 - 13); // leg
+  }
+  hl(ctx, slTopX - span * 0.15, slTopY + drop * 0.02, span * 0.16, 4, 0.35); // water sheen down the top run
+  hl(ctx, slideEndX - 20, room.floor - 36, 22, 8, 0.5); // splash at the outlet
+  fx(ctx, { kind: 'shimmer', x: slideEndX - 26, y: room.floor - 40, w: 40, h: 10, color: '#dff3ff', n: 2, speed: 1.4 });
+  // swim-meet pennant bunting across the ceiling
+  const flags = ['#e86a5a', '#ffd166', '#7fd4d4', '#eef2f5'];
+  for (let fxp = room.x + 16, i = 0; fxp < room.x + room.w - 20; fxp += 30, i++) {
+    const dip = Math.sin((i / 5) * Math.PI) * 8;
+    r(ctx, flags[i % flags.length], fxp, room.y + 14 + dip, 12, 12);
+    r(ctx, flags[i % flags.length], fxp + 3, room.y + 26 + dip, 6, 5);
+  }
   // splash + beach ball + duck float
   hl(ctx, bx + 30, room.floor - 34, 4, 10, 0.5);
   hl(ctx, bx + 38, room.floor - 30, 3, 6, 0.5);
@@ -403,7 +500,7 @@ export const footballP: Painter = (ctx, room, pal, rng) => {
   hl(ctx, room.x + 8, room.floor - 14, 36, 6, 0.2);
   goalPosts(ctx, room.x + 20, room.floor, false);
   goalPosts(ctx, room.x + room.w - 25, room.floor, true);
-  scoreboard(ctx, pal, room.x + room.w * 0.5 - 60, room.y + 16, 120);
+  scoreboard(ctx, pal, room.x + room.w * 0.5 - Math.max(60, room.w * 0.07), room.y + 16, Math.max(120, room.w * 0.14));
   floodLight(ctx, room.x + room.w * 0.2, room.y);
   floodLight(ctx, room.x + room.w * 0.8, room.y);
   // bench + cooler
@@ -448,7 +545,7 @@ export const soccerP: Painter = (ctx, room, pal, rng) => {
   r(ctx, '#e86a5a', room.x + 7, room.floor - 34, 12, 8);
   r(ctx, '#eef2f5', room.x + room.w - 7, room.floor - 34, 3, 34);
   r(ctx, '#e86a5a', room.x + room.w - 19, room.floor - 34, 12, 8);
-  scoreboard(ctx, pal, mid - 60, room.y + 16, 120);
+  scoreboard(ctx, pal, mid - Math.max(60, room.w * 0.07), room.y + 16, Math.max(120, room.w * 0.14));
   floodLight(ctx, room.x + room.w * 0.25, room.y);
   floodLight(ctx, room.x + room.w * 0.75, room.y);
 };
@@ -485,7 +582,7 @@ export const basketballP: Painter = (ctx, room, pal, rng) => {
   r(ctx, pal.furnitureDark, mid + 40, room.floor - 26, 70, 6);
   r(ctx, pal.furnitureDark, mid + 46, room.floor - 20, 5, 20);
   r(ctx, pal.furnitureDark, mid + 98, room.floor - 20, 5, 20);
-  scoreboard(ctx, pal, mid - 60, room.y + 14, 120);
+  scoreboard(ctx, pal, mid - Math.max(60, room.w * 0.07), room.y + 14, Math.max(120, room.w * 0.14));
   floodLight(ctx, room.x + room.w * 0.3, room.y);
   floodLight(ctx, room.x + room.w * 0.7, room.y);
 };
@@ -520,7 +617,7 @@ export const baseballP: Painter = (ctx, room, pal, rng) => {
   r(ctx, '#1e4a8a', dx + 88, room.floor - 8, 16, 6);
   disc(ctx, '#eef2f5', dx + room.w * 0.2, room.floor - 30, 5); // ball mid-air
   r(ctx, '#e86a5a', dx + room.w * 0.2 - 3, room.floor - 30, 2, 2); // stitches
-  scoreboard(ctx, pal, room.x + room.w * 0.5 - 60, room.y + 16, 120);
+  scoreboard(ctx, pal, room.x + room.w * 0.5 - Math.max(60, room.w * 0.07), room.y + 16, Math.max(120, room.w * 0.14));
   floodLight(ctx, room.x + room.w * 0.25, room.y);
   floodLight(ctx, room.x + room.w * 0.75, room.y);
 };

@@ -2,6 +2,7 @@
  * Painters: secret-ops & infrastructure rooms (256 art px per cell).
  * lab · command · vault · garage · racegarage · elevator · silo
  */
+import { fx } from '../fx';
 import {
   disc, halo, hl, r, ring, sh, shadow, shelf, wallScreen, type Painter,
 } from './kit';
@@ -50,6 +51,34 @@ export const labP: Painter = (ctx, room, pal, rng) => {
   r(ctx, pal.trim, room.x + room.w * 0.35, room.y, 4, 44);
   r(ctx, pal.furnitureDark, room.x + bw + 40, room.floor - 36, 6, 36);
   r(ctx, pal.furniture, room.x + bw + 28, room.floor - 44, 30, 8);
+  // overhead pipe run feeding the specimen tank
+  r(ctx, pal.trim, room.x + 12, room.y + 10, room.w - 24, 8);
+  r(ctx, pal.trim, tx + 34, room.y + 18, 10, 12); // drop into the tank
+  for (const vx of [room.x + room.w * 0.24, room.x + room.w * 0.58]) {
+    r(ctx, pal.furnitureDark, vx - 3, room.y + 8, 14, 12);
+    disc(ctx, '#a8552f', vx + 4, room.y + 14, 6); // valve wheel
+  }
+  // hanging monitor cluster over the middle of the room
+  if (room.w > 500) {
+    const hmx = room.x + room.w * 0.34;
+    r(ctx, pal.trim, hmx + 26, room.y + 18, 4, 34); // arm
+    wallScreen(ctx, pal, hmx, room.y + 56, Math.min(150, room.w * 0.18), 44, rng);
+  }
+  // glowing canister rack beside the tank
+  const crx = tx - 56;
+  r(ctx, pal.furnitureDark, crx - 4, room.floor - 56, 52, 56);
+  for (let i = 0; i < 3; i++) {
+    r(ctx, pal.glow, crx + 2 + i * 15, room.floor - 48, 11, 40);
+    hl(ctx, crx + 2 + i * 15, room.floor - 48, 3, 40, 0.3);
+  }
+  halo(ctx, pal.glow, crx - 8, room.floor - 60, 60, 20, 0.12);
+  // floor cable snake bench → tank
+  ctx.globalAlpha = 0.55;
+  r(ctx, pal.furnitureDark, room.x + bw + 16, room.floor - 4, tx - room.x - bw - 16, 4);
+  r(ctx, pal.furnitureDark, room.x + bw + 60, room.floor - 8, 44, 4);
+  ctx.globalAlpha = 1;
+  // slow bubbles in the specimen tank (the specimen is alive, after all)
+  fx(ctx, { kind: 'bubble', x: tx + 12, y: room.y + 48, w: 56, h: room.h - 116, color: '#dff3ff', n: 3, speed: 0.5 });
 };
 
 export const commandP: Painter = (ctx, room, pal, rng) => {
@@ -183,6 +212,54 @@ export const garageP: Painter = (ctx, room, pal, rng) => {
     disc(ctx, pal.trim, tsx + 18, room.floor - 8 - t * 16, 6);
   }
   sh(ctx, vx + vw * 0.4, room.floor - 6, 52, 6, 0.25); // oil stain
+  // hydraulic lift with a second car up on the platform (6-wide bays only —
+  // in the 4-wide it would stand in front of the parked vehicle)
+  if (room.w > 1100) {
+    const lx = room.x + room.w * 0.46;
+    const lw = Math.min(240, room.w * 0.22);
+    const ly = room.y + room.h * 0.42;
+    r(ctx, pal.trim, lx, ly, 10, room.floor - ly); // posts
+    r(ctx, pal.trim, lx + lw - 10, ly, 10, room.floor - ly);
+    r(ctx, '#e8c46f', lx - 6, ly - 8, lw + 12, 10); // platform
+    sh(ctx, lx - 6, ly + 2, lw + 12, 4, 0.3);
+    const c2w = lw * 0.82; // the car up top
+    const c2x = lx + (lw - c2w) / 2;
+    r(ctx, pal.accent, c2x + c2w * 0.22, ly - 42, c2w * 0.5, 16);
+    r(ctx, '#bfe3f0', c2x + c2w * 0.28, ly - 38, c2w * 0.14, 10);
+    r(ctx, pal.furniture, c2x, ly - 26, c2w, 18);
+    hl(ctx, c2x, ly - 26, c2w, 4);
+    disc(ctx, '#14181d', c2x + 22, ly - 8, 10);
+    disc(ctx, '#14181d', c2x + c2w - 22, ly - 8, 10);
+  }
+  // pegboard tool wall filling the upper-right
+  const pgx = room.x + room.w * 0.72;
+  const pgw = Math.min(200, room.w * 0.2);
+  r(ctx, pal.furniture, pgx, room.y + 28, pgw, 110);
+  hl(ctx, pgx, room.y + 28, pgw, 4);
+  ctx.globalAlpha = 0.25;
+  for (let hy = room.y + 40; hy < room.y + 130; hy += 14)
+    for (let hx = pgx + 10; hx < pgx + pgw - 8; hx += 16) r(ctx, pal.furnitureDark, hx, hy, 3, 3);
+  ctx.globalAlpha = 1;
+  r(ctx, pal.trim, pgx + 12, room.y + 44, 8, 34); // wrench
+  r(ctx, pal.trim, pgx + 8, room.y + 40, 16, 8);
+  r(ctx, '#e86a5a', pgx + pgw * 0.35, room.y + 42, 20, 8); // hammer head
+  r(ctx, pal.furnitureDark, pgx + pgw * 0.35 + 7, room.y + 50, 6, 28);
+  disc(ctx, pal.trim, pgx + pgw * 0.68, room.y + 56, 12); // hose coil
+  disc(ctx, pal.furniture, pgx + pgw * 0.68, room.y + 56, 6);
+  r(ctx, '#e8c46f', pgx + 12, room.y + 96, pgw - 28, 10); // spirit level
+  r(ctx, pal.glow, pgx + pgw / 2 - 5, room.y + 98, 10, 6);
+  // chain hoist dangling an engine block over the bay
+  const chx = room.x + room.w * 0.16;
+  r(ctx, pal.furnitureDark, chx, room.y + 14, 4, room.h * 0.22);
+  for (let cy = room.y + 16; cy < room.y + room.h * 0.22; cy += 8) r(ctx, pal.trim, chx - 1, cy, 6, 3);
+  r(ctx, '#5a6470', chx - 18, room.y + room.h * 0.22 + 14, 40, 30); // engine
+  r(ctx, '#5a6470', chx - 8, room.y + room.h * 0.22 + 6, 20, 10);
+  hl(ctx, chx - 18, room.y + room.h * 0.22 + 14, 40, 5, 0.2);
+  // painted parking bay lines
+  ctx.globalAlpha = 0.5;
+  r(ctx, '#e8c46f', vx - 20, room.floor - 4, 8, 4);
+  r(ctx, '#e8c46f', vx + vw + 12, room.floor - 4, 8, 4);
+  ctx.globalAlpha = 1;
 };
 
 export const racegarageP: Painter = (ctx, room, pal) => {
@@ -191,7 +268,7 @@ export const racegarageP: Painter = (ctx, room, pal) => {
     r(ctx, (x / 16) % 2 < 1 ? '#eef2f5' : '#14181d', x, room.y + 6, 16, 10);
   }
   // the race car: low, sleek, numbered
-  const vw = Math.min(360, room.w * 0.55);
+  const vw = Math.min(480, room.w * 0.5);
   const vx = room.x + room.w * 0.16;
   shadow(ctx, vx, room.floor, vw);
   r(ctx, '#e8342a', vx + vw * 0.3, room.floor - 58, vw * 0.34, 20); // cockpit hump
@@ -237,6 +314,39 @@ export const racegarageP: Painter = (ctx, room, pal) => {
   r(ctx, '#f5c542', tcx + 18, room.floor - 82, 16, 14); // trophy cup
   r(ctx, '#f5c542', tcx + 22, room.floor - 68, 8, 6);
   halo(ctx, '#f5c542', tcx + 12, room.floor - 86, 28, 20, 0.18);
+  // overhead pit gantry: truss, work lights, dangling air hoses
+  const gy = room.y + room.h * 0.3;
+  r(ctx, '#3a3f45', room.x + 24, gy, room.w - 48, 10);
+  ctx.globalAlpha = 0.5;
+  for (let gx = room.x + 34; gx < room.x + room.w - 40; gx += 26) {
+    r(ctx, '#5a6470', gx, gy + 2, 3, 6); // truss lattice
+  }
+  ctx.globalAlpha = 1;
+  r(ctx, '#3a3f45', room.x + 40, gy + 10, 8, room.floor - gy - 10); // legs
+  r(ctx, '#3a3f45', room.x + room.w - 52, gy + 10, 8, room.floor - gy - 10);
+  for (let lx2 = room.x + room.w * 0.2; lx2 < room.x + room.w - 60; lx2 += room.w * 0.2) {
+    r(ctx, '#fff3c2', lx2, gy + 10, 16, 6); // work lights
+    halo(ctx, '#fff3c2', lx2 - 8, gy + 16, 32, 26, 0.12);
+  }
+  for (const hx of [vx - 24, vx + vw + 30]) { // air hoses at the car's corners
+    r(ctx, '#e86a5a', hx, gy + 10, 4, room.h * 0.22);
+    r(ctx, '#3a3f45', hx - 3, gy + 10 + room.h * 0.22, 10, 10); // wrench head
+  }
+  // hanging timing board on the gantry
+  const tbx = room.x + room.w * 0.5 - 45;
+  r(ctx, '#14181d', tbx, gy - 44, 90, 40);
+  r(ctx, pal.trim, tbx - 3, gy - 47, 96, 3);
+  r(ctx, '#ffd166', tbx + 8, gy - 36, 26, 10); // "LAP"
+  r(ctx, pal.glow, tbx + 44, gy - 36, 38, 10); // time digits
+  r(ctx, '#ff5555', tbx + 8, gy - 20, 74, 8); // sector bar
+  fx(ctx, { kind: 'blink', x: tbx + 44, y: gy - 36, w: 38, h: 10, color: pal.glow, speed: 1.8 });
+  // tire wall behind the fuel cans
+  for (let col = 0; col < 2; col++) {
+    for (let t2 = 0; t2 < 3 - col; t2++) {
+      r(ctx, '#14181d', room.x + 58 + col * 40, room.floor - 16 - t2 * 16, 36, 16);
+      disc(ctx, '#5a6470', room.x + 76 + col * 40, room.floor - 8 - t2 * 16, 6);
+    }
+  }
 };
 
 export const elevatorP: Painter = (ctx, room, pal) => {
@@ -269,17 +379,18 @@ export const elevatorP: Painter = (ctx, room, pal) => {
 
 export const siloP: Painter = (ctx, room, pal) => {
   const cx = room.x + room.w * 0.42;
-  const bodyW = Math.min(104, room.w * 0.3);
-  const topY = room.y + 32;
+  const bodyW = Math.min(150, room.w * 0.34);
+  const topY = room.y + 20;
   const bodyH = room.floor - topY - 60;
   // steam vents
   hl(ctx, room.x + 16, room.floor - 60, 16, 24, 0.14);
   hl(ctx, room.x + 36, room.floor - 80, 12, 32, 0.1);
-  // rocket body: panels, rivets, stripe, porthole
-  r(ctx, pal.trim, cx - bodyW / 2, topY + 40, bodyW, bodyH);
-  hl(ctx, cx - bodyW / 2, topY + 40, 12, bodyH, 0.2);
-  ctx.globalAlpha = 0.3;
-  for (let py = topY + 68; py < topY + bodyH; py += 48) r(ctx, pal.furnitureDark, cx - bodyW / 2 + 4, py, bodyW - 8, 4);
+  // rocket body: classic warm-white hull with theme-accent trim
+  r(ctx, '#e8e2d0', cx - bodyW / 2, topY + 40, bodyW, bodyH);
+  hl(ctx, cx - bodyW / 2, topY + 40, 12, bodyH, 0.35);
+  sh(ctx, cx + bodyW / 2 - 14, topY + 40, 14, bodyH, 0.14); // rounded shading
+  ctx.globalAlpha = 0.25;
+  for (let py = topY + 68; py < topY + bodyH; py += 48) r(ctx, '#8a8474', cx - bodyW / 2 + 4, py, bodyW - 8, 4);
   ctx.globalAlpha = 1;
   for (let py = topY + 60; py < topY + bodyH - 10; py += 48) {
     r(ctx, pal.furnitureDark, cx - bodyW / 2 + 4, py, 4, 4);
@@ -314,6 +425,22 @@ export const siloP: Painter = (ctx, room, pal) => {
   ctx.globalAlpha = 1;
   r(ctx, pal.furniture, cx + bodyW / 2, topY + 88, gx - cx - bodyW / 2, 12);
   sh(ctx, cx + bodyW / 2, topY + 96, gx - cx - bodyW / 2, 4, 0.3);
+  if (room.h > 600) {
+    // second service arm + fuel line for the 3-row silo
+    r(ctx, pal.furniture, cx + bodyW / 2, topY + bodyH * 0.62, gx - cx - bodyW / 2, 12);
+    sh(ctx, cx + bodyW / 2, topY + bodyH * 0.62 + 8, gx - cx - bodyW / 2, 4, 0.3);
+    r(ctx, '#e86a5a', cx + bodyW / 2 - 8, topY + bodyH * 0.42, 8, 8); // umbilical port
+    r(ctx, '#e86a5a', cx + bodyW / 2, topY + bodyH * 0.42 + 2, (gx - cx - bodyW / 2) * 0.6, 5); // fuel hose
+    r(ctx, '#e86a5a', cx + bodyW / 2 + (gx - cx - bodyW / 2) * 0.6, topY + bodyH * 0.42 + 2, 5, bodyH * 0.2);
+  }
+  // warning beacon on the gantry mast
+  r(ctx, pal.furnitureDark, gx + 8, room.y + 12, 16, 12);
+  r(ctx, '#ff5555', gx + 12, room.y + 4, 8, 8);
+  halo(ctx, '#ff5555', gx + 4, room.y, 24, 18, 0.25);
+  fx(ctx, { kind: 'blink', x: gx + 12, y: room.y + 4, w: 8, h: 8, color: '#ff5555' });
+  // steam venting around the engine bell
+  fx(ctx, { kind: 'bubble', x: cx - bodyW / 2 - 40, y: room.floor - 110, w: 44, h: 96, color: '#e8edf2', n: 3, speed: 0.35 });
+  fx(ctx, { kind: 'bubble', x: cx + bodyW / 2 - 6, y: room.floor - 90, w: 40, h: 78, color: '#e8edf2', n: 2, speed: 0.3 });
   // hazard stripes + countdown console with the big red button
   for (let x = room.x + 4; x < room.x + room.w - 20; x += 28) {
     r(ctx, x % 56 < 28 ? pal.glow : pal.furnitureDark, x, room.floor - 6, 24, 6);
