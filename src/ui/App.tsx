@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { loadBase, removeModule } from '../core/actions';
 import { getState } from '../core/store';
-import type { SaveFileV1 } from '../core/types';
+import type { SaveFileV2 } from '../core/types';
 import { redo, undo } from '../core/undo';
 import { attachPointerController } from '../input/pointerController';
 import { initRenderer } from '../render/renderer';
@@ -20,7 +20,7 @@ export function App() {
   const state = useGameState();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   // A base arriving via share link, awaiting the player's OK to replace theirs.
-  const [pendingShare, setPendingShare] = useState<SaveFileV1 | null>(null);
+  const [pendingShare, setPendingShare] = useState<SaveFileV2 | null>(null);
 
   useEffect(() => {
     const code = shareCodeFromHash(location.hash);

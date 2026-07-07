@@ -1,17 +1,19 @@
 /**
- * Save format v1 + localStorage autosave + export/import.
+ * Save format v2 (v1 migrates) + localStorage autosave + export/import.
  * Contract: docs/ARCHITECTURE.md → "Save format". Versioned: migrate, never break.
+ * v1 → v2: added completedChallenges (badge stamps); v1 loads with [].
  */
-import type { GameState, Placement, SaveFile, SaveFileV1 } from '../core/types';
+import type { GameState, Placement, SaveFile, SaveFileV2 } from '../core/types';
 import { getDef, getEnvironment, getTheme, DEFAULT_ENVIRONMENT } from '../core/catalog';
+import { CHALLENGES } from '../core/challenges';
 import { getState, subscribe } from '../core/store';
 import { loadBase } from '../core/actions';
 
 export const STORAGE_KEY = 'secret-base-builder:save:v1';
 
-export function serialize(state: GameState): SaveFileV1 {
+export function serialize(state: GameState): SaveFileV2 {
   return {
-    version: 1,
+    version: 2,
     baseName: state.baseName,
     environmentId: state.environmentId,
     placements: state.placements.map(({ id, defId, theme, x, y }) => ({
@@ -21,21 +23,24 @@ export function serialize(state: GameState): SaveFileV1 {
       x,
       y,
     })),
+    completedChallenges: state.completedChallenges,
   };
 }
 
 export interface DeserializeResult {
-  save: SaveFileV1;
+  save: SaveFileV2;
   /** Placements dropped because their defId/theme no longer exists or data was malformed. */
   skipped: number;
 }
 
-/** Parses and sanitizes a save file. Throws on unusable input. */
+/** Parses and sanitizes a save file (v1 or v2). Throws on unusable input. */
 export function deserialize(json: string): DeserializeResult {
   const raw: unknown = JSON.parse(json);
   if (typeof raw !== 'object' || raw === null) throw new Error('Save file is not an object');
   const file = raw as Partial<SaveFile>;
-  if (file.version !== 1) throw new Error(`Unsupported save version: ${String(file.version)}`);
+  if (file.version !== 1 && file.version !== 2) {
+    throw new Error(`Unsupported save version: ${String(file.version)}`);
+  }
 
   const environmentId = getEnvironment(String(file.environmentId))
     ? String(file.environmentId)
@@ -63,12 +68,21 @@ export function deserialize(json: string): DeserializeResult {
     }
   }
 
+  // v1 → v2 migration: badge stamps default to none. Unknown ids are dropped
+  // (a future version may have more cards; ours only shows what it knows).
+  const knownIds = new Set(CHALLENGES.map((ch) => ch.id));
+  const completedChallenges =
+    file.version === 2 && Array.isArray(file.completedChallenges)
+      ? file.completedChallenges.filter((id): id is string => typeof id === 'string' && knownIds.has(id))
+      : [];
+
   return {
     save: {
-      version: 1,
+      version: 2,
       baseName: typeof file.baseName === 'string' && file.baseName ? file.baseName : 'My Secret Base',
       environmentId,
       placements,
+      completedChallenges,
     },
     skipped,
   };
@@ -115,7 +129,7 @@ export function loadAutosave(storage: Pick<Storage, 'getItem'> = localStorage): 
     const json = storage.getItem(STORAGE_KEY);
     if (!json) return false;
     const { save } = deserialize(json);
-    loadBase(save.baseName, save.environmentId, save.placements);
+    loadBase(save.baseName, save.environmentId, save.placements, save.completedChallenges);
     return true;
   } catch {
     return false;
@@ -138,6 +152,6 @@ export function exportBase(): void {
 /** Imports a save file's text. Returns skipped-placement count. Throws if unusable. */
 export function importBase(json: string): number {
   const { save, skipped } = deserialize(json);
-  loadBase(save.baseName, save.environmentId, save.placements);
+  loadBase(save.baseName, save.environmentId, save.placements, save.completedChallenges);
   return skipped;
 }

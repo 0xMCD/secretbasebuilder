@@ -116,6 +116,8 @@ export interface GameState {
   selectedId: string | null;
   /** True until the player has confirmed an environment on the start screen. */
   needsEnvironmentPick: boolean;
+  /** Blueprint-challenge badges earned (challenge ids, persisted, never revoked). */
+  completedChallenges: string[];
 }
 
 /** Versioned save file — see docs/ARCHITECTURE.md "Save format". */
@@ -125,4 +127,11 @@ export interface SaveFileV1 {
   environmentId: EnvironmentId;
   placements: Placement[];
 }
-export type SaveFile = SaveFileV1;
+export interface SaveFileV2 {
+  version: 2;
+  baseName: string;
+  environmentId: EnvironmentId;
+  placements: Placement[];
+  completedChallenges: string[];
+}
+export type SaveFile = SaveFileV1 | SaveFileV2;

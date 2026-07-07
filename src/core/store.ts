@@ -16,6 +16,7 @@ export function initialState(): GameState {
     activeTheme: DEFAULT_THEME,
     selectedId: null,
     needsEnvironmentPick: true,
+    completedChallenges: [],
   };
 }
 

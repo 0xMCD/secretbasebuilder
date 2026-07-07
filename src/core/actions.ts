@@ -139,6 +139,7 @@ export function loadBase(
   baseName: string,
   environmentId: EnvironmentId,
   placements: Placement[],
+  completedChallenges: string[] = [],
 ): void {
   resetUndo();
   setState({
@@ -147,5 +148,14 @@ export function loadBase(
     placements,
     selectedId: null,
     needsEnvironmentPick: false,
+    completedChallenges,
   });
+}
+
+/** Awards challenge badges (idempotent; badges are earned, never revoked). */
+export function stampChallenges(ids: string[]): void {
+  const have = getState().completedChallenges;
+  const add = ids.filter((id) => !have.includes(id));
+  if (add.length === 0) return;
+  setState({ completedChallenges: [...have, ...add] });
 }

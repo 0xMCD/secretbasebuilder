@@ -6,6 +6,7 @@ import { canRedo, canUndo, redo, undo } from '../core/undo';
 import { clearAutosave, exportBase, importBase, serialize } from '../persistence/save';
 import { encodeShare, shareUrl } from '../persistence/share';
 import { downloadSnapshot } from '../render/snapshot';
+import { ChallengesButton } from './Challenges';
 import { useGameState } from './hooks';
 
 export function TopBar() {
@@ -20,7 +21,8 @@ export function TopBar() {
   const [shareLink, setShareLink] = useState('');
 
   const onShare = async () => {
-    const url = shareUrl(await encodeShare(serialize(getState())));
+    // Badges are earned, not shared — strip them from the share code.
+    const url = shareUrl(await encodeShare({ ...serialize(getState()), completedChallenges: [] }));
     setShareLink(url);
     try {
       await navigator.clipboard.writeText(url);
@@ -80,6 +82,7 @@ export function TopBar() {
       <button className="btn" onClick={redo} disabled={!canRedo()} title="Redo (Ctrl+Y)">
         ↪
       </button>
+      <ChallengesButton />
       <button
         className="btn"
         onClick={() => void onShare()}

@@ -20,8 +20,9 @@ React (UI) + hand-rolled Canvas2D renderer (base view). No backend.
 
 ## Hard rules
 - `src/core/` must stay DOM-free (pure logic; it's the tested layer).
-- Content ids (`module kind ids, def ids, theme ids, environment ids`) are
-  public and appear in players' save files: **never rename or delete, only add.**
+- Content ids (`module kind ids, def ids, theme ids, environment ids,
+  challenge ids`) are public and appear in players' save files: **never
+  rename or delete, only add.**
 - All sprite art is addressed by key `${kindId}_${w}x${h}_${themeId}`. Real
   PNGs in `public/art/modules/` (listed in `public/art/art-manifest.json`)
   override procedural placeholders. Never hardcode sprite pixel sizes —

@@ -1,0 +1,101 @@
+{
+  "$comment": "Blueprint challenges: optional prompt cards, LEGO-idea-book style. Completing one stamps a cosmetic badge — no gates, no currency, ids are public (saved) so never rename/delete, only add. Condition types live in core/challenges.ts. After editing run: npm run validate:content",
+  "challenges": [
+    {
+      "id": "spy-starter",
+      "emoji": "🕵️",
+      "name": "Spy Starter Kit",
+      "blurb": "Every agent needs the basics: somewhere to sleep, cook, and wash up.",
+      "conditions": [
+        { "type": "hasKind", "kind": "bedroom" },
+        { "type": "hasKind", "kind": "kitchen" },
+        { "type": "hasKind", "kind": "bathroom" }
+      ]
+    },
+    {
+      "id": "science-wing",
+      "emoji": "🧪",
+      "name": "Science Wing",
+      "blurb": "Put a laboratory right next to the library. For very serious research.",
+      "conditions": [{ "type": "adjacentKinds", "a": "lab", "b": "library" }]
+    },
+    {
+      "id": "rocket-ready",
+      "emoji": "🚀",
+      "name": "Rocket Ready",
+      "blurb": "A rocket silo, a command center, and a garage. Just in case.",
+      "conditions": [
+        { "type": "hasKind", "kind": "silo" },
+        { "type": "hasKind", "kind": "command" },
+        { "type": "hasKind", "kind": "garage" }
+      ]
+    },
+    {
+      "id": "deep-base",
+      "emoji": "🕳️",
+      "name": "Going Deep",
+      "blurb": "Build on at least four different floors.",
+      "conditions": [{ "type": "floors", "count": 4 }]
+    },
+    {
+      "id": "tiny-base",
+      "emoji": "🐜",
+      "name": "Tiny But Mighty",
+      "blurb": "A complete little base: five to eight rooms, all connected.",
+      "conditions": [
+        { "type": "minRooms", "count": 5 },
+        { "type": "maxRooms", "count": 8 },
+        { "type": "connected" }
+      ]
+    },
+    {
+      "id": "all-cozy",
+      "emoji": "🧶",
+      "name": "Maximum Cozy",
+      "blurb": "Six or more rooms, every single one in the Cozy style.",
+      "conditions": [
+        { "type": "minRooms", "count": 6 },
+        { "type": "allSameTheme", "theme": "cozy" }
+      ]
+    },
+    {
+      "id": "menagerie",
+      "emoji": "🦖",
+      "name": "The Menagerie",
+      "blurb": "Sharks, puppies, and a dinosaur under one roof.",
+      "conditions": [
+        { "type": "hasKind", "kind": "aquarium" },
+        { "type": "hasKind", "kind": "petstore" },
+        { "type": "hasKind", "kind": "dinoexhibit" }
+      ]
+    },
+    {
+      "id": "grand-hotel",
+      "emoji": "🛎️",
+      "name": "The Grand Hotel",
+      "blurb": "Three bedrooms, a dining hall, and an elevator for the guests.",
+      "conditions": [
+        { "type": "hasKind", "kind": "bedroom", "count": 3 },
+        { "type": "hasKind", "kind": "dining" },
+        { "type": "hasKind", "kind": "elevator" }
+      ]
+    },
+    {
+      "id": "movie-night",
+      "emoji": "🍿",
+      "name": "Movie Night",
+      "blurb": "A theater with the buffet right next door. Snacks come first.",
+      "conditions": [{ "type": "adjacentKinds", "a": "theater", "b": "buffet" }]
+    },
+    {
+      "id": "mega-base",
+      "emoji": "🏗️",
+      "name": "Mega Base",
+      "blurb": "Fifteen rooms or more, all connected. One giant secret world.",
+      "conditions": [
+        { "type": "minRooms", "count": 15 },
+        { "type": "connected" }
+      ]
+    }
+  ]
+}

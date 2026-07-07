@@ -200,11 +200,13 @@ for one-off hero assets but is no longer the plan of record.
   ball, and every resident bounces + waves via agents.startParty); aquarium
   → feeding time (flakes rain, fish dart up); trampoline → bounce show
   (flying balls, star pops at apex). `?perf` also exposes `__reactions`.
-- [ ] **P4.2 Blueprint challenges** — a deck of optional prompt cards
-  ("a spy needs: a bedroom next to a rocket silo and somewhere to swim");
-  completion stamps a cosmetic badge. Pure placement-logic checks, no
-  gates, no currency. `content/challenges.json` + save-format bump for
-  completed-card stamps.
+- [x] **P4.2 Blueprint challenges** — 10 optional prompt cards
+  (`content/challenges.json`, validated; ids are public/stable) checked by
+  a pure evaluator (`core/challenges.ts`, tested): hasKind / adjacentKinds /
+  allSameTheme / floors / min-maxRooms / connected (connectivity follows the
+  P4.0 solid-floors rule). 🎯 top-bar panel shows live ✓/○ per condition;
+  completing a card auto-stamps a permanent badge (toast + gold card).
+  Save format v2 (v1 migrates; badges stripped from share codes).
 - [ ] **P4.3 Secret-base secrets** — bookcase-door connector (looks solid
   until a resident walks through), fireman pole, periscope room;
   excavatable dirt treasures that become museum displays; Base-o-pedia

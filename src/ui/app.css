@@ -704,3 +704,111 @@ canvas.world {
     max-width: 90%;
   }
 }
+
+/* --- blueprint challenges --- */
+.challenge-panel {
+  background: linear-gradient(180deg, #1b2432, #141a24);
+  border: 1px solid #2c3745;
+  border-radius: 14px;
+  padding: 18px 20px;
+  width: min(720px, 92vw);
+  max-height: 84vh;
+  overflow-y: auto;
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.55);
+}
+
+.challenge-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.challenge-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.challenge-card {
+  position: relative;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid #2c3745;
+  border-radius: 10px;
+  padding: 12px 14px;
+}
+
+.challenge-card.stamped {
+  border-color: #ffd166;
+  background: rgba(255, 209, 102, 0.08);
+}
+
+.challenge-name {
+  font-weight: 700;
+  font-size: 14.5px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.challenge-badge {
+  margin-left: auto;
+  background: #ffd166;
+  color: #14181d;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: 999px;
+  letter-spacing: 0.5px;
+}
+
+.challenge-blurb {
+  font-size: 12.5px;
+  color: #93a5b8;
+  margin: 6px 0 8px;
+}
+
+.challenge-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-size: 12.5px;
+  color: #b8c6d6;
+}
+
+.challenge-list li {
+  padding: 2px 0;
+}
+
+.challenge-list li.ok {
+  color: #7fc95c;
+}
+
+.challenge-toast {
+  position: fixed;
+  top: 64px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(180deg, #2a3547, #1b2432);
+  border: 1px solid #ffd166;
+  color: #e8eef5;
+  border-radius: 999px;
+  padding: 10px 22px;
+  font-size: 14px;
+  z-index: 60;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.5), 0 0 18px rgba(255, 209, 102, 0.25);
+  cursor: pointer;
+  animation: toast-pop 0.35s ease-out;
+}
+
+@keyframes toast-pop {
+  from {
+    transform: translateX(-50%) translateY(-16px) scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(-50%) translateY(0) scale(1);
+    opacity: 1;
+  }
+}

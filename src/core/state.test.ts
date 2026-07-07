@@ -149,6 +149,24 @@ describe('save serialize/deserialize', () => {
     expect(() => deserialize('{"version":99}')).toThrow(/version/i);
   });
 
+  it('migrates v1 saves (no badges) and round-trips v2 badges', () => {
+    // v1: completedChallenges defaults to []
+    const v1 = deserialize('{"version":1,"baseName":"Old","environmentId":"suburban","placements":[]}');
+    expect(v1.save.version).toBe(2);
+    expect(v1.save.completedChallenges).toEqual([]);
+    // v2: known badges survive, unknown ids are dropped
+    const v2 = deserialize(
+      JSON.stringify({
+        version: 2,
+        baseName: 'New',
+        environmentId: 'suburban',
+        placements: [],
+        completedChallenges: ['spy-starter', 'not-a-real-card'],
+      }),
+    );
+    expect(v2.save.completedChallenges).toEqual(['spy-starter']);
+  });
+
   it('falls back to default environment for unknown ids', () => {
     const { save } = deserialize('{"version":1,"environmentId":"moon","placements":[]}');
     expect(save.environmentId).toBe('suburban');

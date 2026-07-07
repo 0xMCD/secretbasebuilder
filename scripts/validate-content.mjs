@@ -105,6 +105,34 @@ for (const env of environments.environments ?? []) {
   checkPalette(env.palette, ENV_PALETTE_KEYS, label);
 }
 
+// ---- challenges.json ----
+const challenges = read('src/content/challenges.json');
+const kindIdSet = new Set((modules.kinds ?? []).map((k) => k.id));
+const themeIdSet = new Set((themes.themes ?? []).map((t) => t.id));
+const CONDITION_TYPES = ['hasKind', 'adjacentKinds', 'allSameTheme', 'floors', 'minRooms', 'maxRooms', 'connected'];
+checkUnique(challenges.challenges ?? [], 'challenges.json');
+for (const ch of challenges.challenges ?? []) {
+  const label = `challenges.json challenge "${ch.id}"`;
+  if (!ID.test(ch.id ?? '')) err(`${label}: id must match ${ID}`);
+  if (!ch.name) err(`${label}: missing name`);
+  if (!ch.blurb) err(`${label}: missing blurb`);
+  if (!ch.emoji) err(`${label}: missing emoji`);
+  if (!Array.isArray(ch.conditions) || ch.conditions.length === 0) {
+    err(`${label}: conditions must be a non-empty array`);
+    continue;
+  }
+  for (const c of ch.conditions) {
+    if (!CONDITION_TYPES.includes(c.type)) err(`${label}: unknown condition type "${c.type}"`);
+    for (const k of [c.kind, c.a, c.b]) {
+      if (k !== undefined && !kindIdSet.has(k)) err(`${label}: unknown kind "${k}"`);
+    }
+    if (c.theme !== undefined && !themeIdSet.has(c.theme)) err(`${label}: unknown theme "${c.theme}"`);
+    if (c.count !== undefined && (!Number.isInteger(c.count) || c.count < 1)) {
+      err(`${label}: count must be a positive integer`);
+    }
+  }
+}
+
 // ---- art-manifest.json ----
 const artManifest = read('public/art/art-manifest.json');
 const kindIds = new Set((modules.kinds ?? []).map((k) => k.id));
@@ -135,5 +163,5 @@ if (errors.length > 0) {
 }
 const defCount = (modules.kinds ?? []).reduce((n, k) => n + k.sizes.length, 0);
 console.log(
-  `Content OK: ${modules.kinds.length} kinds → ${defCount} defs × ${themes.themes.length} themes = ${defCount * themes.themes.length} sprite variants; ${environments.environments.length} environments; ${artManifest.modules.length} final-art overrides.`,
+  `Content OK: ${modules.kinds.length} kinds → ${defCount} defs × ${themes.themes.length} themes = ${defCount * themes.themes.length} sprite variants; ${environments.environments.length} environments; ${challenges.challenges.length} challenges; ${artManifest.modules.length} final-art overrides.`,
 );

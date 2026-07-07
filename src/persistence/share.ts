@@ -3,7 +3,7 @@
  * No backend — the link IS the base. deflate-raw via CompressionStream where
  * available (all modern browsers), with a plain-JSON fallback prefix.
  */
-import type { SaveFile, SaveFileV1 } from '../core/types';
+import type { SaveFile } from '../core/types';
 
 const PREFIX_DEFLATE = 'c';
 const PREFIX_PLAIN = 'j';
@@ -27,7 +27,7 @@ async function pipe(bytes: Uint8Array, stream: CompressionStream | Decompression
   return new Uint8Array(await new Response(readable).arrayBuffer());
 }
 
-export async function encodeShare(save: SaveFileV1): Promise<string> {
+export async function encodeShare(save: SaveFile): Promise<string> {
   const bytes = new TextEncoder().encode(JSON.stringify(save));
   if (typeof CompressionStream !== 'undefined') {
     return PREFIX_DEFLATE + toBase64Url(await pipe(bytes, new CompressionStream('deflate-raw')));
