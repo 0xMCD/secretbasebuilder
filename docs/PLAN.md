@@ -150,10 +150,17 @@ for one-off hero assets but is no longer the plan of record.
   (warm-white hero rocket, second service arm + fuel line, blinking beacon,
   steam); lab (ceiling pipe run, hanging monitors, canister rack, live tank
   bubbles).
-- [ ] P2.B2 Remaining-room densify — same treatment for the second tier:
-  gameroom, trampoline, junglegym, skatepark, dinoexhibit, gemmine, vault
-  2×2, observatory; plus the deferred shading-consistency audit (hardcoded
-  hexes that should be theme palette; deliberate fixed hero colors stay).
+- [x] **P2.B2 Remaining-room densify** — gameroom (air-hockey table,
+  high-score wall); trampoline park (chunky framed beds w/ springs, angled
+  wall-trampoline, hanging rings, neon bounce sign, dive-worthy foam pit);
+  junglegym (monkey bars across 72% w/ swing rings, cargo net, wider ball
+  pit); skatepark (quarter-pipes scaled to room w/ deck rails, graffiti
+  mural, fun box); dino exhibit (skeleton scaled to fill the hall + wired
+  pterosaur overhead); vault (safe-deposit wall w/ one ajar glowing box,
+  third laser + breathing-laser fx, blinking camera); observatory (telescope
+  reaches the roof slit, dome ribs, comet, twinkling stars); gemmine
+  (twinkling gem veins). Color policy codified in kit.ts: theme palette for
+  construction/furniture, deliberate fixed hero colors stay.
 - [ ] P2.C Per-placement variation — variant index in the sprite cache key
   (3-4 variants per def, seeded choices: book colors, posters, clutter) so
   two copies of a room aren't pixel-identical.

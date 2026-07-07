@@ -135,6 +135,28 @@ export const gameroomP: Painter = (ctx, room, pal, rng) => {
   disc(ctx, pal.glow, dx, room.y + 52, 8);
   disc(ctx, '#14181d', dx, room.y + 52, 3);
   r(ctx, '#ffd166', dx - 1, room.y + 38, 2, 10); // stuck dart
+  // air-hockey table in the middle (wide rooms)
+  if (room.w > 820) {
+    const ahx = room.x + room.w * 0.42;
+    const ahw = Math.min(190, room.w * 0.2);
+    shadow(ctx, ahx, room.floor, ahw);
+    r(ctx, '#3a8fd4', ahx, room.floor - 48, ahw, 14); // rim
+    r(ctx, '#eef2f5', ahx + 6, room.floor - 44, ahw - 12, 8); // air surface
+    r(ctx, '#e86a5a', ahx + ahw / 2 - 2, room.floor - 44, 4, 8); // center line
+    disc(ctx, '#14181d', ahx + ahw * 0.3, room.floor - 40, 4); // puck
+    disc(ctx, '#e86a5a', ahx + ahw * 0.72, room.floor - 42, 6); // striker
+    r(ctx, pal.furnitureDark, ahx + 10, room.floor - 34, 12, 34); // legs
+    r(ctx, pal.furnitureDark, ahx + ahw - 22, room.floor - 34, 12, 34);
+    fx(ctx, { kind: 'sparkle', x: ahx + 8, y: room.floor - 44, w: ahw - 16, h: 8, color: '#ffffff', n: 3, speed: 1.6 });
+  }
+  // framed high-score wall between sign and dartboard
+  const hsx = room.x + room.w * 0.72;
+  for (let i = 0; i < 3; i++) {
+    r(ctx, pal.trim, hsx + i * 34, room.y + 34, 26, 32);
+    r(ctx, '#0d1117', hsx + 3 + i * 34, room.y + 38, 20, 24);
+    r(ctx, pal.glow, hsx + 6 + i * 34, room.y + 42, 14, 4);
+    r(ctx, pal.accent, hsx + 6 + i * 34, room.y + 50, 10, 4);
+  }
   // pool table
   if (room.w > 600) {
     const px = room.x + room.w - 220;
@@ -360,35 +382,57 @@ export const lavaP: Painter = (ctx, room, pal, rng) => {
 
 export const trampolineP: Painter = (ctx, room, pal, rng) => {
   paddedWalls(ctx, room, pal.accent);
-  // trampolines in a row
-  const n = Math.max(2, Math.floor(room.w / 180));
+  // angled wall-trampoline at the left (park signature move)
+  for (let i = 0; i < 6; i++) {
+    r(ctx, '#3a8fd4', room.x + 8 + i * 10, room.floor - 130 + i * 18, 14, 14);
+    r(ctx, pal.accent, room.x + 4 + i * 10, room.floor - 134 + i * 18, 8, 8); // pad edge
+  }
+  // hanging rings pair over the beds
+  for (const rx of [room.x + room.w * 0.36, room.x + room.w * 0.5]) {
+    r(ctx, pal.trim, rx, room.y + 8, 3, room.h * 0.3);
+    ring(ctx, '#ffd166', rx + 1, room.y + 12 + room.h * 0.3, 9, 3);
+  }
+  // bounce-arrows neon sign (up-up-up!)
+  const sgx = room.x + room.w * 0.62;
+  r(ctx, '#14181d', sgx - 10, room.y + 18, 96, 44);
+  for (let a = 0; a < 3; a++) {
+    const ax = sgx + a * 28;
+    const ay = room.y + 48 - a * 8;
+    r(ctx, pal.glow, ax, ay, 18, 5); // chevron arms
+    r(ctx, pal.glow, ax + 3, ay - 5, 12, 5);
+    r(ctx, pal.glow, ax + 6, ay - 10, 6, 5);
+  }
+  halo(ctx, pal.glow, sgx - 14, room.y + 16, 104, 50, 0.14);
+  // trampoline beds: chunky frames, blue mats, spring ticks, pad rings
+  const n = Math.max(2, Math.floor(room.w / 260));
+  const span2 = room.w - 80 - Math.min(200, room.w * 0.24); // leave room for foam pit
   for (let i = 0; i < n; i++) {
-    const tx = room.x + 20 + i * (room.w - 40) / n;
-    const tw = (room.w - 60) / n;
+    const tw = span2 / n - 24;
+    const tx = room.x + 56 + i * (span2 / n);
     shadow(ctx, tx, room.floor, tw);
-    r(ctx, pal.trim, tx + 4, room.floor - 24, 6, 24); // legs
-    r(ctx, pal.trim, tx + tw - 10, room.floor - 24, 6, 24);
-    r(ctx, '#14181d', tx, room.floor - 30, tw, 8); // mat
-    r(ctx, pal.accent, tx - 2, room.floor - 32, tw + 4, 4); // pad ring
-    // bounce arc ghost
-    ctx.globalAlpha = 0.15;
-    ring(ctx, '#ffffff', tx + tw / 2, room.floor - 60, 20, 2);
-    ctx.globalAlpha = 1;
+    r(ctx, pal.trim, tx + 4, room.floor - 30, 8, 30); // legs
+    r(ctx, pal.trim, tx + tw - 12, room.floor - 30, 8, 30);
+    r(ctx, '#2c3138', tx - 4, room.floor - 44, tw + 8, 12); // frame rail
+    r(ctx, '#3a8fd4', tx + 8, room.floor - 40, tw - 16, 8); // mat
+    hl(ctx, tx + 8, room.floor - 40, tw - 16, 3, 0.25);
+    for (let s = tx + 4; s < tx + tw - 6; s += 12) r(ctx, '#eef2f5', s, room.floor - 36, 3, 2); // springs
+    r(ctx, '#e86a5a', tx - 6, room.floor - 48, tw + 12, 6); // safety pad ring
   }
   // ball mid-air with motion lines
-  const bx = room.x + room.w * 0.35;
-  disc(ctx, '#e86a5a', bx, room.y + room.h * 0.35, 10);
-  r(ctx, '#ffd166', bx - 10, room.y + room.h * 0.35 - 2, 10, 4);
-  hl(ctx, bx - 4, room.y + room.h * 0.35 + 16, 3, 14, 0.3);
-  hl(ctx, bx + 4, room.y + room.h * 0.35 + 20, 3, 10, 0.3);
-  // foam pit
-  const fx = room.x + room.w - 110;
-  r(ctx, '#14181d', fx, room.floor - 36, 96, 36);
+  const bx = room.x + room.w * 0.3;
+  disc(ctx, '#e86a5a', bx, room.y + room.h * 0.38, 10);
+  r(ctx, '#ffd166', bx - 10, room.y + room.h * 0.38 - 2, 10, 4);
+  hl(ctx, bx - 4, room.y + room.h * 0.38 + 16, 3, 14, 0.3);
+  hl(ctx, bx + 4, room.y + room.h * 0.38 + 20, 3, 10, 0.3);
+  // foam pit, big enough to actually dive into
+  const fpw = Math.min(200, room.w * 0.24);
+  const fx2 = room.x + room.w - fpw - 14;
+  r(ctx, '#14181d', fx2, room.floor - 44, fpw, 44);
   const foam = ['#38e1ff', '#ff8fdc', '#ffd166', '#7fc95c', '#c9a5ff'];
-  for (let i = 0; i < 24; i++) {
-    r(ctx, foam[rng.int(0, foam.length - 1)], fx + 4 + rng.int(0, 84), room.floor - 32 + rng.int(0, 26), 10, 8);
+  for (let i = 0; i < Math.floor(fpw / 4); i++) {
+    r(ctx, foam[rng.int(0, foam.length - 1)], fx2 + 4 + rng.int(0, fpw - 16), room.floor - 40 + rng.int(0, 32), 11, 9);
   }
-  r(ctx, pal.accent, fx - 4, room.floor - 40, 104, 6); // pit edge pad
+  r(ctx, pal.accent, fx2 - 4, room.floor - 48, fpw + 8, 6); // pit edge pad
 };
 
 export const nerfP: Painter = (ctx, room, pal, rng) => {
@@ -436,10 +480,14 @@ export const nerfP: Painter = (ctx, room, pal, rng) => {
 
 export const junglegymP: Painter = (ctx, room, pal, rng) => {
   const WOOD = '#c9762e';
-  // monkey bars along the ceiling
-  r(ctx, pal.trim, room.x + 20, room.y + 14, room.w * 0.5, 6);
-  for (let mx = room.x + 26; mx < room.x + 20 + room.w * 0.5; mx += 26) {
+  // monkey bars along most of the ceiling, with swing rings
+  r(ctx, pal.trim, room.x + 20, room.y + 14, room.w * 0.72, 6);
+  for (let mx = room.x + 26; mx < room.x + 20 + room.w * 0.72; mx += 26) {
     r(ctx, pal.trim, mx, room.y + 20, 4, 12);
+  }
+  for (const rgx of [room.x + room.w * 0.22, room.x + room.w * 0.5]) {
+    r(ctx, '#8a5f3c', rgx, room.y + 20, 3, 26);
+    ring(ctx, '#ffd166', rgx + 1, room.y + 52, 8, 3);
   }
   // platforms + ladders
   const p1x = room.x + 24;
@@ -451,6 +499,14 @@ export const junglegymP: Painter = (ctx, room, pal, rng) => {
   r(ctx, pal.trim, p1x + 10, p1y + 10, 4, room.floor - p1y - 10);
   r(ctx, pal.trim, p1x + 30, p1y + 10, 4, room.floor - p1y - 10);
   for (let ly = p1y + 22; ly < room.floor - 6; ly += 18) r(ctx, pal.trim, p1x + 10, ly, 24, 4);
+  // cargo net from platform 1's edge down to the floor
+  const netX = p1x + room.w * 0.3 - 14;
+  const netW = 64;
+  const netH = room.floor - p1y - 10;
+  ctx.globalAlpha = 0.75;
+  for (let i = 0; i <= 4; i++) r(ctx, '#8a5f3c', netX + (i * netW) / 4, p1y + 10, 3, netH);
+  for (let j = 1; j <= 4; j++) r(ctx, '#8a5f3c', netX, p1y + 10 + (j * netH) / 5, netW, 3);
+  ctx.globalAlpha = 1;
   // slide from platform 2 (stepped diagonal)
   const sx = p1x + room.w * 0.34;
   const sy = p1y - 24;
@@ -467,13 +523,14 @@ export const junglegymP: Painter = (ctx, room, pal, rng) => {
   // rings pair
   r(ctx, pal.trim, rx + 40, room.y + 20, 3, 30);
   ring(ctx, '#ffd166', rx + 41, room.y + 58, 8, 3);
-  // ball pit corner
-  const bx = room.x + room.w - 120;
-  r(ctx, '#14181d', bx, room.floor - 32, 106, 32);
-  r(ctx, WOOD, bx - 4, room.floor - 36, 114, 6);
+  // ball pit corner, widened
+  const bpw = Math.min(180, room.w * 0.22);
+  const bx = room.x + room.w - bpw - 14;
+  r(ctx, '#14181d', bx, room.floor - 32, bpw, 32);
+  r(ctx, WOOD, bx - 4, room.floor - 36, bpw + 8, 6);
   const balls = ['#38e1ff', '#ff8fdc', '#ffd166', '#7fc95c', '#e86a5a'];
-  for (let i = 0; i < 26; i++) {
-    disc(ctx, balls[rng.int(0, balls.length - 1)], bx + 8 + rng.int(0, 92), room.floor - 26 + rng.int(0, 18), 5);
+  for (let i = 0; i < Math.floor(bpw / 4); i++) {
+    disc(ctx, balls[rng.int(0, balls.length - 1)], bx + 8 + rng.int(0, bpw - 16), room.floor - 26 + rng.int(0, 18), 5);
   }
 };
 
@@ -707,32 +764,47 @@ export const dinoexhibitP: Painter = (ctx, room, pal) => {
   r(ctx, '#14181d', px + pw * 0.45, room.y + 4, 22, 10); // spot fixture
   r(ctx, '#fff3c2', px + pw * 0.45 + 5, room.y + 14, 12, 4);
   const base = room.floor - 14;
-  // T-rex skeleton: legs, spine arc, ribs, tail, skull
+  // T-rex skeleton, scaled to the hall (occupies ~2/3 of its height)
+  const legH = room.h * 0.34;
+  const boneW = Math.max(8, Math.round(room.h * 0.035));
   const hipX = px + pw * 0.52;
-  r(ctx, BONE, hipX, base - 96, 10, 96); // back leg
-  r(ctx, BONE, hipX - 8, base - 40, 26, 8); // foot
-  r(ctx, BONE, px + pw * 0.3, base - 78, 8, 78); // front leg
-  r(ctx, BONE, px + pw * 0.3 - 6, base - 8, 22, 8);
+  r(ctx, BONE, hipX, base - legH, boneW, legH); // back leg
+  r(ctx, BONE, hipX - 10, base - 8, boneW + 20, 8); // foot
+  r(ctx, BONE, px + pw * 0.3, base - legH * 0.8, boneW - 2, legH * 0.8); // front leg
+  r(ctx, BONE, px + pw * 0.3 - 8, base - 8, boneW + 16, 8);
   // spine: rising arc toward the head
+  const spineY = base - legH - boneW;
+  const rise = room.h * 0.028;
   for (let i = 0; i < 9; i++) {
-    disc(ctx, BONE, px + pw * 0.52 - i * (pw * 0.045), base - 100 - i * 7, 6);
+    disc(ctx, BONE, hipX - i * (pw * 0.045), spineY - i * rise, boneW * 0.7);
   }
-  // ribs hanging from spine
-  for (let i = 1; i < 7; i += 1) {
-    const rx2 = px + pw * 0.52 - i * (pw * 0.045);
-    r(ctx, BONE, rx2, base - 96 - i * 7, 4, 34 + i * 3);
+  // ribs hanging from the spine
+  for (let i = 1; i < 7; i++) {
+    const rx2 = hipX - i * (pw * 0.045);
+    r(ctx, BONE, rx2, spineY - i * rise + 4, 5, room.h * 0.12 + i * 4);
   }
-  // tail: descending behind
-  for (let i = 1; i < 8; i++) {
-    disc(ctx, BONE, hipX + 10 + i * (pw * 0.05), base - 96 + i * 9, Math.max(2, 6 - i * 0.5));
+  // tail: long, descending behind
+  for (let i = 1; i < 10; i++) {
+    disc(ctx, BONE, hipX + boneW + i * (pw * 0.042), spineY + i * (room.h * 0.026), Math.max(3, boneW * 0.7 - i));
   }
   // skull: big head with jaw + teeth + eye
-  const skx = px + pw * 0.52 - 8 * (pw * 0.045);
-  const sky = base - 156;
-  r(ctx, BONE, skx - 34, sky, 48, 26);
-  r(ctx, BONE, skx - 30, sky + 26, 40, 12); // jaw
-  for (let t = 0; t < 5; t++) r(ctx, BONE, skx - 28 + t * 8, sky + 22, 3, 7); // teeth
-  r(ctx, '#14181d', skx - 2, sky + 6, 8, 8); // eye socket
+  const skx = hipX - 8 * (pw * 0.045);
+  const sky = spineY - 8 * rise - room.h * 0.1;
+  const skw = room.h * 0.16;
+  r(ctx, BONE, skx - skw * 0.7, sky, skw, skw * 0.55);
+  r(ctx, BONE, skx - skw * 0.62, sky + skw * 0.55, skw * 0.82, skw * 0.26); // jaw
+  for (let t = 0; t < 6; t++) r(ctx, BONE, skx - skw * 0.58 + t * skw * 0.14, sky + skw * 0.48, 4, skw * 0.18); // teeth
+  r(ctx, '#14181d', skx - skw * 0.06, sky + skw * 0.14, skw * 0.16, skw * 0.16); // eye socket
+  // pterosaur skeleton wheeling overhead on wires
+  const ptx = px + pw * 0.82;
+  const pty = room.y + room.h * 0.18;
+  r(ctx, pal.trim, ptx + 6, room.y, 2, pty - room.y); // wire
+  r(ctx, BONE, ptx - 30, pty, 72, 5); // wingspan
+  r(ctx, BONE, ptx - 42, pty - 6, 14, 5); // head crest
+  r(ctx, BONE, ptx - 34, pty - 2, 18, 4); // beak
+  r(ctx, BONE, ptx - 14, pty + 5, 5, 14); // body
+  r(ctx, BONE, ptx + 24, pty - 8, 5, 10); // wing tip up
+  r(ctx, BONE, ptx - 26, pty + 4, 5, 10); // wing tip down
   // rope stanchions
   for (const sx of [px + 10, px + pw - 20]) {
     r(ctx, '#f5c542', sx, room.floor - 54, 6, 54);
@@ -931,38 +1003,53 @@ export const dojoP: Painter = (ctx, room, pal) => {
 
 export const skateparkP: Painter = (ctx, room, pal) => {
   const CONCRETE = '#9a958c';
-  // halfpipe: two quarter curves + flat bottom
+  // big graffiti mural across the back wall
+  ctx.globalAlpha = 0.85;
+  const mural = [pal.accent, '#ff8fdc', '#ffd166', '#38e1ff'];
+  const mw2 = room.w * 0.5;
+  const mx2 = room.x + room.w * 0.25;
+  for (let i = 0; i < Math.floor(mw2 / 30); i++) {
+    const bh2 = 16 + ((i * 37) % 3) * 12;
+    r(ctx, mural[i % mural.length], mx2 + i * 30, room.y + 40 + ((i * 23) % 2) * 14, 26, bh2);
+  }
+  ctx.globalAlpha = 1;
+  hl(ctx, mx2, room.y + 36, mw2, 4, 0.2);
+  sh(ctx, mx2 + 10, room.y + 96, mw2 - 20, 6, 0.15); // drip shadow
+  // halfpipe: two quarter curves scaled to the room + deck platforms
   const hw = room.w - 40;
   const hx = room.x + 20;
-  const steps = 10;
+  const steps = 14;
+  const pipeH = room.h * 0.36;
+  const runL = Math.min(130, room.w * 0.16);
   for (let i = 0; i < steps; i++) {
     const t = i / steps;
-    const h = Math.round(90 * t * t); // quarter-pipe curve
-    r(ctx, CONCRETE, hx + i * 8, room.floor - 8 - h, 9, 8 + h);
-    r(ctx, CONCRETE, hx + hw - (i + 1) * 8, room.floor - 8 - h, 9, 8 + h);
+    const h = Math.round(pipeH * t * t); // quarter-pipe curve
+    const segW = runL / steps + 1;
+    r(ctx, CONCRETE, hx + (steps - 1 - i) * (runL / steps), room.floor - 8 - h, segW + 1, 8 + h);
+    r(ctx, CONCRETE, hx + hw - (steps - i) * (runL / steps), room.floor - 8 - h, segW + 1, 8 + h);
   }
-  r(ctx, CONCRETE, hx + steps * 8, room.floor - 8, hw - steps * 16, 8); // flat
-  r(ctx, pal.trim, hx - 2, room.floor - 98, 10, 4); // coping
-  r(ctx, pal.trim, hx + hw - 8, room.floor - 98, 10, 4);
-  hl(ctx, hx + 8, room.floor - 40, 20, 3, 0.2);
-  // grind rail
-  r(ctx, pal.trim, room.x + room.w * 0.42, room.floor - 26, room.w * 0.2, 4);
-  r(ctx, pal.trim, room.x + room.w * 0.44, room.floor - 22, 4, 14);
-  r(ctx, pal.trim, room.x + room.w * 0.58, room.floor - 22, 4, 14);
+  r(ctx, CONCRETE, hx + runL, room.floor - 8, hw - runL * 2, 8); // flat
+  for (const [cx2, dir] of [[hx, 1], [hx + hw, -1]] as const) {
+    r(ctx, pal.trim, cx2 - (dir > 0 ? 8 : 2), room.floor - 8 - pipeH, 10, 4); // coping
+    r(ctx, CONCRETE, cx2 - (dir > 0 ? 16 : 30), room.floor - 8 - pipeH, 46, 8); // deck
+    r(ctx, pal.trim, cx2 - (dir > 0 ? 14 : 26), room.floor - 8 - pipeH - 26, 4, 26); // rail posts
+    r(ctx, pal.trim, cx2 - (dir > 0 ? 14 : 26), room.floor - 8 - pipeH - 26, 40 * dir, 4);
+  }
+  hl(ctx, hx + 14, room.floor - 8 - pipeH * 0.45, 18, 3, 0.2); // wax sheen
+  // fun box with grind rail in the middle
+  const fbx = room.x + room.w * 0.44;
+  const fbw = Math.min(150, room.w * 0.18);
+  r(ctx, CONCRETE, fbx, room.floor - 30, fbw, 22);
+  r(ctx, CONCRETE, fbx - 20, room.floor - 14, fbw + 40, 6);
+  r(ctx, pal.trim, fbx + 8, room.floor - 34, fbw - 16, 4); // rail on top
+  hl(ctx, fbx, room.floor - 30, fbw, 3, 0.2);
   // skateboard + helmet
-  const sbx = room.x + room.w * 0.5;
+  const sbx = room.x + room.w * 0.3;
   r(ctx, '#e8342a', sbx, room.floor - 14, 34, 5);
   disc(ctx, '#14181d', sbx + 7, room.floor - 6, 4);
   disc(ctx, '#14181d', sbx + 27, room.floor - 6, 4);
-  disc(ctx, '#3a8fd4', room.x + room.w * 0.34, room.floor - 12, 8); // helmet
-  r(ctx, '#3a8fd4', room.x + room.w * 0.34 - 8, room.floor - 12, 16, 6);
-  // graffiti tag
-  ctx.globalAlpha = 0.85;
-  for (let i = 0; i < 6; i++) {
-    r(ctx, [pal.accent, '#ff8fdc', '#ffd166'][i % 3], room.x + room.w * 0.32 + i * 14, room.y + 34 + (i % 2) * 10, 14, 12);
-  }
-  ctx.globalAlpha = 1;
-  hl(ctx, room.x + room.w * 0.32, room.y + 30, 84, 3, 0.2);
+  disc(ctx, '#3a8fd4', room.x + room.w * 0.68, room.floor - 12, 8); // helmet
+  r(ctx, '#3a8fd4', room.x + room.w * 0.68 - 8, room.floor - 12, 16, 6);
   // caution sign
   r(ctx, '#ffd166', room.x + 10, room.y + 30, 26, 22);
   r(ctx, '#14181d', room.x + 20, room.y + 34, 6, 10);

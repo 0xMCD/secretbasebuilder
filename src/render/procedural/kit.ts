@@ -6,6 +6,13 @@
  * a sleep pod, a fantasy one a four-poster. themeFlavor() additionally stamps
  * 1-2 signature wall props into every room (cable trays / torches / pipes /
  * string lights / chandeliers) so the theme reads even before furniture.
+ *
+ * COLOR POLICY: construction + generic furniture always come from the theme
+ * palette (pal.*). Fixed hex "hero colors" are DELIBERATE and identical in
+ * every theme — things whose real-world color is their identity: race-car
+ * red, water blues, turf green, bone white, gold treasure, safety orange,
+ * crowd-shirt candy colors. Don't palette-ify those; don't hardcode anything
+ * else.
  */
 import type { ModuleDef, ThemePalette } from '../../core/types';
 import { fx } from '../fx';

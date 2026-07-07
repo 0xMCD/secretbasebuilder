@@ -143,16 +143,39 @@ export const vaultP: Painter = (ctx, room, pal, rng) => {
     const ang = (a / 8) * Math.PI * 2;
     disc(ctx, pal.glow, cx + Math.cos(ang) * (rad - 5), cy + Math.sin(ang) * (rad - 5), 3); // rim bolts
   }
-  // laser tripwires
+  // laser tripwires (breathing menace)
   ctx.globalAlpha = 0.4;
   r(ctx, '#ff5555', cx + rad + 12, room.floor - 60, room.w - (cx - room.x) - rad - 30, 2);
   r(ctx, '#ff5555', cx + rad + 30, room.floor - 30, room.w - (cx - room.x) - rad - 48, 2);
+  r(ctx, '#ff5555', cx + rad + 20, room.floor - 96, room.w - (cx - room.x) - rad - 40, 2);
   ctx.globalAlpha = 1;
-  // security camera
+  fx(ctx, { kind: 'glow', x: cx + rad + 12, y: room.floor - 98, w: room.w - (cx - room.x) - rad - 30, h: 72, color: '#ff5555', a: 0.1 });
+  // security camera with live tally light
   const camx = room.x + room.w - 40;
   r(ctx, pal.trim, camx + 10, room.y + 12, 4, 10);
   r(ctx, pal.furnitureDark, camx, room.y + 22, 24, 14);
   disc(ctx, '#ff5555', camx + 4, room.y + 29, 3);
+  fx(ctx, { kind: 'blink', x: camx + 1, y: room.y + 26, w: 6, h: 6, color: '#ff5555', speed: 0.7 });
+  // safe-deposit box wall filling the upper right
+  if (room.h > 380) {
+    const dbx = cx + rad + 40;
+    const dbw = room.x + room.w - dbx - 60;
+    if (dbw > 90) {
+      const cols = Math.floor(dbw / 34);
+      const rows = Math.floor((cy - 60 - room.y - 20) / 26);
+      r(ctx, pal.furnitureDark, dbx - 6, room.y + 18, cols * 34 + 12, rows * 26 + 12);
+      for (let by = 0; by < rows; by++) {
+        for (let bx2 = 0; bx2 < cols; bx2++) {
+          r(ctx, pal.furniture, dbx + bx2 * 34, room.y + 24 + by * 26, 28, 20);
+          hl(ctx, dbx + bx2 * 34, room.y + 24 + by * 26, 28, 3, 0.2);
+          disc(ctx, pal.trim, dbx + bx2 * 34 + 14, room.y + 34 + by * 26, 4); // dial
+        }
+      }
+      // one box left ajar, glowing inside
+      r(ctx, '#14181d', dbx + 34, room.y + 24 + 26, 28, 20);
+      r(ctx, pal.glow, dbx + 38, room.y + 30 + 26, 10, 8);
+    }
+  }
   // keypad
   r(ctx, pal.furnitureDark, cx + rad + 16, cy - 20, 24, 40);
   r(ctx, pal.glow, cx + rad + 20, cy - 16, 16, 10);
@@ -498,6 +521,12 @@ export const gemmineP: Painter = (ctx, room, pal, rng) => {
   r(ctx, '#14181d', room.x + room.w - 46, room.y + 30, 16, 18);
   r(ctx, '#ffd166', room.x + room.w - 42, room.y + 34, 8, 10);
   halo(ctx, '#ffd166', room.x + room.w - 52, room.y + 28, 28, 24, 0.2);
+  // buried treasure twinkles in the dark
+  fx(ctx, {
+    kind: 'sparkle', x: room.x + 16, y: room.y + 20, w: room.w - 40, h: room.h - 60,
+    color: '#7fd4ff', colors: ['#7fd4ff', '#ff8fdc', '#a5ff9e', '#ffd166'],
+    n: Math.max(5, Math.floor(room.w / 120)), speed: 0.7,
+  });
 };
 
 export const observatoryP: Painter = (ctx, room, pal, rng) => {
@@ -507,22 +536,48 @@ export const observatoryP: Painter = (ctx, room, pal, rng) => {
     const big = rng.chance(0.2);
     r(ctx, '#ffffff', room.x + rng.int(4, room.w - 6), room.y + rng.int(4, room.h * 0.42), big ? 3 : 2, big ? 3 : 2);
   }
+  // dome ribs arcing over the star band
+  ctx.globalAlpha = 0.35;
+  for (let i = 1; i < 5; i++) {
+    r(ctx, pal.trim, room.x + (room.w * i) / 5, room.y, 4, room.h * 0.45);
+  }
+  r(ctx, pal.trim, room.x, room.y + room.h * 0.2, room.w, 3);
+  ctx.globalAlpha = 1;
+  // a comet streaking by
+  const cmx = room.x + room.w * 0.2;
+  r(ctx, '#dff3ff', cmx, room.y + room.h * 0.1, 6, 6);
+  for (let i = 1; i < 5; i++) hl(ctx, cmx + i * 8, room.y + room.h * 0.1 - i * 3, 8, 3, 0.4 - i * 0.08);
   // roof slit with sky
   r(ctx, pal.trim, room.x + room.w * 0.55 - 6, room.y, 6, room.h * 0.45);
   r(ctx, '#1a2244', room.x + room.w * 0.55, room.y, room.w * 0.14, room.h * 0.45);
-  r(ctx, '#f4f1de', room.x + room.w * 0.6, room.y + 12, 10, 10); // moon through the slit
+  r(ctx, '#f4f1de', room.x + room.w * 0.6, room.y + 12, 14, 14); // moon through the slit
+  halo(ctx, '#f4f1de', room.x + room.w * 0.6 - 8, room.y + 4, 30, 30, 0.18);
   r(ctx, pal.trim, room.x + room.w * 0.55 + room.w * 0.14, room.y, 6, room.h * 0.45);
-  // the big telescope: angled tube on a mount
-  const bx = room.x + room.w * 0.42;
-  const by = room.floor - 30;
-  for (let i = 0; i < 7; i++) {
-    r(ctx, pal.trim, bx + i * 14, by - 40 - i * 12, 26, 18); // stepped tube
+  // stars twinkle
+  fx(ctx, {
+    kind: 'sparkle', x: room.x + 8, y: room.y + 6, w: room.w - 20, h: room.h * 0.4,
+    color: '#ffffff', n: Math.max(6, Math.floor(room.w / 90)), speed: 0.8,
+  });
+  // the big telescope: angled tube on a mount, scaled to reach the slit
+  const segN = 8;
+  const segX = room.w * 0.028;
+  const segY = room.h * 0.055;
+  const tubeW = room.w * 0.052;
+  const tubeH = room.h * 0.085;
+  const bx = room.x + room.w * 0.38;
+  const by = room.floor - room.h * 0.12;
+  for (let i = 0; i < segN; i++) {
+    r(ctx, pal.trim, bx + i * segX, by - tubeH - i * segY, tubeW, tubeH); // stepped tube
+    if (i % 3 === 1) sh(ctx, bx + i * segX, by - tubeH - i * segY, 4, tubeH, 0.2); // tube bands
   }
-  hl(ctx, bx + 8, by - 48, 70, 4, 0.2);
-  r(ctx, pal.accent, bx + 7 * 14, by - 40 - 7 * 12, 22, 16); // lens end
-  r(ctx, pal.furnitureDark, bx - 6, by - 34, 22, 10); // eyepiece
-  r(ctx, pal.furnitureDark, bx + 10, by - 24, 14, 24); // mount column
-  r(ctx, pal.furnitureDark, bx - 6, by, 46, 6); // base
+  hl(ctx, bx + segX, by - tubeH - segY + 3, segN * segX * 0.7, 4, 0.25);
+  r(ctx, pal.accent, bx + segN * segX, by - tubeH - segN * segY, tubeW * 0.9, tubeH * 0.9); // lens end
+  hl(ctx, bx + segN * segX + 3, by - tubeH - segN * segY + 3, 6, tubeH * 0.6, 0.4); // lens glint
+  r(ctx, pal.furnitureDark, bx - 16, by - tubeH * 0.5, 24, 12); // eyepiece
+  r(ctx, pal.furnitureDark, bx + 8, by - 8, 18, room.h * 0.12); // mount column
+  r(ctx, pal.furnitureDark, bx - 14, room.floor - 6, 62, 6); // base
+  r(ctx, pal.furnitureDark, bx - 8, room.floor - 20, 14, 16); // tripod legs
+  r(ctx, pal.furnitureDark, bx + 30, room.floor - 20, 14, 16);
   // control desk with star chart
   const dx = room.x + 20;
   r(ctx, pal.furniture, dx, room.floor - 52, 90, 8);
