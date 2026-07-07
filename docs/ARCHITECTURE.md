@@ -100,8 +100,10 @@ environment in an offscreen canvas (`render/environment.ts:
 getEnvironmentCanvas`); only the weather overlay (`drawWeather(ctx, env, t)`)
 and sprites are drawn fresh. Draw order: cached environment → animated weather
 → day/night pass → module sprites (new placements scale-pop for 200ms) →
-**connection seams** (quiet arched doorways / ladderways wherever two
-placements share ≥1 cell of edge) → decor props → ambient fx overlays
+**connection seams** (side-by-side rooms get arched doorways; floors are
+SOLID between stacked rooms — a floor only opens where a vertical connector
+(elevator/stairs/ladder, `VERTICAL_KINDS`) touches it, and stacked vertical
+connectors merge into one shaft) → decor props → ambient fx overlays
 (`render/fx.ts`) → inhabitants → ghost preview → selection outline → label
 overlay.
 

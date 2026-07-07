@@ -17,6 +17,15 @@ export const CATEGORIES: { id: string; name: string }[] = modulesJson.categories
 
 export const KINDS: KindDef[] = modulesJson.kinds as KindDef[];
 
+/**
+ * Vertical connectors (elevator/stairs/ladder — tagged "vertical"). These are
+ * the ONLY kinds that pass through floors: stacked regular rooms have solid
+ * floor/ceiling between them, like a real structure.
+ */
+export const VERTICAL_KINDS: Set<string> = new Set(
+  KINDS.filter((k) => k.tags.includes('vertical')).map((k) => k.id),
+);
+
 /** Kinds × sizes, expanded. Def id = `${kindId}_${w}x${h}` (public, stable). */
 export const MODULE_DEFS: ModuleDef[] = KINDS.flatMap((kind) =>
   kind.sizes.map((size) => ({

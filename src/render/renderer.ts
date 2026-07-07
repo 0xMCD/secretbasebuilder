@@ -5,7 +5,7 @@
  * inhabitants → ghost preview → grid hint → selection → label overlay.
  */
 import { ART_CELL, COLS, GROUND_ROW, ROWS, allSeams, canPlace, placementRect } from '../core/grid';
-import { getDef, getEnvironment, getTheme, KINDS } from '../core/catalog';
+import { getDef, getEnvironment, getTheme, VERTICAL_KINDS } from '../core/catalog';
 import type { DefId, Placement, ThemeId } from '../core/types';
 import { getState, subscribe } from '../core/store';
 import { createCamera, WORLD_H, WORLD_W, type Camera } from './camera';
@@ -235,10 +235,6 @@ const SEAM_DARK = 'rgba(13,16,20,0.88)';
 const SEAM_EDGE = 'rgba(255,255,255,0.14)';
 const SEAM_GLOW = 'rgba(255,214,140,0.5)';
 
-const VERTICAL_KINDS = new Set(
-  KINDS.filter((k) => k.tags.includes('vertical')).map((k) => k.id),
-);
-
 function isVerticalConnector(placements: Placement[], id: string): boolean {
   const p = placements.find((pl) => pl.id === id);
   const def = p && getDef(p.defId);
@@ -320,8 +316,12 @@ export function drawConnectors(c: CanvasRenderingContext2D, placements: Placemen
         c.fillRect(cxm + 4, y, 4, reach);
       }
       // stairs need nothing extra: the open well reads on its own
-    } else {
-      // Slim ladderway through the floor at the middle of the overlap.
+    } else if (
+      isVerticalConnector(placements, seam.aId) ||
+      isVerticalConnector(placements, seam.bId)
+    ) {
+      // A vertical connector meets a regular room above/below it: slim
+      // ladderway through the floor at the middle of the overlap.
       const hx = Math.round((seam.x + seam.len / 2) * ART_CELL);
       const y = seam.y * ART_CELL;
       c.fillStyle = SEAM_DARK;
@@ -331,6 +331,8 @@ export function drawConnectors(c: CanvasRenderingContext2D, placements: Placemen
         c.fillRect(hx - 10 * u, ry, 20 * u, 2 * u); // rungs
       }
     }
+    // Two regular rooms stacked = solid floor between them, like a real
+    // structure. Floors only open where an elevator/stairs/ladder touches.
   }
 }
 

@@ -6,7 +6,7 @@
  * saved: every base is simply lived-in.
  */
 import { ART_CELL, allSeams, placementRect } from '../core/grid';
-import { getDef } from '../core/catalog';
+import { getDef, VERTICAL_KINDS } from '../core/catalog';
 import type { Placement } from '../core/types';
 
 const STAND_OFF = 48; // wall + floor band: feet sit on the visible floor
@@ -75,6 +75,11 @@ function buildGraph(placements: Placement[]): void {
       hatches: [],
     });
   }
+  const isVertical = (id: string): boolean => {
+    const p = walkable.find((pl) => pl.id === id);
+    const def = p && getDef(p.defId);
+    return !!def && VERTICAL_KINDS.has(def.kind);
+  };
   for (const seam of allSeams(walkable)) {
     const a = rooms.get(seam.aId);
     const b = rooms.get(seam.bId);
@@ -88,7 +93,9 @@ function buildGraph(placements: Placement[]): void {
         a.doors.push({ x, toId: b.id });
         b.doors.push({ x, toId: a.id });
       }
-    } else {
+    } else if (isVertical(seam.aId) || isVertical(seam.bId)) {
+      // Floors only open where an elevator/stairs/ladder touches — stacked
+      // regular rooms have solid floor between them (matches the renderer).
       const x = (seam.x + seam.len / 2) * ART_CELL;
       a.hatches.push({ x, toId: b.id });
       b.hatches.push({ x, toId: a.id });

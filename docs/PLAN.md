@@ -185,6 +185,33 @@ for one-off hero assets but is no longer the plan of record.
   directly — the full world canvas is never materialized) instead of four
   color swatches.
 
+## Phase P4 — Play value (toys, prompts, audiences — NO economy/resources)
+
+- [x] **P4.0 Structural realism (prerequisite)** — stacked rooms do NOT
+  connect vertically: no floor hatches between two regular rooms, and
+  residents may only change floors through a vertical connector
+  (elevator / stairs / ladder) touching both. Side-by-side doorways stay.
+  (`VERTICAL_KINDS` moved to core/catalog; renderer + agent graph share it.)
+- [ ] **P4.1 Interactive props** — tap reactions: silo's big red button
+  launches the rocket (countdown, steam, parachute return); disco ball
+  starts a dance party (lights sweep, residents dance); aquarium feeding
+  (fish swarm); trampoline mega-bounce. One-shot animations, no state.
+- [ ] **P4.2 Blueprint challenges** — a deck of optional prompt cards
+  ("a spy needs: a bedroom next to a rocket silo and somewhere to swim");
+  completion stamps a cosmetic badge. Pure placement-logic checks, no
+  gates, no currency. `content/challenges.json` + save-format bump for
+  completed-card stamps.
+- [ ] **P4.3 Secret-base secrets** — bookcase-door connector (looks solid
+  until a resident walks through), fireman pole, periscope room;
+  excavatable dirt treasures that become museum displays; Base-o-pedia
+  collection book.
+- [ ] **P4.4 Resident life** — destination behaviors: sleep in beds at
+  night, swim in pools, sit on couches, watch the theater screen, a pet
+  that follows a resident around.
+- [ ] **P4.5 Visitors & events** — inspector spy tours the base and leaves
+  a silly report card; delivery drone drops a free decor prop; meteor
+  shower at night; lost dog appears if you have a pet store.
+
 ## Phase P3 — Life
 
 - [x] L. Characters walking between rooms — shipped as P1.2 inhabitants
