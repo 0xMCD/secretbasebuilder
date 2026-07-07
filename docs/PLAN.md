@@ -124,15 +124,37 @@ How to resume a session:
   (`scripts/scan-art.mjs`) regenerates `art-manifest.json` from the PNGs in
   `public/art/modules/`, rejecting filenames that match no kind×size×theme.
 
-## Phase P2 — Final art
+## Phase P2 — Procedural art is final (playtest decision)
 
-- [ ] J. Replace placeholders per-module via `public/art/` pipeline.
-- [ ] K. `frames[]` animation support in sprite cache + renderer.
+The playtest verdict: keep the procedural art. Phase P2 is now about pushing
+it to final quality. The PNG-override pipeline (`scan:art`) stays supported
+for one-off hero assets but is no longer the plan of record.
+
+- [x] **P2.A Ambient animation** — `render/fx.ts`: painters emit FxHints
+  while painting (through the ctx transform, so scaled decor props work);
+  hints are cached with the sprite and replayed every frame, phase-offset per
+  placement id. Auto coverage: every `halo()` breathes, every `wallScreen()`
+  flickers + blinks its live dot, scoreboards blink. Hand-tuned: pool +
+  aquarium water shimmer, swimming fish, rising bubbles (lava, lava lamp),
+  lava heat-haze, claw-machine glass sparkle, disco-ball mirror + room-dot
+  sparkles, robo-buddy antenna blink + face flicker. Verified 61fps.
+- [ ] P2.B Painter style sweep — codify shading rules as kit helpers (one
+  shade ramp, consistent floor-contact shadows, light direction), sweep all
+  four rooms files through them; audit hardcoded hexes → theme palette;
+  give XL/tall sizes deliberate compositions instead of tiled props.
+- [ ] P2.C Per-placement variation — variant index in the sprite cache key
+  (3-4 variants per def, seeded choices: book colors, posters, clutter) so
+  two copies of a room aren't pixel-identical.
+- [ ] P2.D Catalog & picker polish — two-step downscale for sidebar
+  thumbnails; environment picker cards show a real rendered scene preview
+  instead of four color swatches.
 
 ## Phase P3 — Life
 
-- [ ] L. Characters walking the connection graph between rooms.
-- [ ] M. Ambient animation (screens flicker, weather motion), day/night.
+- [x] L. Characters walking between rooms — shipped as P1.2 inhabitants
+  (walk floors, use doorways, climb shafts).
+- [x] M. Ambient animation + day/night — day/night shipped in P1.3; ambient
+  animation shipped as P2.A.
 
 ---
 

@@ -8,6 +8,7 @@
  * string lights / chandeliers) so the theme reads even before furniture.
  */
 import type { ModuleDef, ThemePalette } from '../../core/types';
+import { fx } from '../fx';
 import type { Rng } from './rng';
 
 export type Ctx = CanvasRenderingContext2D;
@@ -57,12 +58,15 @@ export const hl = (ctx: Ctx, x: number, y: number, w: number, h: number, a = 0.1
 export const shadow = (ctx: Ctx, x: number, floor: number, w: number) =>
   sh(ctx, x, floor - 4, w, 4, 0.25);
 
-/** Glow halo around a light source. */
+/** Glow halo around a light source. Every halo breathes at runtime: it also
+ * emits a matching 'glow' fx hint, which is what makes lamps, torches, neon
+ * and lava feel alive without any per-painter work. */
 export const halo = (ctx: Ctx, color: string, x: number, y: number, w: number, h: number, a = 0.16) => {
   ctx.globalAlpha = a;
   ctx.fillStyle = color;
   ctx.fillRect(Math.round(x), Math.round(y), Math.round(w), Math.round(h));
   ctx.globalAlpha = 1;
+  fx(ctx, { kind: 'glow', x, y, w, h, color, a: a * 0.8 });
 };
 
 /** Blocky circle (stepped rects) — the pixel-art way to draw round things. */
@@ -322,6 +326,8 @@ export function wallScreen(ctx: Ctx, pal: ThemePalette, x: number, y: number, w:
   ctx.globalAlpha = 0.08;
   for (let sy = y + 4; sy < y + h; sy += 8) r(ctx, '#ffffff', x, sy, w, 2);
   ctx.globalAlpha = 1;
+  fx(ctx, { kind: 'flicker', x, y, w, h, color: '#ffffff' });
+  fx(ctx, { kind: 'blink', x: x + w - 14, y: y + 8, w: 6, h: 6, color: pal.glow });
 }
 
 export function shelf(ctx: Ctx, pal: ThemePalette, x: number, y: number, w: number, rows: number, rng: Rng) {
@@ -390,6 +396,7 @@ export function scoreboard(ctx: Ctx, pal: ThemePalette, x: number, y: number, w:
   r(ctx, '#ffd166', x + w - 26, y + 8, 18, 14); // away score
   r(ctx, '#ff5555', x + w / 2 - 3, y + 10, 6, 4); // clock dots
   r(ctx, '#ff5555', x + w / 2 - 3, y + 18, 6, 4);
+  fx(ctx, { kind: 'blink', x: x + w / 2 - 3, y: y + 10, w: 6, h: 12, color: '#ff5555', speed: 1.6 });
   ctx.globalAlpha = 0.5;
   r(ctx, pal.glow, x + 8, y + 26, w - 16, 4); // ticker
   ctx.globalAlpha = 1;

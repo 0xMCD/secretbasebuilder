@@ -3,6 +3,7 @@
  * entertainment · gameroom · theater · pool · lava · trampoline · nerf ·
  * junglegym · football · soccer · basketball · baseball
  */
+import { fx } from '../fx';
 import type { Rng } from './rng';
 import {
   ceilingLamp, couch, disc, floodLight, halo, hl, r, ring, rug, scoreboard,
@@ -192,6 +193,7 @@ export const poolP: Painter = (ctx, room, pal, rng) => {
   for (let wx = bx + 10; wx < bx + bw - 20; wx += rng.int(30, 60)) {
     hl(ctx, wx, room.floor - 20 + rng.int(0, 10), rng.int(10, 24), 2, 0.4); // shimmer
   }
+  fx(ctx, { kind: 'shimmer', x: bx + 4, y: room.floor - 22, w: bw - 8, h: 14, color: '#bfe9f5' });
   // ladder
   r(ctx, '#eef2f5', bx + bw - 10, room.floor - 44, 4, 40);
   r(ctx, '#eef2f5', bx + bw - 22, room.floor - 44, 4, 40);
@@ -232,6 +234,8 @@ export const lavaP: Painter = (ctx, room, pal, rng) => {
     const bx = room.x + rng.int(10, room.w - 16);
     disc(ctx, '#ffd166', bx, ly + rng.int(2, 8), rng.int(3, 6)); // bubbles
   }
+  fx(ctx, { kind: 'bubble', x: room.x + 6, y: ly - 10, w: room.w - 12, h: 20, color: '#ffd166', speed: 0.7 });
+  fx(ctx, { kind: 'shimmer', x: room.x + 10, y: room.y + 24, w: room.w - 20, h: room.h * 0.3, color: '#ffffff', n: 3, speed: 0.6 });
   // obsidian stepping stones
   for (let sx = room.x + 30; sx < room.x + room.w - 50; sx += rng.int(80, 120)) {
     r(ctx, '#14181d', sx, ly - 8, rng.int(36, 52), 14);
@@ -662,6 +666,7 @@ export const arcadeP: Painter = (ctx, room, pal, rng) => {
   r(ctx, '#e8342a', cx, room.floor - 118, 62, 118);
   r(ctx, '#bfe3f0', cx + 6, room.floor - 106, 50, 62); // glass
   hl(ctx, cx + 8, room.floor - 104, 8, 58, 0.4);
+  fx(ctx, { kind: 'sparkle', x: cx + 6, y: room.floor - 106, w: 50, h: 62, color: '#ffffff', n: 4, speed: 0.8 });
   for (let i = 0; i < 4; i++) {
     disc(ctx, ['#ff8fdc', '#7fc95c', '#ffd166', '#38e1ff'][i], cx + 14 + i * 11, room.floor - 52, 6); // plushies
   }
@@ -727,6 +732,14 @@ export const aquariumP: Painter = (ctx, room, pal, rng) => {
   for (let i = 0; i < 8; i++) {
     ring(ctx, 'rgba(255,255,255,0.5)', tx + rng.int(20, tw - 20), ty + rng.int(10, th - 16), rng.int(2, 4), 1);
   }
+  // live school + rising bubbles + surface shimmer
+  fx(ctx, {
+    kind: 'swim', x: tx + 8, y: ty + 10, w: tw - 16, h: th - 26,
+    color: '#ffd166', colors: ['#ffd166', '#ff8fdc', '#38e1ff', '#ff9d4d'],
+    n: Math.max(3, Math.floor(tw / 130)),
+  });
+  fx(ctx, { kind: 'bubble', x: tx + tw * 0.28, y: ty + 8, w: 14, h: th - 20, color: '#dff3ff', n: 3, speed: 0.8 });
+  fx(ctx, { kind: 'shimmer', x: tx + 4, y: ty + 4, w: tw - 8, h: 6, color: '#bfe9f5', n: 2 });
   // viewing bench
   r(ctx, pal.furniture, room.x + room.w * 0.3, room.floor - 24, room.w * 0.4, 8);
   r(ctx, pal.furnitureDark, room.x + room.w * 0.32, room.floor - 16, 8, 16);

@@ -77,13 +77,19 @@ Versioned; loaders migrate or reject gracefully. Import skips unknown
 Sprite key = `` `${kindId}_${w}x${h}_${themeId}` ``. Resolution order:
 
 1. If the key is listed in `public/art/art-manifest.json`, load
-   `public/art/modules/<key>.png` (must be exactly `w*64 × h*64` px).
+   `public/art/modules/<key>.png` (must be exactly `w*256 × h*256` px).
 2. Otherwise generate a deterministic procedural placeholder into an offscreen
    canvas and cache it.
 
-**To ship final art: drop PNGs in `public/art/modules/`, list them in the
-manifest, reload. No code changes.** The cache API is shaped to grow a
-`frames[]` field later for animated modules.
+**Procedural art is the final art** (playtest decision). The PNG-override
+pipeline stays supported for one-off hero assets: drop PNGs in
+`public/art/modules/`, run `npm run scan:art`, reload.
+
+**Ambient animation (`render/fx.ts`):** painters emit `FxHint`s while they
+paint (a `halo()` is also a breathing glow, a `wallScreen()` also flickers;
+water/lava/fish/sparkle hints are hand-placed). Hints are cached with the
+sprite and replayed by the renderer every frame, offset per placement id so
+copies never animate in sync. PNG-override sprites drop their hints.
 
 ### Renderer (`render/renderer.ts`)
 
@@ -93,9 +99,11 @@ placement pops are always animating). Cheap because the static environment
 environment in an offscreen canvas (`render/environment.ts:
 getEnvironmentCanvas`); only the weather overlay (`drawWeather(ctx, env, t)`)
 and sprites are drawn fresh. Draw order: cached environment → animated weather
-→ module sprites (new placements scale-pop for 200ms) → **connection seams**
-(quiet arched doorways / ladderways wherever two placements share ≥1 cell of
-edge) → ghost preview → selection outline → label overlay.
+→ day/night pass → module sprites (new placements scale-pop for 200ms) →
+**connection seams** (quiet arched doorways / ladderways wherever two
+placements share ≥1 cell of edge) → decor props → ambient fx overlays
+(`render/fx.ts`) → inhabitants → ghost preview → selection outline → label
+overlay.
 
 ### Input (`input/`)
 

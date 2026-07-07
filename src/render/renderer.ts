@@ -1,7 +1,8 @@
 /**
  * The Canvas2D renderer. One rAF loop, redraws only when dirty.
- * Draw order (see docs/ARCHITECTURE.md): environment → module sprites →
- * connection seams → ghost preview → grid hint → selection → label overlay.
+ * Draw order (see docs/ARCHITECTURE.md): environment → weather → day/night →
+ * module sprites → connection seams → decor props → ambient fx overlays →
+ * inhabitants → ghost preview → grid hint → selection → label overlay.
  */
 import { ART_CELL, COLS, GROUND_ROW, ROWS, allSeams, canPlace, placementRect } from '../core/grid';
 import { getDef, getEnvironment, getTheme, KINDS } from '../core/catalog';
@@ -10,6 +11,7 @@ import { getState, subscribe } from '../core/store';
 import { createCamera, WORLD_H, WORLD_W, type Camera } from './camera';
 import { getSprite, initSprites } from './sprites';
 import { drawDayNight, drawWeather, getEnvironmentCanvas } from './environment';
+import { drawFx, fxSeed } from './fx';
 import { drawAgents, updateAgents } from './agents';
 
 /** A module being placed (from sidebar) or moved (existing placement). */
@@ -143,6 +145,14 @@ function draw(): void {
   for (const p of roomPlacements) drawPlacementSprite(c, p, now);
   drawConnectors(c, roomPlacements);
   for (const p of decorPlacements) drawPlacementSprite(c, p, now);
+  // Ambient animation: replay each sprite's cached fx hints (screens flicker,
+  // water shimmers, glows breathe) — see render/fx.ts.
+  for (const p of livePlacements) {
+    const def = getDef(p.defId);
+    if (!def) continue;
+    const { fx } = getSprite(def, p.theme);
+    if (fx.length > 0) drawFx(c, fx, p.x * ART_CELL, p.y * ART_CELL, t, fxSeed(p.id));
+  }
   updateAgents(roomPlacements, dt);
   drawAgents(c);
   if (ghost) {

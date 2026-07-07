@@ -13,6 +13,7 @@
  */
 import { ART_CELL } from '../../core/grid';
 import type { ModuleDef, ThemePalette } from '../../core/types';
+import { beginFx, endFx, type FxHint } from '../fx';
 import { createRng } from './rng';
 import type { Rng } from './rng';
 import { getPainter } from './furniture';
@@ -23,11 +24,17 @@ const WALL = 16; // wall thickness in art px
 const FLOOR_BAND = 32; // visible floor depth
 export { WALL, FLOOR_BAND };
 
+export interface GeneratedSprite {
+  canvas: HTMLCanvasElement;
+  /** Ambient-animation hints collected while painting (see render/fx.ts). */
+  fx: FxHint[];
+}
+
 export function generateModuleSprite(
   def: ModuleDef,
   themeId: string,
   pal: ThemePalette,
-): HTMLCanvasElement {
+): GeneratedSprite {
   const W = def.w * ART_CELL;
   const H = def.h * ART_CELL;
   const canvas = document.createElement('canvas');
@@ -37,6 +44,7 @@ export function generateModuleSprite(
   ctx.imageSmoothingEnabled = false;
 
   const rng = createRng(`${def.kind}_${def.w}x${def.h}_${themeId}`);
+  beginFx();
 
   // Decor props are transparent-background sprites: no shell, no bolts —
   // just the prop, scaled per kind (see DECOR_META) around its floor or
@@ -50,7 +58,7 @@ export function generateModuleSprite(
     ctx.translate(-px, -py);
     const room: Interior = { x: 12, y: 12, w: W - 24, h: H - 36, floor: H - 24 };
     getPainter(def.kind)(ctx, room, pal, rng, def, themeId);
-    return canvas;
+    return { canvas, fx: endFx() };
   }
 
   drawShell(ctx, W, H, pal, themeId, rng);
@@ -76,7 +84,7 @@ export function generateModuleSprite(
     r(ctx, pal.glow, bx, by, 2, 2);
   }
 
-  return canvas;
+  return { canvas, fx: endFx() };
 }
 
 function drawShell(ctx: Ctx, W: number, H: number, pal: ThemePalette, theme: string, rng: Rng): void {

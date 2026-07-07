@@ -3,6 +3,7 @@
  * Drawn big and readable — each prop fills most of its cell and sits on the
  * hosting room's floor. Theme palette flavors the accents.
  */
+import { fx } from '../fx';
 import { disc, halo, hl, r, ring, sh, type Painter } from './kit';
 
 /**
@@ -118,6 +119,12 @@ export const discoballP: Painter = (ctx, room, pal) => {
     ctx.globalAlpha = 1;
     disc(ctx, c, room.x + 24 + i * ((room.w - 48) / 3), room.floor - 6, 5); // floor spots
   });
+  // mirror facets catch the light; scattered dots dance around the room
+  fx(ctx, { kind: 'sparkle', x: cx - 44, y: cy - 44, w: 88, h: 88, color: '#ffffff', n: 8, speed: 1.4 });
+  fx(ctx, {
+    kind: 'sparkle', x: room.x + 12, y: cy + 50, w: room.w - 24, h: room.floor - cy - 50,
+    color: colors[0], colors, n: 6,
+  });
 };
 
 export const sleepingpetP: Painter = (ctx, room, pal) => {
@@ -158,6 +165,7 @@ export const lavalampP: Painter = (ctx, room, pal) => {
   disc(ctx, '#ff8fdc', cx + 8, room.floor - 116, 7);
   r(ctx, pal.furnitureDark, cx - 16, room.floor - 144, 32, 14); // cap
   halo(ctx, '#ff8fdc', cx - 40, room.floor - 140, 80, 130, 0.18);
+  fx(ctx, { kind: 'bubble', x: cx - 16, y: room.floor - 124, w: 32, h: 98, color: '#ff8fdc', n: 3, speed: 0.4 });
 };
 
 export const paintingP: Painter = (ctx, room) => {
@@ -211,4 +219,6 @@ export const robobuddyP: Painter = (ctx, room, pal) => {
   disc(ctx, '#ff5555', cx, room.floor - 96, 5);
   halo(ctx, '#ff5555', cx - 8, room.floor - 104, 16, 14, 0.3);
   ring(ctx, pal.glow, cx, room.floor - 62, 30, 2); // beep-boop aura, why not
+  fx(ctx, { kind: 'blink', x: cx - 4, y: room.floor - 100, w: 8, h: 8, color: '#ff5555', speed: 1.4 });
+  fx(ctx, { kind: 'flicker', x: cx - 24, y: room.floor - 70, w: 48, h: 26, color: '#ffffff', speed: 0.7 });
 };

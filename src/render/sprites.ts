@@ -7,12 +7,13 @@
 import type { ModuleDef } from '../core/types';
 import { ART_CELL } from '../core/grid';
 import { getTheme, spriteKey } from '../core/catalog';
+import type { FxHint } from './fx';
 import { generateModuleSprite } from './procedural/moduleSprite';
 
 export interface SpriteEntry {
   image: CanvasImageSource;
-  /** Reserved for animated modules (P2+): if set, renderer cycles frames. */
-  frames?: CanvasImageSource[];
+  /** Ambient-animation hints the renderer replays each frame (render/fx.ts). */
+  fx: FxHint[];
 }
 
 const cache = new Map<string, SpriteEntry>();
@@ -45,15 +46,16 @@ export function getSprite(def: ModuleDef, themeId: string): SpriteEntry {
   if (hit) return hit;
 
   const theme = getTheme(themeId);
-  const placeholder: SpriteEntry = {
-    image: generateModuleSprite(def, themeId, theme!.palette),
-  };
+  const generated = generateModuleSprite(def, themeId, theme!.palette);
+  const placeholder: SpriteEntry = { image: generated.canvas, fx: generated.fx };
   cache.set(key, placeholder);
 
   if (finalArtKeys.has(key)) {
     const img = new Image();
     img.onload = () => {
-      cache.set(key, { image: img });
+      // Final PNG art replaces the look wholesale; procedural fx hints no
+      // longer line up with it, so they're dropped.
+      cache.set(key, { image: img, fx: [] });
       thumbnailCache.delete(key);
       onSpriteReady?.();
     };
